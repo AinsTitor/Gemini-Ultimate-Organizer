@@ -86,6 +86,24 @@ Aucune collecte de données : Cette extension ne collecte ni n'envoie aucune don
 
 **Stockage Local & Sync : La structure de vos dossiers est stockée de manière sécurisée dans le stockage de votre navigateur Chrome (synchronisé via votre compte Google).**
 
+-------------------------------------------------------------
+
+## 📄 License / Licence
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)**.
+
+✅ **You are free to / Vous êtes libre de :**
+* **Share / Partager :** Copy and redistribute the material in any medium or format. (Copier et redistribuer le matériel).
+* **Adapt / Adapter :** Remix, transform, and build upon the material. (Remixer, transformer et créer à partir du matériel).
+
+❌ **Under the following terms / Selon les conditions suivantes :**
+* **Attribution :** You must give appropriate credit to the original author. (Vous devez créditer l'auteur original).
+* **NonCommercial :** You may **NOT** use the material for commercial purposes. You cannot sell this extension. (Vous ne pouvez **PAS** utiliser le matériel à des fins commerciales. Vous ne pouvez pas vendre cette extension).
+* **ShareAlike (Partage à l'identique) :** If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original. (Si vous modifiez le matériel, vous devez diffuser votre contribution sous la même licence).
+
+---
+**Author:** AinsTitor
+
 
 <img width="1914" height="962" alt="Capture d’écran du 2025-12-02 02-08-18" src="https://github.com/user-attachments/assets/eb500f1c-6e96-4301-932b-47be52387911" />
 
