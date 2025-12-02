@@ -4,14 +4,14 @@
 Gemini Ultimate Organizer is a powerful Chrome extension designed to bring structure to your Google Gemini interface. Create folders, color-code them, and organize your conversations to keep your workspace clean and efficient.
 
 **✨ Key Features**
-📁 Custom Folders: Create, rename, and delete folders to categorize your chats.
-🎨 Color Coding: Assign specific colors to folders for quick visual identification.
-↕️ Reorder Folders: Easily move folders up or down to prioritize your workflow.
-➕ Easy Save: Add any chat to a folder instantly using the floating + button next to the chat title.
-🔍 Global Search: Instantly find a folder or a specific chat inside your library.
-☁️ Cloud Sync: Your folders are saved to your Google Account (chrome.storage.sync), so you find them on any computer.
-💾 Backup & Restore: Export your organization to JSON and import it anytime.
-🖥️ Native Look: A dark-mode UI that blends perfectly with Gemini's design.
+- 📁 Custom Folders: Create, rename, and delete folders to categorize your chats.
+- 🎨 Color Coding: Assign specific colors to folders for quick visual identification.
+- ↕️ Reorder Folders: Easily move folders up or down to prioritize your workflow.
+- ➕ Easy Save: Add any chat to a folder instantly using the floating + button next to the chat title.
+- 🔍 Global Search: Instantly find a folder or a specific chat inside your library.
+- ☁️ Cloud Sync: Your folders are saved to your Google Account (chrome.storage.sync), so you find them on any computer.
+- 💾 Backup & Restore: Export your organization to JSON and import it anytime.
+- 🖥️ Native Look: A dark-mode UI that blends perfectly with Gemini's design.
 
 # 📥 **Installation (Manual)**
 - Since this extension is currently in development/beta:
@@ -48,14 +48,14 @@ No Data Collection: This extension does not collect or send any personal data to
 Gemini Ultimate Organizer est une extension Chrome puissante conçue pour structurer votre interface Google Gemini. Créez des dossiers, attribuez des couleurs et organisez vos conversations pour garder un espace de travail propre et efficace.
 
 **✨ Fonctionnalités Clés**
-📁 Dossiers Personnalisés : Créez, renommez et supprimez des dossiers pour classer vos discussions.
-🎨 Code Couleur : Assignez des couleurs spécifiques aux dossiers pour un repérage visuel rapide.
-↕️ Réorganisation : Montez ou descendez vos dossiers pour prioriser vos projets.
-➕ Sauvegarde Facile : Ajoutez n'importe quel chat à un dossier instantanément via le bouton + situé à côté du titre du chat.
-🔍 Recherche Globale : Trouvez instantanément un dossier ou une discussion spécifique dans votre bibliothèque.
-☁️ Synchronisation Cloud : Vos dossiers sont sauvegardés sur votre compte Google (chrome.storage.sync) et accessibles sur tous vos ordinateurs.
-💾 Sauvegarde et Restauration : Exportez votre organisation en JSON et réimportez-la à tout moment.
-🖥️ Design Natif : Une interface "Dark Mode" qui s'intègre parfaitement au design de Gemini.
+- 📁 Dossiers Personnalisés : Créez, renommez et supprimez des dossiers pour classer vos discussions.
+- 🎨 Code Couleur : Assignez des couleurs spécifiques aux dossiers pour un repérage visuel rapide.
+- ↕️ Réorganisation : Montez ou descendez vos dossiers pour prioriser vos projets.
+- ➕ Sauvegarde Facile : Ajoutez n'importe quel chat à un dossier instantanément via le bouton + situé à côté du titre du chat.
+- 🔍 Recherche Globale : Trouvez instantanément un dossier ou une discussion spécifique dans votre bibliothèque.
+- ☁️ Synchronisation Cloud : Vos dossiers sont sauvegardés sur votre compte Google (chrome.storage.sync) et accessibles sur tous vos ordinateurs.
+- 💾 Sauvegarde et Restauration : Exportez votre organisation en JSON et réimportez-la à tout moment.
+- 🖥️ Design Natif : Une interface "Dark Mode" qui s'intègre parfaitement au design de Gemini.
 
 # 📥 Installation (Manuelle)
 - L'extension étant en développement, voici comment l'installer :
