@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Gemini Ultimate Organizer",
+  "version": "4.0",
+  "description": "Synchronization, search and organization folders for Gemini. Author: AinsTitor",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://gemini.google.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
