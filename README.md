@@ -85,3 +85,8 @@ __Gérer les Dossiers :__
 Aucune collecte de données : Cette extension ne collecte ni n'envoie aucune donnée personnelle à des serveurs externes.
 
 **Stockage Local & Sync : La structure de vos dossiers est stockée de manière sécurisée dans le stockage de votre navigateur Chrome (synchronisé via votre compte Google).**
+
+
+<img width="1914" height="962" alt="Capture d’écran du 2025-12-02 02-08-18" src="https://github.com/user-attachments/assets/eb500f1c-6e96-4301-932b-47be52387911" />
+
+
