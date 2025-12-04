@@ -1,8 +1,14 @@
-console.log("Gemini Organizer: Ultimate v13 (Bulk Manager) Loaded 🚀");
+console.log("Gemini Organizer: Ultimate v14.2 (Auto-Migration) Loaded 🚀");
 
-// --- 🔒 CORE SETTINGS ---
-const STORAGE_KEY = 'gemini_organizer_sync_v1';
-const PROMPTS_KEY = 'gemini_prompts_data_v1';
+// --- 🔒 CORE SETTINGS & MIGRATION KEYS ---
+// NOUVEAU SYSTÈME (Multi-comptes)
+const BASE_STORAGE_KEY = 'gemini_organizer_data_v1';
+const BASE_PROMPT_KEY = 'gemini_organizer_prompts_v1';
+const TUTORIAL_KEY = 'gemini_organizer_tuto_v14_mix';
+
+// ANCIEN SYSTÈME (Pour la migration)
+const OLD_STORAGE_KEY = 'gemini_organizer_sync_v1';
+const OLD_PROMPTS_KEY = 'gemini_prompts_data_v1';
 
 const COLORS = ['#3c4043', '#5c2b29', '#5c4615', '#254d29', '#0d4f4a', '#004a77', '#2c3c63', '#4a2a5e'];
 const TAG_COLORS = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF', '#e3e3e3'];
@@ -12,7 +18,7 @@ const EMOJIS = ['📁', '💼', '🎓', '💡', '🚀', '🤖', '💻', '🎨', 
 const CSS_STYLES = `
     /* --- FLOATING PANEL --- */
     #gu-floating-panel {
-        position: fixed; top: 80px; right: 20px; width: 320px;
+        position: fixed; top: 80px; right: 20px; width: 360px;
         background-color: #1e1f20; border: 1px solid #444746; border-radius: 12px;
         z-index: 99999; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         display: flex; flex-direction: column; max-height: 85vh;
@@ -20,15 +26,23 @@ const CSS_STYLES = `
     }
     #gu-floating-panel.minimized { height: auto !important; max-height: 50px !important; overflow: hidden; }
     #gu-floating-panel.minimized #gu-content-wrapper { display: none; }
+    #gu-floating-panel.minimized .gu-tabs-header { display: none; }
 
     /* HEADER */
     .gu-header {
-        padding: 12px 16px; background: #1e1f20; border-radius: 12px 12px 0 0; cursor: move;
-        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; gap: 10px;
+        padding: 10px 12px; background: #1e1f20; border-radius: 12px 12px 0 0; cursor: move;
+        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; gap: 4px;
     }
-    .gu-title { color: #e3e3e3; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; pointer-events: none; }
+    .gu-title { color: #e3e3e3; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; pointer-events: none; margin-right: 4px; }
 
-    .gu-header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+    .gu-user-badge {
+        font-size: 10px; color: #a8c7fa; background: rgba(168, 199, 250, 0.1);
+        padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(168, 199, 250, 0.2);
+        max-width: 75px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        margin-right: 4px;
+    }
+
+    .gu-header-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
 
     .gu-btn-create {
         background: #0b57d0; color: white; border: none; border-radius: 20px; padding: 0 12px; height: 28px;
@@ -42,8 +56,25 @@ const CSS_STYLES = `
     }
     .gu-btn-icon-head:hover { color: white; background: rgba(255,255,255,0.1); }
 
-    #gu-content-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-    #gu-content-area { overflow-y: auto; scrollbar-width: thin; padding: 0; flex: 1; }
+    .gu-btn-min {
+        background: transparent; border: 1px solid #444; color: #9aa0a6; font-size: 12px;
+        cursor: pointer; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold;
+    }
+    .gu-btn-min:hover { color: white; background: rgba(255,255,255,0.1); }
+
+    /* TABS */
+    .gu-tabs-header { display: flex; border-bottom: 1px solid #333; background: #252627; }
+    .gu-tab-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #9aa0a6; font-size: 12px; font-weight: 600; background: transparent; border: none; border-bottom: 2px solid transparent; transition: 0.2s; }
+    .gu-tab-btn:hover { color: #e3e3e3; background: rgba(255,255,255,0.02); }
+    .gu-tab-btn.active { color: #a8c7fa; border-bottom-color: #a8c7fa; }
+
+    #gu-content-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
+
+    /* PANELS (Folders vs Prompts) */
+    .gu-panel-view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+    .gu-panel-view.active { display: flex; }
+
+    #gu-content-area, #gu-prompts-list { overflow-y: auto; scrollbar-width: thin; padding: 0; flex: 1; }
 
     /* Search */
     .gu-search-row { padding: 10px 16px; background: #1e1f20; border-bottom: 1px solid #333; }
@@ -52,6 +83,20 @@ const CSS_STYLES = `
         padding: 8px 12px; color: #e3e3e3; font-size: 13px; outline: none; box-sizing: border-box;
     }
     .gu-search-box:focus { border-color: #0b57d0; }
+
+    /* --- PROMPTS SPECIFICS --- */
+    .gu-prompt-input-area { padding: 10px 16px; border-bottom: 1px solid #333; display:flex; gap: 8px; }
+    .gu-prompt-item {
+        padding: 12px 16px; border-bottom: 1px solid #282a2c; cursor: pointer;
+        display: flex; flex-direction: column; gap: 4px; transition: 0.2s;
+    }
+    .gu-prompt-item:hover { background: #2a2b2e; }
+    .gu-prompt-item:active { background: #3c4043; }
+    .gu-prompt-text { font-size: 12px; color: #c4c7c5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+    .gu-prompt-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+    .gu-prompt-name { font-weight: 600; font-size: 13px; color: #e3e3e3; }
+    .gu-prompt-actions { opacity: 0; transition: 0.2s; display: flex; gap: 4px; }
+    .gu-prompt-item:hover .gu-prompt-actions { opacity: 1; }
 
     /* --- FOLDERS --- */
     .gu-folder-row {
@@ -137,6 +182,8 @@ const CSS_STYLES = `
     .gu-input-label { font-size: 12px; color: #999; margin-bottom: 6px; display: block; font-weight: 600; }
     .gu-tag-input { width: 100%; background: #131314; border: 1px solid #555; color: white; padding: 10px; border-radius: 8px; outline: none; box-sizing:border-box; font-size: 14px; }
     .gu-tag-input:focus { border-color: #0b57d0; }
+    .gu-input-textarea { min-height: 100px; resize: vertical; font-family: inherit; }
+
     .gu-btn-action {
         width: 100%; margin-top: 15px; background: #0b57d0; color: white;
         border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px;
@@ -156,7 +203,7 @@ const CSS_STYLES = `
     .gu-tag-option:hover { background: #3c4043; color: white; }
     .gu-tag-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-    /* --- EMOJI PICKER (FIXED) --- */
+    /* --- EMOJI PICKER --- */
     .gu-emoji-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 8px; border: 1px solid #333; padding: 8px; border-radius: 8px; background: #1a1a1a; }
     .gu-emoji-item { cursor: pointer; padding: 4px; text-align: center; border-radius: 4px; font-size: 16px; user-select: none; }
     .gu-emoji-item:hover { background: #444; }
@@ -201,10 +248,69 @@ const CSS_STYLES = `
     @keyframes gu-scaleup { to { transform: scale(1); } }
 `;
 
-// --- 2. DATA MANAGEMENT ---
+// --- 2. DATA MANAGEMENT (MULTI-ACCOUNT & MIGRATION) ---
 
-function getData(cb) { chrome.storage.sync.get([STORAGE_KEY], r => cb(r[STORAGE_KEY] || [])); }
-function saveData(d, cb) { chrome.storage.sync.set({ [STORAGE_KEY]: d }, () => { if(cb) cb(); refreshUI(); }); }
+function getCurrentUser() {
+    const accBtn = document.querySelector('a[href^="https://accounts.google.com"]');
+    if (accBtn) {
+        const label = accBtn.getAttribute('aria-label');
+        if (label) {
+            const emailMatch = label.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+            if (emailMatch) return emailMatch[0];
+        }
+    }
+    return 'default_user';
+}
+
+function getKeys() {
+    const user = getCurrentUser();
+    return {
+        folders: `${BASE_STORAGE_KEY}_${user}`,
+        prompts: `${BASE_PROMPT_KEY}_${user}`,
+        user: user
+    };
+}
+
+// --- MIGRATION LOGIC START ---
+function migrateOldData() {
+    const k = getKeys();
+    // Check both new AND old keys
+    chrome.storage.sync.get([k.folders, k.prompts, OLD_STORAGE_KEY, OLD_PROMPTS_KEY], (result) => {
+        // 1. Folders Migration
+        if (!result[k.folders] && result[OLD_STORAGE_KEY] && result[OLD_STORAGE_KEY].length > 0) {
+            console.log("Gemini Organizer: Migrating Folders from v1 to v14...");
+            // Save to new key. We DO NOT delete the old key (backup safety).
+            chrome.storage.sync.set({ [k.folders]: result[OLD_STORAGE_KEY] }, () => refreshUI());
+        }
+
+        // 2. Prompts Migration
+        if (!result[k.prompts] && result[OLD_PROMPTS_KEY] && result[OLD_PROMPTS_KEY].length > 0) {
+            console.log("Gemini Organizer: Migrating Prompts from v1 to v14...");
+            chrome.storage.sync.set({ [k.prompts]: result[OLD_PROMPTS_KEY] }, () => refreshPromptsUI());
+        }
+    });
+}
+// --- MIGRATION LOGIC END ---
+
+function getData(cb) {
+    const k = getKeys();
+    chrome.storage.sync.get([k.folders], r => cb(r[k.folders] || []));
+}
+
+function saveData(d, cb) {
+    const k = getKeys();
+    chrome.storage.sync.set({ [k.folders]: d }, () => { if(cb) cb(); refreshUI(); });
+}
+
+function getPrompts(cb) {
+    const k = getKeys();
+    chrome.storage.sync.get([k.prompts], r => cb(r[k.prompts] || []));
+}
+
+function savePrompts(d, cb) {
+    const k = getKeys();
+    chrome.storage.sync.set({ [k.prompts]: d }, () => { if(cb) cb(); refreshPromptsUI(); });
+}
 
 function stringToColor(str) {
     let hash = 0;
@@ -224,13 +330,24 @@ function getLibraryTags(folders) {
     return Array.from(tagsMap, ([text, color]) => ({ text, color })).sort((a,b) => a.text.localeCompare(b.text));
 }
 
-// --- 3. UI RENDERING ---
+// --- 3. UI RENDERING (FOLDERS) ---
 
 function refreshUI() {
     getData(folders => {
         renderPanelContent(folders);
         injectButtonsInNativeList(folders);
+        updateUserBadge();
     });
+    refreshPromptsUI();
+}
+
+function updateUserBadge() {
+    const badge = document.getElementById('gu-user-badge');
+    if (badge) {
+        const u = getCurrentUser();
+        badge.innerText = u === 'default_user' ? 'Guest' : u;
+        badge.title = `Data saved for: ${u}`;
+    }
 }
 
 function renderPanelContent(folders) {
@@ -271,7 +388,6 @@ function renderPanelContent(folders) {
         const isOpen = folder.isOpen || (searchText.length > 0);
         const emoji = folder.emoji || '📁';
 
-// FIX EMOJI : Cleaned up inline styles, now using CSS class strictly
         header.innerHTML = `
             <div class="gu-folder-left">
                 <span style="font-size:10px; color:${folder.color}; width: 12px;">${isOpen ? '▼' : '▶'}</span>
@@ -311,7 +427,6 @@ function renderPanelContent(folders) {
             content.addEventListener('dragover', e => e.preventDefault());
             content.addEventListener('drop', e => handleChatReorderDrop(e, idx));
 
-            // Sort logic: Pinned first
             let chatsDisplay = searchText ? matchingChats : [...folder.chats];
             if (!searchText) {
                 chatsDisplay.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
@@ -377,7 +492,124 @@ function renderPanelContent(folders) {
     });
 }
 
-// --- 4. MODALS (TAGS, CREATE, SETTINGS, BULK) ---
+// --- 3B. UI RENDERING (PROMPTS) ---
+
+function refreshPromptsUI() {
+    getPrompts(prompts => {
+        const list = document.getElementById('gu-prompts-list');
+        const searchInput = document.getElementById('gu-search-input');
+        if(!list) return;
+
+        const searchText = searchInput ? searchInput.value.toLowerCase() : "";
+        list.innerHTML = '';
+
+        const filtered = prompts.filter(p => p.name.toLowerCase().includes(searchText) || p.content.toLowerCase().includes(searchText));
+
+        if (filtered.length === 0) {
+             list.innerHTML = `<div style="padding:20px; text-align:center; color:#666; font-size:12px;">No prompts found.<br>Click <b>+ New</b> to add one.</div>`;
+             return;
+        }
+
+        filtered.forEach((p, idx) => {
+            const item = document.createElement('div');
+            item.className = 'gu-prompt-item';
+            item.innerHTML = `
+                <div class="gu-prompt-meta">
+                    <span class="gu-prompt-name">${p.name}</span>
+                    <div class="gu-prompt-actions">
+                        <span class="gu-icon-btn edit-p">✎</span>
+                        <span class="gu-icon-btn delete-p">×</span>
+                    </div>
+                </div>
+                <div class="gu-prompt-text">${p.content}</div>
+            `;
+
+            // Inject Action
+            item.onclick = () => injectPromptToGemini(p.content);
+
+            item.querySelector('.edit-p').onclick = (e) => { e.stopPropagation(); showCreatePromptModal(p, idx); };
+            item.querySelector('.delete-p').onclick = (e) => {
+                e.stopPropagation();
+                if(confirm("Delete this prompt?")) {
+                    prompts.splice(idx, 1);
+                    savePrompts(prompts);
+                }
+            };
+
+            list.appendChild(item);
+        });
+    });
+}
+
+function injectPromptToGemini(text) {
+    // 1. Find the editor (Rich text or simple textarea)
+    const editor = document.querySelector('div[contenteditable="true"].r-1wzrnnt') || // Common Gemini class
+                   document.querySelector('div[contenteditable="true"]') ||
+                   document.querySelector('textarea');
+
+    if (!editor) return alert("Could not find Gemini input box.");
+
+    editor.focus();
+
+    // 2. Insert text
+    if (editor.tagName === 'TEXTAREA') {
+        editor.value = text;
+        editor.dispatchEvent(new Event('input', { bubbles: true }));
+    } else {
+        // ContentEditable: Safest is execCommand for undo history support, or direct innerHTML if fails
+        document.execCommand('insertText', false, text);
+        // Fallback if empty
+        if (editor.innerText.trim() === '') editor.innerText = text;
+    }
+
+    // 3. Try to enable the Send button (Trigger input events)
+    const inputEvent = new Event('input', { bubbles: true, cancelable: true });
+    editor.dispatchEvent(inputEvent);
+}
+
+// --- 4. MODALS (TAGS, CREATE, PROMPTS, ETC) ---
+
+function showCreatePromptModal(existingPrompt = null, existingIdx = null) {
+    const modal = document.createElement('div');
+    modal.className = 'gu-modal-overlay';
+    modal.innerHTML = `
+        <div class="gu-modal-content">
+            <div class="gu-modal-header">
+                <span>${existingPrompt ? 'Edit Prompt' : 'New Prompt'}</span>
+                <span class="gu-menu-close">×</span>
+            </div>
+            <div class="gu-modal-body">
+                <span class="gu-input-label">TITLE</span>
+                <input type="text" id="gu-prompt-name" class="gu-tag-input" value="${existingPrompt ? existingPrompt.name : ''}" autofocus>
+
+                <span class="gu-input-label" style="margin-top:15px;">CONTENT</span>
+                <textarea id="gu-prompt-content" class="gu-tag-input gu-input-textarea" placeholder="Enter your prompt here...">${existingPrompt ? existingPrompt.content : ''}</textarea>
+
+                <button id="gu-save-prompt" class="gu-btn-action">Save Prompt</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
+
+    modal.querySelector('#gu-save-prompt').onclick = () => {
+        const name = modal.querySelector('#gu-prompt-name').value.trim();
+        const content = modal.querySelector('#gu-prompt-content').value.trim();
+        if(!name || !content) return;
+
+        getPrompts(prompts => {
+            if(existingPrompt && existingIdx !== null) {
+                prompts[existingIdx] = { name, content };
+            } else {
+                prompts.push({ name, content });
+            }
+            savePrompts(prompts);
+            modal.remove();
+        });
+    };
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
 
 function showAdvancedTagMenu(e, chat, folders) {
     const existing = document.getElementById('gu-tag-modal');
@@ -387,7 +619,6 @@ function showAdvancedTagMenu(e, chat, folders) {
     modal.id = 'gu-tag-modal';
     modal.className = 'gu-modal-overlay';
 
-    // 1. Active Tags
     let activeHtml = `<div class="gu-active-tags-area">`;
     if (chat.tags && chat.tags.length > 0) {
         chat.tags.forEach((tag, i) => {
@@ -402,14 +633,12 @@ function showAdvancedTagMenu(e, chat, folders) {
     }
     activeHtml += `</div>`;
 
-    // 2. Color Picker
     let colorHtml = `<div class="gu-color-picker-row">`;
     TAG_COLORS.forEach((c, i) => {
         colorHtml += `<div class="gu-color-choice ${i===0?'selected':''}" style="background:${c}" data-col="${c}"></div>`;
     });
     colorHtml += `</div>`;
 
-    // 3. Library
     const library = getLibraryTags(folders);
     const currentTagTexts = (chat.tags || []).map(t => typeof t === 'object' ? t.text : t);
     const available = library.filter(t => !currentTagTexts.includes(t.text));
@@ -550,7 +779,6 @@ function showBulkManager(folders) {
     folders.forEach(f => f.chats.forEach(c => archivedSet.add(c.url)));
 
     chatItems.forEach(item => {
-        // Extract ID & Title logic reused
         const jslog = item.getAttribute('jslog');
         let chatId = null;
         if (jslog) {
@@ -604,7 +832,6 @@ function showBulkManager(folders) {
     `;
     document.body.appendChild(modal);
 
-    // Bulk Logic
     let selection = new Set();
     const items = modal.querySelectorAll('.gu-bulk-item');
     const counter = modal.querySelector('.gu-bulk-counter');
@@ -634,7 +861,6 @@ function showBulkManager(folders) {
         };
     });
 
-    // Search
     modal.querySelector('#gu-bulk-search').oninput = (e) => {
         const val = e.target.value.toLowerCase();
         items.forEach(item => {
@@ -643,7 +869,6 @@ function showBulkManager(folders) {
         });
     };
 
-    // Move
     modal.querySelector('#gu-bulk-move').onclick = () => {
         const folderIdx = modal.querySelector('#gu-bulk-folder-select').value;
         if (folderIdx === "" || selection.size === 0) return alert("Select chats and a folder.");
@@ -664,14 +889,16 @@ function showBulkManager(folders) {
 function showSettingsModal() {
     const modal = document.createElement('div');
     modal.className = 'gu-modal-overlay';
+    const user = getCurrentUser();
     modal.innerHTML = `
         <div class="gu-modal-content">
             <div class="gu-modal-header"><span>Settings</span><span class="gu-menu-close">×</span></div>
             <div class="gu-modal-body" style="text-align:center;">
+                <p style="color:#a8c7fa; font-size:12px; margin-bottom:15px;">Current Account: <b>${user}</b></p>
                 <button id="gu-export" class="gu-btn-action" style="background:#333; margin-top:0;">⬇ Export Data (JSON)</button>
                 <button id="gu-import" class="gu-btn-action" style="background:#333;">⬆ Import Data</button>
                 <input type="file" id="gu-import-file" style="display:none" accept=".json">
-                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v12.0</p>
+                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v14.0</p>
             </div>
         </div>
     `;
@@ -681,7 +908,7 @@ function showSettingsModal() {
     document.getElementById('gu-export').onclick = () => {
         getData(d => {
             const b = new Blob([JSON.stringify(d, null, 2)], {type:'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'gemini_backup.json'; a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `gemini_backup_${user}.json`; a.click();
         });
     };
     document.getElementById('gu-import').onclick = () => document.getElementById('gu-import-file').click();
@@ -832,13 +1059,12 @@ function showTutorialModal() {
     modal.className = 'gu-modal-overlay';
     modal.innerHTML = `
         <div class="gu-modal-content" style="max-width: 550px;">
-            <h1 class="gu-modal-h1">🎉 Welcome to Gemini Organizer!</h1>
-            <p class="gu-modal-p">Boost your productivity with folders, tags, and drag & drop.</p>
+            <h1 class="gu-modal-h1">🎉 Welcome to v14!</h1>
+            <p class="gu-modal-p">New Features Unlocked:</p>
             <div class="gu-modal-steps">
-                <div class="gu-modal-step"><div class="gu-step-icon">📁</div><div><b>Folders:</b> Click <b>+ New</b> to create custom folders.</div></div>
-                <div class="gu-modal-step"><div class="gu-step-icon">✅</div><div><b>Bulk:</b> Click <b>Select</b> to organize many chats at once.</div></div>
-                <div class="gu-modal-step"><div class="gu-step-icon">🏷️</div><div><b>Tags:</b> Use <b>#</b> on saved chats to categorize them.</div></div>
-                <div class="gu-modal-step"><div class="gu-step-icon">📌</div><div><b>Pin:</b> Use <b>Pin</b> to keep important chats at the top.</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">📝</div><div><b>Prompts:</b> Save and reuse your best prompts. Click the <b>"Prompts"</b> tab!</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">👤</div><div><b>Multi-Account:</b> Your folders are now tied to your Google account.</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">📂</div><div><b>Folders:</b> Still here, stronger than ever.</div></div>
             </div>
             <button id="gu-close-tutorial" class="gu-modal-btn">Let's Go!</button>
         </div>
@@ -850,17 +1076,48 @@ function showTutorialModal() {
     };
 }
 
+// --- TAB SWITCHING LOGIC ---
+function switchTab(tabName) {
+    document.querySelectorAll('.gu-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.gu-panel-view').forEach(p => p.classList.remove('active'));
+
+    if (tabName === 'folders') {
+        document.getElementById('gu-tab-folders').classList.add('active');
+        document.getElementById('gu-content-wrapper').querySelector('.gu-search-row').style.display = 'block';
+        document.getElementById('gu-content-area').classList.add('active');
+        document.getElementById('gu-prompts-panel').classList.remove('active');
+        document.getElementById('gu-add-folder-btn').style.display = 'flex';
+        document.getElementById('gu-btn-bulk').style.display = 'flex';
+        // Change Search placeholder
+        document.getElementById('gu-search-input').placeholder = "Search folders & chats...";
+    } else {
+        document.getElementById('gu-tab-prompts').classList.add('active');
+        // We reuse the search bar but hide bulk btn
+        document.getElementById('gu-prompts-panel').classList.add('active');
+        document.getElementById('gu-content-area').classList.remove('active');
+        document.getElementById('gu-add-folder-btn').style.display = 'none'; // Replaced logic
+        document.getElementById('gu-btn-bulk').style.display = 'none';
+        document.getElementById('gu-search-input').placeholder = "Search saved prompts...";
+        refreshPromptsUI();
+    }
+}
+
 function init() {
     if (document.getElementById('gu-floating-panel')) return;
     const style = document.createElement('style');
     style.textContent = CSS_STYLES;
     document.head.appendChild(style);
+
+    // Auto Migrate Data if needed
+    migrateOldData();
+
     const panel = document.createElement('div');
     panel.id = 'gu-floating-panel';
     panel.innerHTML = `
         <div class="gu-header" id="gu-header-drag">
             <div class="gu-header-actions">
-                <span class="gu-title">🗂️ FOLDERS</span>
+                <span class="gu-title">Gemini Org.</span>
+                <span id="gu-user-badge" class="gu-user-badge">...</span>
                 <button id="gu-btn-settings" class="gu-btn-icon-head" title="Settings">⚙️</button>
             </div>
             <div class="gu-header-actions">
@@ -869,14 +1126,30 @@ function init() {
                 <button id="gu-min-btn" class="gu-btn-min" title="Minimize">_</button>
             </div>
         </div>
+
+        <div class="gu-tabs-header">
+            <button id="gu-tab-folders" class="gu-tab-btn active">FOLDERS</button>
+            <button id="gu-tab-prompts" class="gu-tab-btn">PROMPTS</button>
+        </div>
+
         <div id="gu-content-wrapper">
             <div class="gu-search-row">
-                <input type="text" id="gu-search-input" class="gu-search-box" placeholder="Search chats or #tags...">
+                <input type="text" id="gu-search-input" class="gu-search-box" placeholder="Search folders...">
             </div>
-            <div id="gu-content-area"></div>
+
+            <div id="gu-content-area" class="gu-panel-view active"></div>
+
+            <div id="gu-prompts-panel" class="gu-panel-view">
+                <div style="padding:10px; border-bottom:1px solid #333;">
+                    <button id="gu-add-prompt-btn" class="gu-btn-action" style="margin:0; background:#254d29;">+ New Prompt</button>
+                </div>
+                <div id="gu-prompts-list"></div>
+            </div>
         </div>
     `;
     document.body.appendChild(panel);
+
+    // Header Drag
     const header = document.getElementById('gu-header-drag');
     let isDragging = false, startX, startY, initialLeft, initialTop;
     header.onmousedown = (e) => {
@@ -893,18 +1166,24 @@ function init() {
         panel.style.right = 'auto';
     };
     document.onmouseup = () => { isDragging = false; header.style.cursor = 'move'; };
+
+    // Buttons
     document.getElementById('gu-add-folder-btn').onclick = () => showCreateFolderModal();
     document.getElementById('gu-min-btn').onclick = () => panel.classList.toggle('minimized');
-    document.getElementById('gu-search-input').addEventListener('input', () => refreshUI());
+    document.getElementById('gu-search-input').addEventListener('input', () => {
+        if(document.getElementById('gu-tab-folders').classList.contains('active')) refreshUI();
+        else refreshPromptsUI();
+    });
     document.getElementById('gu-btn-settings').onclick = showSettingsModal;
+    document.getElementById('gu-btn-bulk').onclick = () => getData(folders => showBulkManager(folders));
 
-    // BULK BUTTON HANDLER
-    document.getElementById('gu-btn-bulk').onclick = () => {
-        getData(folders => showBulkManager(folders));
-    };
+    // Tabs
+    document.getElementById('gu-tab-folders').onclick = () => switchTab('folders');
+    document.getElementById('gu-tab-prompts').onclick = () => switchTab('prompts');
+    document.getElementById('gu-add-prompt-btn').onclick = () => showCreatePromptModal();
 
     refreshUI();
-    setInterval(() => refreshUI(), 2000);
+    setInterval(() => refreshUI(), 2000); // Polling for sync/updates
     checkAndShowTutorial();
 }
 const startLoop = setInterval(() => { if(!document.getElementById('gu-floating-panel')) init(); }, 1000);
