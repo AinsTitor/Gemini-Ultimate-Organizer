@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "id": "folder_123",
+      "name": "Work Projects",
+      "color": "#ff0000",
+      "chats": [
+        { "id": "chat_abc", "title": "Project Alpha" }
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "id": "prompt_456",
+      "title": "Code Review",
+      "content": "Please review this code for...",
+      "color": "#00ff00"
+    }
+  ]
+}

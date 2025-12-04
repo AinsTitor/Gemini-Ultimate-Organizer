@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Gemini Ultimate Organizer",
-  "version": "4.0",
+  "name": "__MSG_ext_name__",
+  "version": "1.5",
   "description": "Synchronization, search and organization folders for Gemini. Author: AinsTitor",
+  "default_locale": "en",
   "action": {
     "default_popup": "popup.html"
   },
@@ -12,7 +13,14 @@
   "content_scripts": [
     {
       "matches": ["https://gemini.google.com/*"],
-      "js": ["content.js"]
+      "js": ["content_loader.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["config.js", "storage.js", "ui.js", "main.js"],
+      "matches": ["https://gemini.google.com/*"]
     }
   ]
 }
