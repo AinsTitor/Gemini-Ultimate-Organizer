@@ -114,11 +114,11 @@
 
 ## 📸 Screenshots / Captures d'écran
 
-| Main Interface | Add to Folder |
+| Main Interface | Create Folder |
 |:---:|:---:|
 | <img src="https://github.com/user-attachments/assets/43ae8037-6c09-4e17-b38a-af5ae95867c6" width="400" /> | <img src="https://github.com/user-attachments/assets/2356ab9d-63f0-419a-81d9-caaa72427610" width="400" /> |
 
-| Color Picker | Context Menu | Backup/Restore |
+| Variable Prompt | Bulk Folder | Tags Manager |
 |:---:|:---:|:---:|
 | <img src="https://github.com/user-attachments/assets/80c9a1aa-ca74-4b09-98b0-41d89f3a0832" width="250" /> | <img src="https://github.com/user-attachments/assets/5271575c-348a-4a9c-b660-947ca4b59c78" width="250" /> | <img src="https://github.com/user-attachments/assets/0df1153e-e2db-4cd2-a0e7-6013f35522d8" width="250" /> |
 
