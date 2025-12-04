@@ -104,6 +104,7 @@ This project is licensed under the **Creative Commons Attribution-NonCommercial-
 ---
 **Author:** AinsTitor
 
+<img width="1280" height="800" alt="Capture d’écran du 2025-12-04 05-03-48" src="https://github.com/user-attachments/assets/43ae8037-6c09-4e17-b38a-af5ae95867c6" />
 
 
 
