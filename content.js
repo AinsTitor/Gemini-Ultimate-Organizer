@@ -1,10 +1,11 @@
-console.log("Gemini Organizer: Ultimate v15.1 (New Header Layout) Loaded 🚀");
+console.log("Gemini Organizer: Ultimate v16.0 (Wide Mode + Hotkeys + Old Header) Loaded 🚀");
 
 // --- 🔒 CORE SETTINGS ---
 const BASE_STORAGE_KEY = 'gemini_organizer_data_v1';
 const BASE_PROMPT_KEY = 'gemini_organizer_prompts_v1';
-const TUTORIAL_KEY = 'gemini_organizer_tuto_v14_mix';
+const TUTORIAL_KEY = 'gemini_organizer_tuto_v16_wide';
 const STREAMER_KEY = 'gemini_organizer_streamer_mode';
+const WIDE_KEY = 'gemini_organizer_wide_mode';
 
 // MIGRATION KEYS
 const OLD_STORAGE_KEY = 'gemini_organizer_sync_v1';
@@ -18,75 +19,61 @@ const EMOJIS = ['📁', '💼', '🎓', '💡', '🚀', '🤖', '💻', '🎨', 
 const CSS_STYLES = `
     /* --- FLOATING PANEL --- */
     #gu-floating-panel {
-        position: fixed; top: 80px; right: 20px; width: 340px;
+        position: fixed; top: 80px; right: 20px; width: 360px;
         background-color: #1e1f20; border: 1px solid #444746; border-radius: 12px;
         z-index: 99999; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         display: flex; flex-direction: column; max-height: 85vh;
         font-family: "Google Sans", sans-serif; transition: height 0.3s, opacity 0.3s;
     }
-
-    /* MINIMIZED STATE LOGIC */
-    #gu-floating-panel.minimized { height: auto !important; overflow: hidden; }
+    #gu-floating-panel.minimized { height: auto !important; max-height: 50px !important; overflow: hidden; }
     #gu-floating-panel.minimized #gu-content-wrapper { display: none; }
     #gu-floating-panel.minimized .gu-tabs-header { display: none; }
-    #gu-floating-panel.minimized .gu-header-bottom { display: none; } /* Hide buttons when minimized */
-    #gu-floating-panel.minimized .gu-header { border-bottom: none; }
 
-    /* HEADER STRUCTURE */
+    /* HEADER (RESTORED TO ORIGINAL LAYOUT) */
     .gu-header {
-        padding: 12px 16px; background: #1e1f20; border-radius: 12px 12px 0 0; cursor: move;
-        display: flex; flex-direction: column; border-bottom: 1px solid #444; gap: 10px;
+        padding: 12px 14px; background: #1e1f20; border-radius: 12px 12px 0 0; cursor: move;
+        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; gap: 4px;
     }
+    .gu-title { color: #e3e3e3; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; pointer-events: none; margin-right: 4px; display:none; /* Hidden on small screens if needed, but flex handles it */ }
 
-    /* HEADER TOP ROW (Title + Minimize) */
-    .gu-header-top {
-        display: flex; justify-content: space-between; align-items: center; width: 100%;
-    }
-    .gu-title { color: #e3e3e3; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; pointer-events: none; }
-
-    .gu-btn-min {
-        background: transparent; border: 1px solid #444; color: #9aa0a6; font-size: 14px;
-        cursor: pointer; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold;
-    }
-    .gu-btn-min:hover { color: white; background: rgba(255,255,255,0.1); }
-
-    /* HEADER BOTTOM ROW (Actions) */
-    .gu-header-bottom {
-        display: flex; justify-content: space-between; align-items: center; width: 100%;
-    }
-    .gu-actions-group { display: flex; gap: 6px; align-items: center; }
-
-    /* USER BADGE */
     .gu-user-badge {
         font-size: 10px; color: #a8c7fa; background: rgba(168, 199, 250, 0.1);
-        padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(168, 199, 250, 0.2);
-        max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        cursor: default; font-weight: 500;
+        padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(168, 199, 250, 0.2);
+        max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        margin-right: 2px; cursor: default;
     }
 
-    /* BUTTONS */
+    /* Actions Containers */
+    .gu-header-left { display: flex; align-items: center; gap: 4px; }
+    .gu-header-right { display: flex; align-items: center; gap: 4px; }
+
     .gu-btn-create {
-        background: #0b57d0; color: white; border: none; border-radius: 20px; padding: 0 12px; height: 28px;
-        cursor: pointer; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 4px; white-space: nowrap;
+        background: #0b57d0; color: white; border: none; border-radius: 20px; padding: 0 10px; height: 26px;
+        cursor: pointer; font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 4px; white-space: nowrap;
     }
     .gu-btn-create:hover { background: #0842a0; }
 
     .gu-btn-icon-head {
         background: transparent; border: 1px solid #444; color: #9aa0a6; font-size: 14px;
-        cursor: pointer; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        cursor: pointer; width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
     .gu-btn-icon-head:hover { color: white; background: rgba(255,255,255,0.1); }
     .gu-btn-icon-head.active-streamer { color: #ff8989; border-color: #ff8989; background: rgba(255,0,0,0.1); }
+    .gu-btn-icon-head.active-wide { color: #a8c7fa; border-color: #a8c7fa; background: rgba(168, 199, 250, 0.1); }
+
+    .gu-btn-min {
+        background: transparent; border: 1px solid #444; color: #9aa0a6; font-size: 12px;
+        cursor: pointer; width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold;
+    }
+    .gu-btn-min:hover { color: white; background: rgba(255,255,255,0.1); }
 
     /* TABS */
     .gu-tabs-header { display: flex; border-bottom: 1px solid #333; background: #252627; }
-    .gu-tab-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #9aa0a6; font-size: 12px; font-weight: 600; background: transparent; border: none; border-bottom: 2px solid transparent; transition: 0.2s; }
+    .gu-tab-btn { flex: 1; padding: 8px; text-align: center; cursor: pointer; color: #9aa0a6; font-size: 12px; font-weight: 600; background: transparent; border: none; border-bottom: 2px solid transparent; transition: 0.2s; }
     .gu-tab-btn:hover { color: #e3e3e3; background: rgba(255,255,255,0.02); }
     .gu-tab-btn.active { color: #a8c7fa; border-bottom-color: #a8c7fa; }
 
     #gu-content-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
-
-    /* PANELS */
     .gu-panel-view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
     .gu-panel-view.active { display: flex; }
     #gu-content-area, #gu-prompts-list { overflow-y: auto; scrollbar-width: thin; padding: 0; flex: 1; }
@@ -99,7 +86,7 @@ const CSS_STYLES = `
     }
     .gu-search-box:focus { border-color: #0b57d0; }
 
-    /* --- PROMPTS SPECIFICS --- */
+    /* PROMPTS */
     .gu-prompt-input-area { padding: 10px 16px; border-bottom: 1px solid #333; display:flex; gap: 8px; }
     .gu-prompt-item {
         padding: 12px 16px; border-bottom: 1px solid #282a2c; cursor: pointer;
@@ -113,7 +100,7 @@ const CSS_STYLES = `
     .gu-prompt-actions { opacity: 0; transition: 0.2s; display: flex; gap: 4px; }
     .gu-prompt-item:hover .gu-prompt-actions { opacity: 1; }
 
-    /* --- FOLDERS --- */
+    /* FOLDERS */
     .gu-folder-row {
         padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         color: #c4c7c5; font-size: 13px; border-bottom: 1px solid #282a2c;
@@ -140,7 +127,7 @@ const CSS_STYLES = `
     .gu-color-dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid #555; }
     .gu-color-wrapper:hover .gu-color-dot { transform: scale(1.3); border-color: white; }
 
-    /* --- CHATS --- */
+    /* CHATS */
     .gu-folder-content { display: none; background: #161616; border-left: 4px solid #1e1f20; min-height: 5px; }
     .gu-folder-content.open { display: block; }
 
@@ -163,7 +150,7 @@ const CSS_STYLES = `
     .gu-chat-tag-btn { color: #8e918f; font-size: 14px; padding: 2px 4px; }
     .gu-chat-tag-btn:hover { color: #a8c7fa; }
 
-    /* --- TAGS --- */
+    /* TAGS */
     .gu-tags-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; padding-left: 16px; }
     .gu-tag {
         font-size: 10px; padding: 1px 6px; border-radius: 4px;
@@ -172,7 +159,7 @@ const CSS_STYLES = `
     }
     .gu-tag:hover { opacity: 0.8; text-decoration: line-through; }
 
-    /* --- MODALS (COMMON) --- */
+    /* MODALS */
     .gu-modal-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.85); z-index: 1000000;
@@ -205,13 +192,13 @@ const CSS_STYLES = `
     }
     .gu-btn-action:hover { background: #0842a0; }
 
-    /* --- EMOJI PICKER --- */
+    /* EMOJI */
     .gu-emoji-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 8px; border: 1px solid #333; padding: 8px; border-radius: 8px; background: #1a1a1a; }
     .gu-emoji-item { cursor: pointer; padding: 4px; text-align: center; border-radius: 4px; font-size: 16px; user-select: none; }
     .gu-emoji-item:hover { background: #444; }
     .gu-emoji-item.selected { background: #0b57d0; color: white; }
 
-    /* --- BULK MANAGER --- */
+    /* BULK */
     .gu-bulk-list { max-height: 300px; overflow-y: auto; scrollbar-width: thin; margin-top: 10px; border: 1px solid #333; border-radius: 8px; }
     .gu-bulk-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #333; cursor: pointer; transition: background 0.2s; }
     .gu-bulk-item:hover { background: #2a2b2e; }
@@ -223,7 +210,7 @@ const CSS_STYLES = `
     .gu-bulk-text { font-size: 13px; color: #e3e3e3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .gu-bulk-counter { font-size: 12px; color: #a8c7fa; text-align: right; margin-top: 5px; }
 
-    /* --- FLOATING [+] BUTTON --- */
+    /* FLOAT ADD */
     .gu-float-add {
         position: absolute; right: 45px; top: 50%; transform: translateY(-50%);
         width: 26px; height: 26px; background: rgba(255,255,255,0.1);
@@ -233,7 +220,7 @@ const CSS_STYLES = `
     }
     .gu-float-add:hover { background: #0b57d0; border-color: #0b57d0; color: white; scale: 1.1; }
 
-    /* --- CONTEXT MENU (Simple) --- */
+    /* CONTEXT MENU */
     .gu-context-menu {
         position: fixed; background: #282a2c; border: 1px solid #555;
         border-radius: 8px; padding: 6px 0; z-index: 100000;
@@ -245,7 +232,7 @@ const CSS_STYLES = `
     .gu-context-item:hover { background: #0b57d0; color: white; }
     .gu-context-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
 
-    /* --- TAG MANAGER & COMMONS --- */
+    /* TAG MANAGER */
     .gu-active-tags-area { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
     .gu-active-tag-chip { background: #444; padding: 4px 8px; border-radius: 12px; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
     .gu-active-tag-chip:hover { background: #ff5555; }
@@ -258,6 +245,29 @@ const CSS_STYLES = `
     .gu-tag-option:hover { background: #3c4043; color: white; }
     .gu-tag-dot { width: 8px; height: 8px; border-radius: 50%; }
 
+    /* TOAST NOTIFICATION */
+    .gu-toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: #333; color: #fff; padding: 10px 20px; border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 1000001; font-size: 13px;
+        opacity: 0; animation: gu-toast-in 0.3s forwards, gu-toast-out 0.3s 2.5s forwards;
+        display: flex; align-items: center; gap: 8px; border: 1px solid #555;
+    }
+    @keyframes gu-toast-in { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    @keyframes gu-toast-out { from { opacity: 1; } to { opacity: 0; } }
+
+    /* WIDE MODE */
+    body.gu-wide-mode-active .input-area-container,
+    body.gu-wide-mode-active .conversation-container,
+    body.gu-wide-mode-active .bottom-container,
+    body.gu-wide-mode-active .input-area {
+        max-width: 95% !important; margin-left: auto !important; margin-right: auto !important;
+    }
+    /* Targeting Angular/Gemini specifics aggressively for wide mode */
+    body.gu-wide-mode-active .gmat-body-1 { max-width: 100% !important; }
+    body.gu-wide-mode-active user-query { max-width: 90% !important; }
+    body.gu-wide-mode-active model-response { max-width: 90% !important; }
+
     /* --- STREAMER MODE (BLUR) --- */
     body.gu-streamer-active .gu-chat-title,
     body.gu-streamer-active .gu-bulk-text,
@@ -266,17 +276,25 @@ const CSS_STYLES = `
     body.gu-streamer-active .gu-folder-left span:last-child {
         filter: blur(5px); transition: 0.3s;
     }
-
     body.gu-streamer-active div[data-test-id="conversation"] .conversation-title {
         filter: blur(5px); transition: 0.3s;
     }
-
     body.gu-streamer-active .markdown,
     body.gu-streamer-active p,
     body.gu-streamer-active li {
         filter: blur(4px); transition: 0.2s;
     }
-
+    /* LOCATION FIX */
+    body.gu-streamer-active [aria-label*="location"],
+    body.gu-streamer-active [aria-label*="Location"],
+    body.gu-streamer-active [aria-label*="position"],
+    body.gu-streamer-active [aria-label*="Position"],
+    body.gu-streamer-active a[href*="google.com/maps"],
+    body.gu-streamer-active a[href*="location"],
+    body.gu-streamer-active footer,
+    body.gu-streamer-active .location-footer-container {
+        filter: blur(6px); transition: 0.3s;
+    }
     /* Hover Reveals */
     body.gu-streamer-active .gu-chat-link:hover .gu-chat-title,
     body.gu-streamer-active .gu-prompt-item:hover .gu-prompt-text,
@@ -285,7 +303,10 @@ const CSS_STYLES = `
     body.gu-streamer-active div[data-test-id="conversation"]:hover .conversation-title,
     body.gu-streamer-active .markdown:hover,
     body.gu-streamer-active p:hover,
-    body.gu-streamer-active li:hover {
+    body.gu-streamer-active li:hover,
+    body.gu-streamer-active [aria-label*="location"]:hover,
+    body.gu-streamer-active [aria-label*="position"]:hover,
+    body.gu-streamer-active footer:hover {
         filter: none;
     }
 
@@ -369,7 +390,20 @@ function getLibraryTags(folders) {
     return Array.from(tagsMap, ([text, color]) => ({ text, color })).sort((a,b) => a.text.localeCompare(b.text));
 }
 
-// --- 3. STREAMER MODE LOGIC ---
+// --- 3. CORE FEATURES (STREAMER, WIDE, TOASTS) ---
+
+function showToast(message, icon = 'ℹ️') {
+    const existing = document.getElementById('gu-toast-notif');
+    if(existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'gu-toast-notif';
+    toast.className = 'gu-toast';
+    toast.innerHTML = `<span style="font-size:16px;">${icon}</span> <span>${message}</span>`;
+    document.body.appendChild(toast);
+
+    setTimeout(() => { if(document.body.contains(toast)) toast.remove(); }, 3000);
+}
 
 function toggleStreamerMode() {
     const isActive = document.body.classList.contains('gu-streamer-active');
@@ -377,10 +411,12 @@ function toggleStreamerMode() {
         document.body.classList.remove('gu-streamer-active');
         localStorage.setItem(STREAMER_KEY, 'false');
         document.getElementById('gu-btn-streamer').classList.remove('active-streamer');
+        showToast("Streamer Mode: OFF", "👁️");
     } else {
         document.body.classList.add('gu-streamer-active');
         localStorage.setItem(STREAMER_KEY, 'true');
         document.getElementById('gu-btn-streamer').classList.add('active-streamer');
+        showToast("Streamer Mode: ON", "🙈");
     }
 }
 
@@ -390,6 +426,30 @@ function initStreamerMode() {
         document.body.classList.add('gu-streamer-active');
         const btn = document.getElementById('gu-btn-streamer');
         if(btn) btn.classList.add('active-streamer');
+    }
+}
+
+function toggleWideMode() {
+    const isActive = document.body.classList.contains('gu-wide-mode-active');
+    if (isActive) {
+        document.body.classList.remove('gu-wide-mode-active');
+        localStorage.setItem(WIDE_KEY, 'false');
+        document.getElementById('gu-btn-wide').classList.remove('active-wide');
+        showToast("Wide Mode: OFF", "↔️");
+    } else {
+        document.body.classList.add('gu-wide-mode-active');
+        localStorage.setItem(WIDE_KEY, 'true');
+        document.getElementById('gu-btn-wide').classList.add('active-wide');
+        showToast("Wide Mode: ON", "↔️");
+    }
+}
+
+function initWideMode() {
+    const saved = localStorage.getItem(WIDE_KEY);
+    if (saved === 'true') {
+        document.body.classList.add('gu-wide-mode-active');
+        const btn = document.getElementById('gu-btn-wide');
+        if(btn) btn.classList.add('active-wide');
     }
 }
 
@@ -941,7 +1001,7 @@ function showSettingsModal() {
                 <button id="gu-export" class="gu-btn-action" style="background:#333; margin-top:0;">⬇ Export Data (JSON)</button>
                 <button id="gu-import" class="gu-btn-action" style="background:#333;">⬆ Import Data</button>
                 <input type="file" id="gu-import-file" style="display:none" accept=".json">
-                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v15.1</p>
+                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v16.0</p>
             </div>
         </div>
     `;
@@ -1198,12 +1258,12 @@ function showTutorialModal() {
     modal.className = 'gu-modal-overlay';
     modal.innerHTML = `
         <div class="gu-modal-content" style="max-width: 550px;">
-            <h1 class="gu-modal-h1">🎉 Welcome to v15!</h1>
-            <p class="gu-modal-p">New Features Unlocked:</p>
+            <h1 class="gu-modal-h1">🎉 Welcome to v16!</h1>
+            <p class="gu-modal-p">Efficiency Upgrade:</p>
             <div class="gu-modal-steps">
-                <div class="gu-modal-step"><div class="gu-step-icon">👁️</div><div><b>Streamer Mode:</b> Blur sensitive text instantly.</div></div>
-                <div class="gu-modal-step"><div class="gu-step-icon">🧩</div><div><b>Dynamic Prompts:</b> Use <code>{{variables}}</code> in your prompts.</div></div>
-                <div class="gu-modal-step"><div class="gu-step-icon">👤</div><div><b>Multi-Account:</b> Your folders are now tied to your Google account.</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">↔️</div><div><b>Wide Mode:</b> Stretch Gemini to full width.</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">⌨️</div><div><b>Hotkeys:</b> <code>Alt+W</code> (Wide), <code>Alt+S</code> (Streamer).</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">🍞</div><div><b>Toasts:</b> Visual confirmation for your actions.</div></div>
             </div>
             <button id="gu-close-tutorial" class="gu-modal-btn">Let's Go!</button>
         </div>
@@ -1252,21 +1312,18 @@ function init() {
     panel.id = 'gu-floating-panel';
     panel.innerHTML = `
         <div class="gu-header" id="gu-header-drag">
-            <div class="gu-header-top">
-                <span class="gu-title">Gemini Organizer</span>
-                <button id="gu-min-btn" class="gu-btn-min" title="Minimize">_</button>
+            <div class="gu-header-left">
+                <span class="gu-title">Gemini Org.</span>
+                <span id="gu-user-badge" class="gu-user-badge">...</span>
+                <button id="gu-btn-settings" class="gu-btn-icon-head" title="Settings">⚙️</button>
             </div>
 
-            <div class="gu-header-bottom">
-                <div class="gu-actions-group">
-                    <span id="gu-user-badge" class="gu-user-badge">...</span>
-                    <button id="gu-btn-streamer" class="gu-btn-icon-head" title="Streamer Mode (Blur)">👁️</button>
-                    <button id="gu-btn-settings" class="gu-btn-icon-head" title="Settings">⚙️</button>
-                </div>
-                <div class="gu-actions-group">
-                    <button id="gu-btn-bulk" class="gu-btn-icon-head" title="Bulk Select">✅</button>
-                    <button id="gu-add-folder-btn" class="gu-btn-create"><span>+</span> New</button>
-                </div>
+            <div class="gu-header-right">
+                <button id="gu-btn-wide" class="gu-btn-icon-head" title="Wide Mode (Alt+W)">↔️</button>
+                <button id="gu-btn-streamer" class="gu-btn-icon-head" title="Streamer Mode (Alt+S)">👁️</button>
+                <button id="gu-btn-bulk" class="gu-btn-icon-head" title="Bulk Select">✅</button>
+                <button id="gu-add-folder-btn" class="gu-btn-create"><span>+</span> New</button>
+                <button id="gu-min-btn" class="gu-btn-min" title="Minimize">_</button>
             </div>
         </div>
 
@@ -1321,6 +1378,17 @@ function init() {
     document.getElementById('gu-btn-settings').onclick = showSettingsModal;
     document.getElementById('gu-btn-bulk').onclick = () => getData(folders => showBulkManager(folders));
     document.getElementById('gu-btn-streamer').onclick = toggleStreamerMode;
+    document.getElementById('gu-btn-wide').onclick = toggleWideMode;
+
+    // Hotkeys Listener
+    document.addEventListener('keydown', (e) => {
+        if (e.altKey && (e.key === 'w' || e.key === 'W')) {
+            toggleWideMode();
+        }
+        if (e.altKey && (e.key === 's' || e.key === 'S')) {
+            toggleStreamerMode();
+        }
+    });
 
     // Tabs
     document.getElementById('gu-tab-folders').onclick = () => switchTab('folders');
@@ -1329,8 +1397,9 @@ function init() {
     document.getElementById('gu-help-prompt-btn').onclick = showPromptHelpModal;
 
     initStreamerMode();
+    initWideMode();
     refreshUI();
-    setInterval(() => refreshUI(), 2000); // Polling for sync/updates
+    setInterval(() => refreshUI(), 2000);
     checkAndShowTutorial();
 }
 const startLoop = setInterval(() => { if(!document.getElementById('gu-floating-panel')) init(); }, 1000);
