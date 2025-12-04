@@ -1,12 +1,12 @@
-console.log("Gemini Organizer: Ultimate v14.2 (Auto-Migration) Loaded 🚀");
+console.log("Gemini Organizer: Ultimate v15.1 (New Header Layout) Loaded 🚀");
 
-// --- 🔒 CORE SETTINGS & MIGRATION KEYS ---
-// NOUVEAU SYSTÈME (Multi-comptes)
+// --- 🔒 CORE SETTINGS ---
 const BASE_STORAGE_KEY = 'gemini_organizer_data_v1';
 const BASE_PROMPT_KEY = 'gemini_organizer_prompts_v1';
 const TUTORIAL_KEY = 'gemini_organizer_tuto_v14_mix';
+const STREAMER_KEY = 'gemini_organizer_streamer_mode';
 
-// ANCIEN SYSTÈME (Pour la migration)
+// MIGRATION KEYS
 const OLD_STORAGE_KEY = 'gemini_organizer_sync_v1';
 const OLD_PROMPTS_KEY = 'gemini_prompts_data_v1';
 
@@ -18,32 +18,53 @@ const EMOJIS = ['📁', '💼', '🎓', '💡', '🚀', '🤖', '💻', '🎨', 
 const CSS_STYLES = `
     /* --- FLOATING PANEL --- */
     #gu-floating-panel {
-        position: fixed; top: 80px; right: 20px; width: 360px;
+        position: fixed; top: 80px; right: 20px; width: 340px;
         background-color: #1e1f20; border: 1px solid #444746; border-radius: 12px;
         z-index: 99999; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         display: flex; flex-direction: column; max-height: 85vh;
         font-family: "Google Sans", sans-serif; transition: height 0.3s, opacity 0.3s;
     }
-    #gu-floating-panel.minimized { height: auto !important; max-height: 50px !important; overflow: hidden; }
+
+    /* MINIMIZED STATE LOGIC */
+    #gu-floating-panel.minimized { height: auto !important; overflow: hidden; }
     #gu-floating-panel.minimized #gu-content-wrapper { display: none; }
     #gu-floating-panel.minimized .gu-tabs-header { display: none; }
+    #gu-floating-panel.minimized .gu-header-bottom { display: none; } /* Hide buttons when minimized */
+    #gu-floating-panel.minimized .gu-header { border-bottom: none; }
 
-    /* HEADER */
+    /* HEADER STRUCTURE */
     .gu-header {
-        padding: 10px 12px; background: #1e1f20; border-radius: 12px 12px 0 0; cursor: move;
-        display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; gap: 4px;
+        padding: 12px 16px; background: #1e1f20; border-radius: 12px 12px 0 0; cursor: move;
+        display: flex; flex-direction: column; border-bottom: 1px solid #444; gap: 10px;
     }
-    .gu-title { color: #e3e3e3; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; pointer-events: none; margin-right: 4px; }
 
+    /* HEADER TOP ROW (Title + Minimize) */
+    .gu-header-top {
+        display: flex; justify-content: space-between; align-items: center; width: 100%;
+    }
+    .gu-title { color: #e3e3e3; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; pointer-events: none; }
+
+    .gu-btn-min {
+        background: transparent; border: 1px solid #444; color: #9aa0a6; font-size: 14px;
+        cursor: pointer; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold;
+    }
+    .gu-btn-min:hover { color: white; background: rgba(255,255,255,0.1); }
+
+    /* HEADER BOTTOM ROW (Actions) */
+    .gu-header-bottom {
+        display: flex; justify-content: space-between; align-items: center; width: 100%;
+    }
+    .gu-actions-group { display: flex; gap: 6px; align-items: center; }
+
+    /* USER BADGE */
     .gu-user-badge {
         font-size: 10px; color: #a8c7fa; background: rgba(168, 199, 250, 0.1);
-        padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(168, 199, 250, 0.2);
-        max-width: 75px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        margin-right: 4px;
+        padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(168, 199, 250, 0.2);
+        max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        cursor: default; font-weight: 500;
     }
 
-    .gu-header-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
-
+    /* BUTTONS */
     .gu-btn-create {
         background: #0b57d0; color: white; border: none; border-radius: 20px; padding: 0 12px; height: 28px;
         cursor: pointer; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 4px; white-space: nowrap;
@@ -52,15 +73,10 @@ const CSS_STYLES = `
 
     .gu-btn-icon-head {
         background: transparent; border: 1px solid #444; color: #9aa0a6; font-size: 14px;
-        cursor: pointer; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
     .gu-btn-icon-head:hover { color: white; background: rgba(255,255,255,0.1); }
-
-    .gu-btn-min {
-        background: transparent; border: 1px solid #444; color: #9aa0a6; font-size: 12px;
-        cursor: pointer; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold;
-    }
-    .gu-btn-min:hover { color: white; background: rgba(255,255,255,0.1); }
+    .gu-btn-icon-head.active-streamer { color: #ff8989; border-color: #ff8989; background: rgba(255,0,0,0.1); }
 
     /* TABS */
     .gu-tabs-header { display: flex; border-bottom: 1px solid #333; background: #252627; }
@@ -70,10 +86,9 @@ const CSS_STYLES = `
 
     #gu-content-wrapper { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
 
-    /* PANELS (Folders vs Prompts) */
+    /* PANELS */
     .gu-panel-view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
     .gu-panel-view.active { display: flex; }
-
     #gu-content-area, #gu-prompts-list { overflow-y: auto; scrollbar-width: thin; padding: 0; flex: 1; }
 
     /* Search */
@@ -190,19 +205,6 @@ const CSS_STYLES = `
     }
     .gu-btn-action:hover { background: #0842a0; }
 
-    /* --- TAG MANAGER SPECIFICS --- */
-    .gu-active-tags-area { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-    .gu-active-tag-chip { background: #444; padding: 4px 8px; border-radius: 12px; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-    .gu-active-tag-chip:hover { background: #ff5555; }
-    .gu-color-picker-row { display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
-    .gu-color-choice { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-    .gu-color-choice.selected { border-color: white; transform: scale(1.2); }
-    .gu-tag-library { margin-top: 15px; border-top: 1px solid #333; padding-top: 10px; }
-    .gu-tag-list-scroll { max-height: 120px; overflow-y: auto; scrollbar-width: thin; }
-    .gu-tag-option { padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #ccc; border-radius: 4px; }
-    .gu-tag-option:hover { background: #3c4043; color: white; }
-    .gu-tag-dot { width: 8px; height: 8px; border-radius: 50%; }
-
     /* --- EMOJI PICKER --- */
     .gu-emoji-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 8px; border: 1px solid #333; padding: 8px; border-radius: 8px; background: #1a1a1a; }
     .gu-emoji-item { cursor: pointer; padding: 4px; text-align: center; border-radius: 4px; font-size: 16px; user-select: none; }
@@ -243,12 +245,56 @@ const CSS_STYLES = `
     .gu-context-item:hover { background: #0b57d0; color: white; }
     .gu-context-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
 
+    /* --- TAG MANAGER & COMMONS --- */
+    .gu-active-tags-area { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+    .gu-active-tag-chip { background: #444; padding: 4px 8px; border-radius: 12px; font-size: 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .gu-active-tag-chip:hover { background: #ff5555; }
+    .gu-color-picker-row { display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
+    .gu-color-choice { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+    .gu-color-choice.selected { border-color: white; transform: scale(1.2); }
+    .gu-tag-library { margin-top: 15px; border-top: 1px solid #333; padding-top: 10px; }
+    .gu-tag-list-scroll { max-height: 120px; overflow-y: auto; scrollbar-width: thin; }
+    .gu-tag-option { padding: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #ccc; border-radius: 4px; }
+    .gu-tag-option:hover { background: #3c4043; color: white; }
+    .gu-tag-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* --- STREAMER MODE (BLUR) --- */
+    body.gu-streamer-active .gu-chat-title,
+    body.gu-streamer-active .gu-bulk-text,
+    body.gu-streamer-active .gu-prompt-text,
+    body.gu-streamer-active .gu-prompt-name,
+    body.gu-streamer-active .gu-folder-left span:last-child {
+        filter: blur(5px); transition: 0.3s;
+    }
+
+    body.gu-streamer-active div[data-test-id="conversation"] .conversation-title {
+        filter: blur(5px); transition: 0.3s;
+    }
+
+    body.gu-streamer-active .markdown,
+    body.gu-streamer-active p,
+    body.gu-streamer-active li {
+        filter: blur(4px); transition: 0.2s;
+    }
+
+    /* Hover Reveals */
+    body.gu-streamer-active .gu-chat-link:hover .gu-chat-title,
+    body.gu-streamer-active .gu-prompt-item:hover .gu-prompt-text,
+    body.gu-streamer-active .gu-prompt-item:hover .gu-prompt-name,
+    body.gu-streamer-active .gu-folder-row:hover .gu-folder-left span:last-child,
+    body.gu-streamer-active div[data-test-id="conversation"]:hover .conversation-title,
+    body.gu-streamer-active .markdown:hover,
+    body.gu-streamer-active p:hover,
+    body.gu-streamer-active li:hover {
+        filter: none;
+    }
+
     /* --- ANIMATIONS --- */
     @keyframes gu-fadein { to { opacity: 1; } }
     @keyframes gu-scaleup { to { transform: scale(1); } }
 `;
 
-// --- 2. DATA MANAGEMENT (MULTI-ACCOUNT & MIGRATION) ---
+// --- 2. DATA MANAGEMENT ---
 
 function getCurrentUser() {
     const accBtn = document.querySelector('a[href^="https://accounts.google.com"]');
@@ -271,26 +317,19 @@ function getKeys() {
     };
 }
 
-// --- MIGRATION LOGIC START ---
 function migrateOldData() {
     const k = getKeys();
-    // Check both new AND old keys
     chrome.storage.sync.get([k.folders, k.prompts, OLD_STORAGE_KEY, OLD_PROMPTS_KEY], (result) => {
-        // 1. Folders Migration
         if (!result[k.folders] && result[OLD_STORAGE_KEY] && result[OLD_STORAGE_KEY].length > 0) {
             console.log("Gemini Organizer: Migrating Folders from v1 to v14...");
-            // Save to new key. We DO NOT delete the old key (backup safety).
             chrome.storage.sync.set({ [k.folders]: result[OLD_STORAGE_KEY] }, () => refreshUI());
         }
-
-        // 2. Prompts Migration
         if (!result[k.prompts] && result[OLD_PROMPTS_KEY] && result[OLD_PROMPTS_KEY].length > 0) {
             console.log("Gemini Organizer: Migrating Prompts from v1 to v14...");
             chrome.storage.sync.set({ [k.prompts]: result[OLD_PROMPTS_KEY] }, () => refreshPromptsUI());
         }
     });
 }
-// --- MIGRATION LOGIC END ---
 
 function getData(cb) {
     const k = getKeys();
@@ -330,7 +369,31 @@ function getLibraryTags(folders) {
     return Array.from(tagsMap, ([text, color]) => ({ text, color })).sort((a,b) => a.text.localeCompare(b.text));
 }
 
-// --- 3. UI RENDERING (FOLDERS) ---
+// --- 3. STREAMER MODE LOGIC ---
+
+function toggleStreamerMode() {
+    const isActive = document.body.classList.contains('gu-streamer-active');
+    if (isActive) {
+        document.body.classList.remove('gu-streamer-active');
+        localStorage.setItem(STREAMER_KEY, 'false');
+        document.getElementById('gu-btn-streamer').classList.remove('active-streamer');
+    } else {
+        document.body.classList.add('gu-streamer-active');
+        localStorage.setItem(STREAMER_KEY, 'true');
+        document.getElementById('gu-btn-streamer').classList.add('active-streamer');
+    }
+}
+
+function initStreamerMode() {
+    const saved = localStorage.getItem(STREAMER_KEY);
+    if (saved === 'true') {
+        document.body.classList.add('gu-streamer-active');
+        const btn = document.getElementById('gu-btn-streamer');
+        if(btn) btn.classList.add('active-streamer');
+    }
+}
+
+// --- 4. UI RENDERING (FOLDERS) ---
 
 function refreshUI() {
     getData(folders => {
@@ -492,7 +555,7 @@ function renderPanelContent(folders) {
     });
 }
 
-// --- 3B. UI RENDERING (PROMPTS) ---
+// --- 5. UI RENDERING (PROMPTS + VARIABLES) ---
 
 function refreshPromptsUI() {
     getPrompts(prompts => {
@@ -524,8 +587,8 @@ function refreshPromptsUI() {
                 <div class="gu-prompt-text">${p.content}</div>
             `;
 
-            // Inject Action
-            item.onclick = () => injectPromptToGemini(p.content);
+            // Handle Variable Injection
+            item.onclick = () => handlePromptClick(p.content);
 
             item.querySelector('.edit-p').onclick = (e) => { e.stopPropagation(); showCreatePromptModal(p, idx); };
             item.querySelector('.delete-p').onclick = (e) => {
@@ -541,9 +604,66 @@ function refreshPromptsUI() {
     });
 }
 
+function handlePromptClick(content) {
+    const regex = /{{(.*?)}}/g;
+    const matches = [...content.matchAll(regex)];
+
+    if (matches.length > 0) {
+        // Dedup variables
+        const vars = [...new Set(matches.map(m => m[1]))];
+        showPromptVariableModal(content, vars);
+    } else {
+        injectPromptToGemini(content);
+    }
+}
+
+function showPromptVariableModal(content, variables) {
+    const modal = document.createElement('div');
+    modal.className = 'gu-modal-overlay';
+
+    let inputsHtml = variables.map(v => `
+        <span class="gu-input-label" style="margin-top:10px; color:#a8c7fa;">${v.toUpperCase()}</span>
+        <input type="text" data-var="${v}" class="gu-tag-input gu-var-input" placeholder="Value for ${v}..." autofocus>
+    `).join('');
+
+    modal.innerHTML = `
+        <div class="gu-modal-content">
+            <div class="gu-modal-header"><span>Fill Variables</span><span class="gu-menu-close">×</span></div>
+            <div class="gu-modal-body">
+                <p style="font-size:12px; color:#999; margin-bottom:10px;">Customize your prompt:</p>
+                ${inputsHtml}
+                <button id="gu-submit-vars" class="gu-btn-action">Generate & Insert</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
+
+    // Auto-focus first input
+    setTimeout(() => { const i = modal.querySelector('input'); if(i) i.focus(); }, 100);
+
+    const submit = () => {
+        let finalContent = content;
+        modal.querySelectorAll('.gu-var-input').forEach(input => {
+            const v = input.getAttribute('data-var');
+            const val = input.value || `{{${v}}}`; // keep placeholder if empty
+            // Global replace
+            finalContent = finalContent.split(`{{${v}}}`).join(val);
+        });
+        injectPromptToGemini(finalContent);
+        modal.remove();
+    };
+
+    modal.querySelector('#gu-submit-vars').onclick = submit;
+    modal.querySelectorAll('input').forEach(inp => {
+        inp.onkeydown = (e) => { if(e.key === 'Enter') submit(); };
+    });
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
+
 function injectPromptToGemini(text) {
-    // 1. Find the editor (Rich text or simple textarea)
-    const editor = document.querySelector('div[contenteditable="true"].r-1wzrnnt') || // Common Gemini class
+    const editor = document.querySelector('div[contenteditable="true"].r-1wzrnnt') ||
                    document.querySelector('div[contenteditable="true"]') ||
                    document.querySelector('textarea');
 
@@ -551,23 +671,44 @@ function injectPromptToGemini(text) {
 
     editor.focus();
 
-    // 2. Insert text
     if (editor.tagName === 'TEXTAREA') {
         editor.value = text;
         editor.dispatchEvent(new Event('input', { bubbles: true }));
     } else {
-        // ContentEditable: Safest is execCommand for undo history support, or direct innerHTML if fails
         document.execCommand('insertText', false, text);
-        // Fallback if empty
         if (editor.innerText.trim() === '') editor.innerText = text;
     }
 
-    // 3. Try to enable the Send button (Trigger input events)
     const inputEvent = new Event('input', { bubbles: true, cancelable: true });
     editor.dispatchEvent(inputEvent);
 }
 
-// --- 4. MODALS (TAGS, CREATE, PROMPTS, ETC) ---
+// --- 6. MODALS ---
+
+function showPromptHelpModal() {
+    const modal = document.createElement('div');
+    modal.className = 'gu-modal-overlay';
+    modal.innerHTML = `
+        <div class="gu-modal-content">
+            <div class="gu-modal-header"><span>Dynamic Prompts Help</span><span class="gu-menu-close">×</span></div>
+            <div class="gu-modal-body">
+                <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                    You can create dynamic templates using <b>Variables</b>.<br><br>
+                    Simply wrap a word in double curly braces like this:
+                    <br><br>
+                    <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Act as a {{Job}} expert.</code>
+                    <br><br>
+                    When you click the prompt, Gemini Organizer will ask you to fill in "Job" before inserting the text.
+                </p>
+                <button class="gu-btn-action" id="gu-close-help">Got it!</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
+    modal.querySelector('#gu-close-help').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
 
 function showCreatePromptModal(existingPrompt = null, existingIdx = null) {
     const modal = document.createElement('div');
@@ -583,7 +724,7 @@ function showCreatePromptModal(existingPrompt = null, existingIdx = null) {
                 <input type="text" id="gu-prompt-name" class="gu-tag-input" value="${existingPrompt ? existingPrompt.name : ''}" autofocus>
 
                 <span class="gu-input-label" style="margin-top:15px;">CONTENT</span>
-                <textarea id="gu-prompt-content" class="gu-tag-input gu-input-textarea" placeholder="Enter your prompt here...">${existingPrompt ? existingPrompt.content : ''}</textarea>
+                <textarea id="gu-prompt-content" class="gu-tag-input gu-input-textarea" placeholder="Ex: Explain {{topic}} like I am 5...">${existingPrompt ? existingPrompt.content : ''}</textarea>
 
                 <button id="gu-save-prompt" class="gu-btn-action">Save Prompt</button>
             </div>
@@ -608,102 +749,6 @@ function showCreatePromptModal(existingPrompt = null, existingIdx = null) {
             modal.remove();
         });
     };
-    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
-}
-
-function showAdvancedTagMenu(e, chat, folders) {
-    const existing = document.getElementById('gu-tag-modal');
-    if (existing) existing.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'gu-tag-modal';
-    modal.className = 'gu-modal-overlay';
-
-    let activeHtml = `<div class="gu-active-tags-area">`;
-    if (chat.tags && chat.tags.length > 0) {
-        chat.tags.forEach((tag, i) => {
-            const txt = typeof tag === 'object' ? tag.text : tag;
-            const col = typeof tag === 'object' ? tag.color : stringToColor(txt);
-            activeHtml += `<div class="gu-active-tag-chip" style="border:1px solid ${col}" data-idx="${i}">
-                <span style="width:8px; height:8px; border-radius:50%; background:${col}"></span>${txt} <span style="margin-left:4px; font-weight:bold">×</span>
-            </div>`;
-        });
-    } else {
-        activeHtml += `<span style="color:#666; font-size:12px; padding:5px;">No tags yet</span>`;
-    }
-    activeHtml += `</div>`;
-
-    let colorHtml = `<div class="gu-color-picker-row">`;
-    TAG_COLORS.forEach((c, i) => {
-        colorHtml += `<div class="gu-color-choice ${i===0?'selected':''}" style="background:${c}" data-col="${c}"></div>`;
-    });
-    colorHtml += `</div>`;
-
-    const library = getLibraryTags(folders);
-    const currentTagTexts = (chat.tags || []).map(t => typeof t === 'object' ? t.text : t);
-    const available = library.filter(t => !currentTagTexts.includes(t.text));
-
-    let libraryHtml = `<div class="gu-tag-library"><span class="gu-input-label">LIBRARY</span><div class="gu-available-tags-list">`;
-    if(available.length > 0) {
-        available.forEach(t => {
-            libraryHtml += `<div class="gu-tag-option" data-text="${t.text}" data-col="${t.color}"><span class="gu-tag-dot" style="background:${t.color}"></span>${t.text}</div>`;
-        });
-    }
-    libraryHtml += `</div></div>`;
-
-    modal.innerHTML = `
-        <div class="gu-modal-content">
-            <div class="gu-modal-header"><span>Manage Tags</span><span class="gu-menu-close">×</span></div>
-            <div class="gu-modal-body">
-                <span class="gu-input-label">ACTIVE TAGS</span>
-                ${activeHtml}
-
-                <span class="gu-input-label" style="margin-top:10px;">ADD NEW TAG</span>
-                <input type="text" id="gu-new-tag-name" class="gu-tag-input" placeholder="Tag name..." autofocus>
-                ${colorHtml}
-
-                <button id="gu-submit-tag" class="gu-btn-action">Add Tag</button>
-                ${libraryHtml}
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
-
-    modal.querySelectorAll('.gu-active-tag-chip').forEach(el => {
-        el.onclick = () => {
-            chat.tags.splice(parseInt(el.getAttribute('data-idx')), 1);
-            saveData(folders);
-            modal.remove();
-            showAdvancedTagMenu(e, chat, folders);
-        };
-    });
-
-    let selectedColor = TAG_COLORS[0];
-    modal.querySelectorAll('.gu-color-choice').forEach(dot => {
-        dot.onclick = () => {
-            modal.querySelectorAll('.gu-color-choice').forEach(d => d.classList.remove('selected'));
-            dot.classList.add('selected');
-            selectedColor = dot.getAttribute('data-col');
-        };
-    });
-
-    const doAdd = (text, color) => {
-        if (!text) return;
-        if (!chat.tags) chat.tags = [];
-        chat.tags.push({ text: text, color: color });
-        saveData(folders);
-        modal.remove();
-    };
-
-    modal.querySelector('#gu-submit-tag').onclick = () => doAdd(modal.querySelector('#gu-new-tag-name').value.trim(), selectedColor);
-    modal.querySelector('#gu-new-tag-name').onkeydown = (ev) => { if(ev.key === 'Enter') modal.querySelector('#gu-submit-tag').click(); };
-
-    modal.querySelectorAll('.gu-tag-option').forEach(opt => {
-        opt.onclick = () => doAdd(opt.getAttribute('data-text'), opt.getAttribute('data-col'));
-    });
-
     modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
 }
 
@@ -770,11 +815,9 @@ function showBulkManager(folders) {
     const existing = document.getElementById('gu-bulk-modal');
     if (existing) existing.remove();
 
-    // Find all chats available in sidebar
     const chatItems = document.querySelectorAll('div[data-test-id="conversation"]');
     let availableChats = [];
 
-    // Filter out archived
     const archivedSet = new Set();
     folders.forEach(f => f.chats.forEach(c => archivedSet.add(c.url)));
 
@@ -898,7 +941,7 @@ function showSettingsModal() {
                 <button id="gu-export" class="gu-btn-action" style="background:#333; margin-top:0;">⬇ Export Data (JSON)</button>
                 <button id="gu-import" class="gu-btn-action" style="background:#333;">⬆ Import Data</button>
                 <input type="file" id="gu-import-file" style="display:none" accept=".json">
-                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v14.0</p>
+                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v15.1</p>
             </div>
         </div>
     `;
@@ -925,7 +968,103 @@ function showSettingsModal() {
     modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
 }
 
-// --- 5. HELPERS MOVE ---
+function showAdvancedTagMenu(e, chat, folders) {
+    const existing = document.getElementById('gu-tag-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'gu-tag-modal';
+    modal.className = 'gu-modal-overlay';
+
+    let activeHtml = `<div class="gu-active-tags-area">`;
+    if (chat.tags && chat.tags.length > 0) {
+        chat.tags.forEach((tag, i) => {
+            const txt = typeof tag === 'object' ? tag.text : tag;
+            const col = typeof tag === 'object' ? tag.color : stringToColor(txt);
+            activeHtml += `<div class="gu-active-tag-chip" style="border:1px solid ${col}" data-idx="${i}">
+                <span style="width:8px; height:8px; border-radius:50%; background:${col}"></span>${txt} <span style="margin-left:4px; font-weight:bold">×</span>
+            </div>`;
+        });
+    } else {
+        activeHtml += `<span style="color:#666; font-size:12px; padding:5px;">No tags yet</span>`;
+    }
+    activeHtml += `</div>`;
+
+    let colorHtml = `<div class="gu-color-picker-row">`;
+    TAG_COLORS.forEach((c, i) => {
+        colorHtml += `<div class="gu-color-choice ${i===0?'selected':''}" style="background:${c}" data-col="${c}"></div>`;
+    });
+    colorHtml += `</div>`;
+
+    const library = getLibraryTags(folders);
+    const currentTagTexts = (chat.tags || []).map(t => typeof t === 'object' ? t.text : t);
+    const available = library.filter(t => !currentTagTexts.includes(t.text));
+
+    let libraryHtml = `<div class="gu-tag-library"><span class="gu-input-label">LIBRARY</span><div class="gu-available-tags-list">`;
+    if(available.length > 0) {
+        available.forEach(t => {
+            libraryHtml += `<div class="gu-tag-option" data-text="${t.text}" data-col="${t.color}"><span class="gu-tag-dot" style="background:${t.color}"></span>${t.text}</div>`;
+        });
+    }
+    libraryHtml += `</div></div>`;
+
+    modal.innerHTML = `
+        <div class="gu-modal-content">
+            <div class="gu-modal-header"><span>Manage Tags</span><span class="gu-menu-close">×</span></div>
+            <div class="gu-modal-body">
+                <span class="gu-input-label">ACTIVE TAGS</span>
+                ${activeHtml}
+
+                <span class="gu-input-label" style="margin-top:10px;">ADD NEW TAG</span>
+                <input type="text" id="gu-new-tag-name" class="gu-tag-input" placeholder="Tag name..." autofocus>
+                ${colorHtml}
+
+                <button id="gu-submit-tag" class="gu-btn-action">Add Tag</button>
+                ${libraryHtml}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
+
+    modal.querySelectorAll('.gu-active-tag-chip').forEach(el => {
+        el.onclick = () => {
+            chat.tags.splice(parseInt(el.getAttribute('data-idx')), 1);
+            saveData(folders);
+            modal.remove();
+            showAdvancedTagMenu(e, chat, folders);
+        };
+    });
+
+    let selectedColor = TAG_COLORS[0];
+    modal.querySelectorAll('.gu-color-choice').forEach(dot => {
+        dot.onclick = () => {
+            modal.querySelectorAll('.gu-color-choice').forEach(d => d.classList.remove('selected'));
+            dot.classList.add('selected');
+            selectedColor = dot.getAttribute('data-col');
+        };
+    });
+
+    const doAdd = (text, color) => {
+        if (!text) return;
+        if (!chat.tags) chat.tags = [];
+        chat.tags.push({ text: text, color: color });
+        saveData(folders);
+        modal.remove();
+    };
+
+    modal.querySelector('#gu-submit-tag').onclick = () => doAdd(modal.querySelector('#gu-new-tag-name').value.trim(), selectedColor);
+    modal.querySelector('#gu-new-tag-name').onkeydown = (ev) => { if(ev.key === 'Enter') modal.querySelector('#gu-submit-tag').click(); };
+
+    modal.querySelectorAll('.gu-tag-option').forEach(opt => {
+        opt.onclick = () => doAdd(opt.getAttribute('data-text'), opt.getAttribute('data-col'));
+    });
+
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
+
+// --- 7. HELPERS MOVE ---
 function handleFolderDrop(e, targetIdx) {
     e.preventDefault();
     try {
@@ -971,7 +1110,7 @@ function moveChat(folder, idx, dir, allFolders) {
     }
 }
 
-// --- 6. NATIVE LIST INJECTION ---
+// --- 8. NATIVE LIST INJECTION ---
 
 function showFolderMenu(e, folders, chatTitle, fullUrl) {
     const existing = document.getElementById('gu-context-menu');
@@ -1047,7 +1186,7 @@ function injectButtonsInNativeList(folders) {
     });
 }
 
-// --- 7. TUTORIAL & INIT ---
+// --- 9. TUTORIAL & INIT ---
 
 function checkAndShowTutorial() {
     chrome.storage.local.get([TUTORIAL_KEY], (result) => {
@@ -1059,12 +1198,12 @@ function showTutorialModal() {
     modal.className = 'gu-modal-overlay';
     modal.innerHTML = `
         <div class="gu-modal-content" style="max-width: 550px;">
-            <h1 class="gu-modal-h1">🎉 Welcome to v14!</h1>
+            <h1 class="gu-modal-h1">🎉 Welcome to v15!</h1>
             <p class="gu-modal-p">New Features Unlocked:</p>
             <div class="gu-modal-steps">
-                <div class="gu-modal-step"><div class="gu-step-icon">📝</div><div><b>Prompts:</b> Save and reuse your best prompts. Click the <b>"Prompts"</b> tab!</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">👁️</div><div><b>Streamer Mode:</b> Blur sensitive text instantly.</div></div>
+                <div class="gu-modal-step"><div class="gu-step-icon">🧩</div><div><b>Dynamic Prompts:</b> Use <code>{{variables}}</code> in your prompts.</div></div>
                 <div class="gu-modal-step"><div class="gu-step-icon">👤</div><div><b>Multi-Account:</b> Your folders are now tied to your Google account.</div></div>
-                <div class="gu-modal-step"><div class="gu-step-icon">📂</div><div><b>Folders:</b> Still here, stronger than ever.</div></div>
             </div>
             <button id="gu-close-tutorial" class="gu-modal-btn">Let's Go!</button>
         </div>
@@ -1088,14 +1227,12 @@ function switchTab(tabName) {
         document.getElementById('gu-prompts-panel').classList.remove('active');
         document.getElementById('gu-add-folder-btn').style.display = 'flex';
         document.getElementById('gu-btn-bulk').style.display = 'flex';
-        // Change Search placeholder
         document.getElementById('gu-search-input').placeholder = "Search folders & chats...";
     } else {
         document.getElementById('gu-tab-prompts').classList.add('active');
-        // We reuse the search bar but hide bulk btn
         document.getElementById('gu-prompts-panel').classList.add('active');
         document.getElementById('gu-content-area').classList.remove('active');
-        document.getElementById('gu-add-folder-btn').style.display = 'none'; // Replaced logic
+        document.getElementById('gu-add-folder-btn').style.display = 'none';
         document.getElementById('gu-btn-bulk').style.display = 'none';
         document.getElementById('gu-search-input').placeholder = "Search saved prompts...";
         refreshPromptsUI();
@@ -1115,15 +1252,21 @@ function init() {
     panel.id = 'gu-floating-panel';
     panel.innerHTML = `
         <div class="gu-header" id="gu-header-drag">
-            <div class="gu-header-actions">
-                <span class="gu-title">Gemini Org.</span>
-                <span id="gu-user-badge" class="gu-user-badge">...</span>
-                <button id="gu-btn-settings" class="gu-btn-icon-head" title="Settings">⚙️</button>
-            </div>
-            <div class="gu-header-actions">
-                <button id="gu-btn-bulk" class="gu-btn-icon-head" title="Bulk Select">✅</button>
-                <button id="gu-add-folder-btn" class="gu-btn-create"><span>+</span> New</button>
+            <div class="gu-header-top">
+                <span class="gu-title">Gemini Organizer</span>
                 <button id="gu-min-btn" class="gu-btn-min" title="Minimize">_</button>
+            </div>
+
+            <div class="gu-header-bottom">
+                <div class="gu-actions-group">
+                    <span id="gu-user-badge" class="gu-user-badge">...</span>
+                    <button id="gu-btn-streamer" class="gu-btn-icon-head" title="Streamer Mode (Blur)">👁️</button>
+                    <button id="gu-btn-settings" class="gu-btn-icon-head" title="Settings">⚙️</button>
+                </div>
+                <div class="gu-actions-group">
+                    <button id="gu-btn-bulk" class="gu-btn-icon-head" title="Bulk Select">✅</button>
+                    <button id="gu-add-folder-btn" class="gu-btn-create"><span>+</span> New</button>
+                </div>
             </div>
         </div>
 
@@ -1140,8 +1283,9 @@ function init() {
             <div id="gu-content-area" class="gu-panel-view active"></div>
 
             <div id="gu-prompts-panel" class="gu-panel-view">
-                <div style="padding:10px; border-bottom:1px solid #333;">
-                    <button id="gu-add-prompt-btn" class="gu-btn-action" style="margin:0; background:#254d29;">+ New Prompt</button>
+                <div style="padding:10px; border-bottom:1px solid #333; display:flex; gap:6px;">
+                    <button id="gu-add-prompt-btn" class="gu-btn-action" style="margin:0; flex:1; background:#254d29;">+ New Prompt</button>
+                    <button id="gu-help-prompt-btn" class="gu-btn-icon-head" style="width:36px;" title="How to use variables?">?</button>
                 </div>
                 <div id="gu-prompts-list"></div>
             </div>
@@ -1176,12 +1320,15 @@ function init() {
     });
     document.getElementById('gu-btn-settings').onclick = showSettingsModal;
     document.getElementById('gu-btn-bulk').onclick = () => getData(folders => showBulkManager(folders));
+    document.getElementById('gu-btn-streamer').onclick = toggleStreamerMode;
 
     // Tabs
     document.getElementById('gu-tab-folders').onclick = () => switchTab('folders');
     document.getElementById('gu-tab-prompts').onclick = () => switchTab('prompts');
     document.getElementById('gu-add-prompt-btn').onclick = () => showCreatePromptModal();
+    document.getElementById('gu-help-prompt-btn').onclick = showPromptHelpModal;
 
+    initStreamerMode();
     refreshUI();
     setInterval(() => refreshUI(), 2000); // Polling for sync/updates
     checkAndShowTutorial();
