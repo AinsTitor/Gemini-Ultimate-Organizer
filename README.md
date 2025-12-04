@@ -105,6 +105,9 @@ This project is licensed under the **Creative Commons Attribution-NonCommercial-
 **Author:** AinsTitor
 
 <img width="1280" height="800" alt="Capture d’écran du 2025-12-04 05-03-48" src="https://github.com/user-attachments/assets/43ae8037-6c09-4e17-b38a-af5ae95867c6" />
-
+<img width="442" height="422" alt="Capture d’écran du 2025-12-04 11-50-30" src="https://github.com/user-attachments/assets/2356ab9d-63f0-419a-81d9-caaa72427610" />
+<img width="442" height="422" alt="Capture d’écran du 2025-12-04 11-51-18" src="https://github.com/user-attachments/assets/80c9a1aa-ca74-4b09-98b0-41d89f3a0832" />
+<img width="442" height="422" alt="Capture d’écran du 2025-12-04 11-49-11" src="https://github.com/user-attachments/assets/5271575c-348a-4a9c-b660-947ca4b59c78" />
+<img width="442" height="422" alt="Capture d’écran du 2025-12-04 11-52-09" src="https://github.com/user-attachments/assets/0df1153e-e2db-4cd2-a0e7-6013f35522d8" />
 
 
