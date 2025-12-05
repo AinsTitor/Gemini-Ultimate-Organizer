@@ -12,7 +12,7 @@ export const SETTINGS = {
 
 export const COLORS = ['#3c4043', '#5c2b29', '#5c4615', '#254d29', '#0d4f4a', '#004a77', '#2c3c63', '#4a2a5e'];
 export const TAG_COLORS = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF', '#e3e3e3'];
-export const EMOJIS = ['📁', '💼', '🎓', '💡', '🚀', '🤖', '💻', '🎨', '📝', '🎮', '🎬', '🎵', '🛒', '✈️', '🏠', '❤️', '⭐', '🔥', '✅', '🔒'];
+export const EMOJIS = ['📁', '💼', '🎓', '💡', '🚀', '🤖', '💻', '🎨', '📝', '🎮', '🎬', '🎵', '🛒', '✈️', '🏠', '❤️', '⭐', '🔥', '✅', '🔒', '🔑', '⚡️', '🌳', '🍎', '🍖', '🏈', '🚗', '💵', '⌛️', '💬'];
 
 export const CSS_STYLES = `
     /* --- FLOATING PANEL --- */
