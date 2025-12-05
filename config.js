@@ -265,7 +265,9 @@ export const CSS_STYLES = `
     body.gu-wide-mode-active user-query { max-width: 90% !important; }
     body.gu-wide-mode-active model-response { max-width: 90% !important; }
 
-    /* --- STREAMER MODE (BLUR) --- */
+    /* --- STREAMER MODE (ENHANCED BLUR & HIDE) --- */
+
+    /* 1. EXTENSION INTERNALS */
     body.gu-streamer-active .gu-chat-title,
     body.gu-streamer-active .gu-bulk-text,
     body.gu-streamer-active .gu-prompt-text,
@@ -273,6 +275,12 @@ export const CSS_STYLES = `
     body.gu-streamer-active .gu-folder-left span:last-child {
         filter: blur(5px); transition: 0.3s;
     }
+    body.gu-streamer-active #gu-user-badge {
+        filter: blur(5px) !important;
+        opacity: 0.5;
+    }
+
+    /* 2. GEMINI CONTENT */
     body.gu-streamer-active div[data-test-id="conversation"] .conversation-title {
         filter: blur(5px); transition: 0.3s;
     }
@@ -281,18 +289,35 @@ export const CSS_STYLES = `
     body.gu-streamer-active li {
         filter: blur(4px); transition: 0.2s;
     }
-    /* LOCATION FIX */
-    body.gu-streamer-active [aria-label*="location"],
-    body.gu-streamer-active [aria-label*="Location"],
-    body.gu-streamer-active [aria-label*="position"],
-    body.gu-streamer-active [aria-label*="Position"],
-    body.gu-streamer-active a[href*="google.com/maps"],
-    body.gu-streamer-active a[href*="location"],
-    body.gu-streamer-active footer,
+
+    /* 3. LOCATION & SENSITIVE FOOTER */
+    body.gu-streamer-active .location-footer-textual,
     body.gu-streamer-active .location-footer-container {
-        filter: blur(6px); transition: 0.3s;
+        filter: blur(8px) !important;
+        opacity: 0.3;
+        pointer-events: none; /* Prevent clicks on blurred location */
     }
-    /* Hover Reveals */
+
+    /* 4. USER PROFILE & EMAIL (Top Right) */
+    body.gu-streamer-active a[href^="https://accounts.google.com"],
+    body.gu-streamer-active img[src*="googleusercontent.com/profile"],
+    body.gu-streamer-active [aria-label*="Google Account"],
+    body.gu-streamer-active [aria-label*="Compte Google"] {
+        filter: blur(6px) !important;
+        opacity: 0.4;
+    }
+
+    /* 5. "MY STUFF" / "MES CONTENUS" SIDEBAR & PREVIEWS */
+    /* Target the container holding the "My Stuff" button and preview cards */
+    body.gu-streamer-active .side-nav-entry-container:has([aria-label="Mes contenus"]),
+    body.gu-streamer-active .side-nav-entry-container:has([aria-label="My Stuff"]),
+    body.gu-streamer-active my-stuff-recents-preview {
+        filter: blur(10px) !important;
+        opacity: 0.1;
+        transition: 0.3s;
+    }
+
+    /* Reveal on Hover (Optional - good for user to check but keep hidden mostly) */
     body.gu-streamer-active .gu-chat-link:hover .gu-chat-title,
     body.gu-streamer-active .gu-prompt-item:hover .gu-prompt-text,
     body.gu-streamer-active .gu-prompt-item:hover .gu-prompt-name,
@@ -300,11 +325,9 @@ export const CSS_STYLES = `
     body.gu-streamer-active div[data-test-id="conversation"]:hover .conversation-title,
     body.gu-streamer-active .markdown:hover,
     body.gu-streamer-active p:hover,
-    body.gu-streamer-active li:hover,
-    body.gu-streamer-active [aria-label*="location"]:hover,
-    body.gu-streamer-active [aria-label*="position"]:hover,
-    body.gu-streamer-active footer:hover {
+    body.gu-streamer-active li:hover {
         filter: none;
+        transition: 0.2s;
     }
 
     /* --- ANIMATIONS --- */
