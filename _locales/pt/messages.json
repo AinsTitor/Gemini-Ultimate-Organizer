@@ -1,0 +1,176 @@
+{
+  "ext_name": {
+    "message": "Organizador Gemini"
+  },
+  "loaded_message": {
+    "message": "Ultimate v16.0 (Modo Amplo + Atalhos + Modular) Carregado 🚀"
+  },
+  "settings_title": {
+    "message": "Configurações"
+  },
+  "export_data": {
+    "message": "⬇ Exportar Dados (JSON)"
+  },
+  "import_data": {
+    "message": "⬆ Importar Dados"
+  },
+  "current_account": {
+    "message": "Conta Atual"
+  },
+  "select_language": {
+    "message": "Selecionar Idioma"
+  },
+  "new_folder": {
+    "message": "Nova Pasta"
+  },
+  "edit_folder": {
+    "message": "Editar Pasta"
+  },
+  "name": {
+    "message": "NOME"
+  },
+  "icon": {
+    "message": "ÍCONE"
+  },
+  "save": {
+    "message": "Salvar"
+  },
+  "folders_tab": {
+    "message": "PASTAS"
+  },
+  "prompts_tab": {
+    "message": "PROMPTS"
+  },
+  "search_folders_placeholder": {
+    "message": "Pesquisar pastas e conversas..."
+  },
+  "search_prompts_placeholder": {
+    "message": "Pesquisar prompts salvos..."
+  },
+  "new_prompt_btn": {
+    "message": "+ Novo Prompt"
+  },
+  "prompt_help_title": {
+    "message": "Ajuda Prompts Dinâmicos"
+  },
+  "fill_vars_title": {
+    "message": "Preencher Variáveis"
+  },
+  "customize_prompt": {
+    "message": "Personalize seu prompt:"
+  },
+  "generate_insert": {
+    "message": "Gerar e Inserir"
+  },
+  "edit_prompt": {
+    "message": "Editar Prompt"
+  },
+  "prompt_content": {
+    "message": "CONTEÚDO"
+  },
+  "save_prompt": {
+    "message": "Salvar Prompt"
+  },
+  "delete_prompt_confirm": {
+    "message": "Excluir este prompt?"
+  },
+  "folder_empty_message": {
+    "message": "Clique em \u003Cb>+ Novo\u003C/b> para criar uma pasta."
+  },
+  "prompt_empty_message": {
+    "message": "Nenhum prompt encontrado.\u003Cbr>Clique em \u003Cb>+ Novo\u003C/b> para adicionar um."
+  },
+  "add_to_folder": {
+    "message": "Adicionar à pasta:"
+  },
+  "no_folder_alert": {
+    "message": "Por favor, crie uma pasta primeiro."
+  },
+  "delete_folder_confirm": {
+    "message": "Excluir?"
+  },
+  "no_input_box_alert": {
+    "message": "Não foi possível encontrar a caixa de entrada do Gemini."
+  },
+  "invalid_json_alert": {
+    "message": "JSON inválido"
+  },
+  "overwrite_confirm": {
+    "message": "Sobrescrever dados atuais?"
+  },
+  "bulk_organize_title": {
+    "message": "Organização em Massa"
+  },
+  "filter_chats_placeholder": {
+    "message": "Filtrar conversas..."
+  },
+  "no_new_chats_found": {
+    "message": "Nenhuma conversa nova encontrada para organizar."
+  },
+  "select_folder_placeholder": {
+    "message": "Selecionar Pasta de Destino..."
+  },
+  "move_selected": {
+    "message": "Mover Selecionados"
+  },
+  "bulk_selection_alert": {
+    "message": "Selecione conversas e uma pasta."
+  },
+  "max_batch_alert": {
+    "message": "Máximo de 20 itens por lote."
+  },
+  "manage_tags_title": {
+    "message": "Gerenciar Etiquetas"
+  },
+  "active_tags_label": {
+    "message": "ETIQUETAS ATIVAS"
+  },
+  "no_tags_yet": {
+    "message": "Ainda sem etiquetas"
+  },
+  "add_new_tag": {
+    "message": "ADICIONAR NOVA ETIQUETA"
+  },
+  "tag_name_placeholder": {
+    "message": "Nome da etiqueta..."
+  },
+  "add_tag": {
+    "message": "Adicionar Etiqueta"
+  },
+  "library_label": {
+    "message": "BIBLIOTECA"
+  },
+  "tutorial_welcome": {
+    "message": "🎉 Bem-vindo à v16!"
+  },
+  "tutorial_upgrade": {
+    "message": "Atualização de Eficiência:"
+  },
+  "tutorial_wide_mode": {
+    "message": "Modo Amplo: Estique o Gemini para largura total."
+  },
+  "tutorial_hotkeys": {
+    "message": "Atalhos: \u003Ccode>Alt+W\u003C/code> (Amplo), \u003Ccode>Alt+S\u003C/code> (Streamer)."
+  },
+  "tutorial_toasts": {
+    "message": "Notificações: Confirmação visual para suas ações."
+  },
+  "tutorial_button": {
+    "message": "Vamos lá!"
+  },
+  "streamer_mode_off": {
+    "message": "Modo Streamer: DESATIVADO"
+  },
+  "streamer_mode_on": {
+    "message": "Modo Streamer: ATIVADO"
+  },
+  "wide_mode_off": {
+    "message": "Modo Amplo: DESATIVADO"
+  },
+  "wide_mode_on": {
+    "message": "Modo Amplo: ATIVADO"
+  },
+  "language_changed_alert": {
+    "message": "Idioma alterado. Atualize a página (F5) para que o novo idioma entre em vigor."
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "ext_name": {
+    "message": "Gemini 整理器"
+  },
+  "loaded_message": {
+    "message": "Ultimate v16.0 (宽模式 + 快捷键 + 模块化) 已加载 🚀"
+  },
+  "settings_title": {
+    "message": "设置"
+  },
+  "export_data": {
+    "message": "⬇ 导出数据 (JSON)"
+  },
+  "import_data": {
+    "message": "⬆ 导入数据"
+  },
+  "current_account": {
+    "message": "当前账户"
+  },
+  "select_language": {
+    "message": "选择语言"
+  },
+  "new_folder": {
+    "message": "新建文件夹"
+  },
+  "edit_folder": {
+    "message": "编辑文件夹"
+  },
+  "name": {
+    "message": "名称"
+  },
+  "icon": {
+    "message": "图标"
+  },
+  "save": {
+    "message": "保存"
+  },
+  "folders_tab": {
+    "message": "文件夹"
+  },
+  "prompts_tab": {
+    "message": "提示词"
+  },
+  "search_folders_placeholder": {
+    "message": "搜索文件夹和聊天..."
+  },
+  "search_prompts_placeholder": {
+    "message": "搜索已保存的提示词..."
+  },
+  "new_prompt_btn": {
+    "message": "+ 新建提示词"
+  },
+  "prompt_help_title": {
+    "message": "动态提示词帮助"
+  },
+  "fill_vars_title": {
+    "message": "填写变量"
+  },
+  "customize_prompt": {
+    "message": "自定义您的提示词："
+  },
+  "generate_insert": {
+    "message": "生成并插入"
+  },
+  "edit_prompt": {
+    "message": "编辑提示词"
+  },
+  "prompt_content": {
+    "message": "内容"
+  },
+  "save_prompt": {
+    "message": "保存提示词"
+  },
+  "delete_prompt_confirm": {
+    "message": "删除此提示词？"
+  },
+  "folder_empty_message": {
+    "message": "点击 \u003Cb>+ 新建\u003C/b> 创建一个文件夹。"
+  },
+  "prompt_empty_message": {
+    "message": "未找到提示词。\u003Cbr>点击 \u003Cb>+ 新建\u003C/b> 添加一个。"
+  },
+  "add_to_folder": {
+    "message": "添加到文件夹："
+  },
+  "no_folder_alert": {
+    "message": "请先创建一个文件夹。"
+  },
+  "delete_folder_confirm": {
+    "message": "删除？"
+  },
+  "no_input_box_alert": {
+    "message": "找不到 Gemini 输入框。"
+  },
+  "invalid_json_alert": {
+    "message": "JSON 无效"
+  },
+  "overwrite_confirm": {
+    "message": "覆盖当前数据？"
+  },
+  "bulk_organize_title": {
+    "message": "批量整理"
+  },
+  "filter_chats_placeholder": {
+    "message": "过滤聊天..."
+  },
+  "no_new_chats_found": {
+    "message": "未找到新的聊天记录进行整理。"
+  },
+  "select_folder_placeholder": {
+    "message": "选择目标文件夹..."
+  },
+  "move_selected": {
+    "message": "移动所选"
+  },
+  "bulk_selection_alert": {
+    "message": "请选择聊天记录和文件夹。"
+  },
+  "max_batch_alert": {
+    "message": "每批次最多 20 个项目。"
+  },
+  "manage_tags_title": {
+    "message": "管理标签"
+  },
+  "active_tags_label": {
+    "message": "活动标签"
+  },
+  "no_tags_yet": {
+    "message": "暂无标签"
+  },
+  "add_new_tag": {
+    "message": "添加新标签"
+  },
+  "tag_name_placeholder": {
+    "message": "标签名称..."
+  },
+  "add_tag": {
+    "message": "添加标签"
+  },
+  "library_label": {
+    "message": "库"
+  },
+  "tutorial_welcome": {
+    "message": "🎉 欢迎使用 v16！"
+  },
+  "tutorial_upgrade": {
+    "message": "效率升级："
+  },
+  "tutorial_wide_mode": {
+    "message": "宽模式：将 Gemini 扩展到全屏宽度。"
+  },
+  "tutorial_hotkeys": {
+    "message": "快捷键：\u003Ccode>Alt+W\u003C/code> (宽)，\u003Ccode>Alt+S\u003C/code> (主播)。"
+  },
+  "tutorial_toasts": {
+    "message": "Toast 通知：操作的视觉确认。"
+  },
+  "tutorial_button": {
+    "message": "开始吧！"
+  },
+  "streamer_mode_off": {
+    "message": "主播模式：关闭"
+  },
+  "streamer_mode_on": {
+    "message": "主播模式：开启"
+  },
+  "wide_mode_off": {
+    "message": "宽模式：关闭"
+  },
+  "wide_mode_on": {
+    "message": "宽模式：开启"
+  },
+  "language_changed_alert": {
+    "message": "语言已更改。请刷新页面 (F5) 使新语言生效。"
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "ext_name": {
+    "message": "Organisateur Gemini"
+  },
+  "loaded_message": {
+    "message": "Ultime v16.0 (Mode Large + Raccourcis + Modulaire) Chargé 🚀"
+  },
+  "settings_title": {
+    "message": "Réglages"
+  },
+  "export_data": {
+    "message": "⬇ Exporter les données (JSON)"
+  },
+  "import_data": {
+    "message": "⬆ Importer les données"
+  },
+  "current_account": {
+    "message": "Compte Actuel"
+  },
+  "select_language": {
+    "message": "Sélectionner la langue"
+  },
+  "new_folder": {
+    "message": "Nouveau Dossier"
+  },
+  "edit_folder": {
+    "message": "Modifier le Dossier"
+  },
+  "name": {
+    "message": "NOM"
+  },
+  "icon": {
+    "message": "ICÔNE"
+  },
+  "save": {
+    "message": "Sauvegarder"
+  },
+  "folders_tab": {
+    "message": "DOSSIERS"
+  },
+  "prompts_tab": {
+    "message": "PROMPTES"
+  },
+  "search_folders_placeholder": {
+    "message": "Rechercher dossiers & discussions..."
+  },
+  "search_prompts_placeholder": {
+    "message": "Rechercher promptes sauvegardées..."
+  },
+  "new_prompt_btn": {
+    "message": "+ Nouvelle Prompte"
+  },
+  "prompt_help_title": {
+    "message": "Aide Promptes Dynamiques"
+  },
+  "fill_vars_title": {
+    "message": "Remplir les Variables"
+  },
+  "customize_prompt": {
+    "message": "Personnalisez votre prompte :"
+  },
+  "generate_insert": {
+    "message": "Générer & Insérer"
+  },
+  "edit_prompt": {
+    "message": "Modifier la Prompte"
+  },
+  "prompt_content": {
+    "message": "CONTENU"
+  },
+  "save_prompt": {
+    "message": "Sauvegarder la Prompte"
+  },
+  "delete_prompt_confirm": {
+    "message": "Supprimer cette prompte ?"
+  },
+  "folder_empty_message": {
+    "message": "Cliquez sur \u003Cb>+ Nouveau\u003C/b> pour créer un dossier."
+  },
+  "prompt_empty_message": {
+    "message": "Aucune prompte trouvée.\u003Cbr>Cliquez sur \u003Cb>+ Nouveau\u003C/b> pour en ajouter une."
+  },
+  "add_to_folder": {
+    "message": "Ajouter au dossier :"
+  },
+  "no_folder_alert": {
+    "message": "Veuillez créer un dossier d'abord."
+  },
+  "delete_folder_confirm": {
+    "message": "Supprimer ?"
+  },
+  "no_input_box_alert": {
+    "message": "Impossible de trouver la boîte de saisie Gemini."
+  },
+  "invalid_json_alert": {
+    "message": "JSON invalide"
+  },
+  "overwrite_confirm": {
+    "message": "Écraser les données actuelles ?"
+  },
+  "bulk_organize_title": {
+    "message": "Organisation en Vrac"
+  },
+  "filter_chats_placeholder": {
+    "message": "Filtrer les discussions..."
+  },
+  "no_new_chats_found": {
+    "message": "Aucune nouvelle discussion trouvée à organiser."
+  },
+  "select_folder_placeholder": {
+    "message": "Sélectionner le Dossier de Destination..."
+  },
+  "move_selected": {
+    "message": "Déplacer la Sélection"
+  },
+  "bulk_selection_alert": {
+    "message": "Sélectionnez des discussions et un dossier."
+  },
+  "max_batch_alert": {
+    "message": "Maximum 20 éléments par lot."
+  },
+  "manage_tags_title": {
+    "message": "Gérer les Étiquettes"
+  },
+  "active_tags_label": {
+    "message": "ÉTIQUETTES ACTIVES"
+  },
+  "no_tags_yet": {
+    "message": "Aucune étiquette pour l'instant"
+  },
+  "add_new_tag": {
+    "message": "AJOUTER UNE NOUVELLE ÉTIQUETTE"
+  },
+  "tag_name_placeholder": {
+    "message": "Nom de l'étiquette..."
+  },
+  "add_tag": {
+    "message": "Ajouter l'étiquette"
+  },
+  "library_label": {
+    "message": "BIBLIOTHÈQUE"
+  },
+  "tutorial_welcome": {
+    "message": "🎉 Bienvenue dans la v16 !"
+  },
+  "tutorial_upgrade": {
+    "message": "Amélioration de l'efficacité :"
+  },
+  "tutorial_wide_mode": {
+    "message": "Mode Large : Étirez Gemini sur toute la largeur."
+  },
+  "tutorial_hotkeys": {
+    "message": "Raccourcis : \u003Ccode>Alt+W\u003C/code> (Large), \u003Ccode>Alt+S\u003C/code> (Streamer)."
+  },
+  "tutorial_toasts": {
+    "message": "Notifications : Confirmation visuelle de vos actions."
+  },
+  "tutorial_button": {
+    "message": "C'est parti !"
+  },
+  "streamer_mode_off": {
+    "message": "Mode Streamer : DÉSACTIVÉ"
+  },
+  "streamer_mode_on": {
+    "message": "Mode Streamer : ACTIVÉ"
+  },
+  "wide_mode_off": {
+    "message": "Mode Large : DÉSACTIVÉ"
+  },
+  "wide_mode_on": {
+    "message": "Mode Large : ACTIVÉ"
+  },
+  "language_changed_alert": {
+    "message": "Langue changée. Veuillez rafraîchir la page (F5) pour appliquer la nouvelle langue."
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "ext_name": {
+    "message": "Gemini Organizer"
+  },
+  "loaded_message": {
+    "message": "Ultimate v16.0 (Wide Mode + Hotkeys + Modular) Loaded 🚀"
+  },
+  "settings_title": {
+    "message": "Settings"
+  },
+  "export_data": {
+    "message": "⬇ Export Data (JSON)"
+  },
+  "import_data": {
+    "message": "⬆ Import Data"
+  },
+  "current_account": {
+    "message": "Current Account"
+  },
+  "select_language": {
+    "message": "Select Language"
+  },
+  "new_folder": {
+    "message": "New Folder"
+  },
+  "edit_folder": {
+    "message": "Edit Folder"
+  },
+  "name": {
+    "message": "NAME"
+  },
+  "icon": {
+    "message": "ICON"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "folders_tab": {
+    "message": "FOLDERS"
+  },
+  "prompts_tab": {
+    "message": "PROMPTS"
+  },
+  "search_folders_placeholder": {
+    "message": "Search folders & chats..."
+  },
+  "search_prompts_placeholder": {
+    "message": "Search saved prompts..."
+  },
+  "new_prompt_btn": {
+    "message": "+ New Prompt"
+  },
+  "prompt_help_title": {
+    "message": "Dynamic Prompts Help"
+  },
+  "fill_vars_title": {
+    "message": "Fill Variables"
+  },
+  "customize_prompt": {
+    "message": "Customize your prompt:"
+  },
+  "generate_insert": {
+    "message": "Generate & Insert"
+  },
+  "edit_prompt": {
+    "message": "Edit Prompt"
+  },
+  "prompt_content": {
+    "message": "CONTENT"
+  },
+  "save_prompt": {
+    "message": "Save Prompt"
+  },
+  "delete_prompt_confirm": {
+    "message": "Delete this prompt?"
+  },
+  "folder_empty_message": {
+    "message": "Click \u003Cb>+ New\u003C/b> to create a folder."
+  },
+  "prompt_empty_message": {
+    "message": "No prompts found.\u003Cbr>Click \u003Cb>+ New\u003C/b> to add one."
+  },
+  "add_to_folder": {
+    "message": "Add to folder:"
+  },
+  "no_folder_alert": {
+    "message": "Please create a folder first."
+  },
+  "delete_folder_confirm": {
+    "message": "Delete?"
+  },
+  "no_input_box_alert": {
+    "message": "Could not find Gemini input box."
+  },
+  "invalid_json_alert": {
+    "message": "Invalid JSON"
+  },
+  "overwrite_confirm": {
+    "message": "Overwrite current data?"
+  },
+  "bulk_organize_title": {
+    "message": "Bulk Organize"
+  },
+  "filter_chats_placeholder": {
+    "message": "Filter chats..."
+  },
+  "no_new_chats_found": {
+    "message": "No new chats found to organize."
+  },
+  "select_folder_placeholder": {
+    "message": "Select Destination Folder..."
+  },
+  "move_selected": {
+    "message": "Move Selected"
+  },
+  "bulk_selection_alert": {
+    "message": "Select chats and a folder."
+  },
+  "max_batch_alert": {
+    "message": "Max 20 items per batch."
+  },
+  "manage_tags_title": {
+    "message": "Manage Tags"
+  },
+  "active_tags_label": {
+    "message": "ACTIVE TAGS"
+  },
+  "no_tags_yet": {
+    "message": "No tags yet"
+  },
+  "add_new_tag": {
+    "message": "ADD NEW TAG"
+  },
+  "tag_name_placeholder": {
+    "message": "Tag name..."
+  },
+  "add_tag": {
+    "message": "Add Tag"
+  },
+  "library_label": {
+    "message": "LIBRARY"
+  },
+  "tutorial_welcome": {
+    "message": "🎉 Welcome to v16!"
+  },
+  "tutorial_upgrade": {
+    "message": "Efficiency Upgrade:"
+  },
+  "tutorial_wide_mode": {
+    "message": "Wide Mode: Stretch Gemini to full width."
+  },
+  "tutorial_hotkeys": {
+    "message": "Hotkeys: \u003Ccode>Alt+W\u003C/code> (Wide), \u003Ccode>Alt+S\u003C/code> (Streamer)."
+  },
+  "tutorial_toasts": {
+    "message": "Toasts: Visual confirmation for your actions."
+  },
+  "tutorial_button": {
+    "message": "Let's Go!"
+  },
+  "streamer_mode_off": {
+    "message": "Streamer Mode: OFF"
+  },
+  "streamer_mode_on": {
+    "message": "Streamer Mode: ON"
+  },
+  "wide_mode_off": {
+    "message": "Wide Mode: OFF"
+  },
+  "wide_mode_on": {
+    "message": "Wide Mode: ON"
+  },
+  "language_changed_alert": {
+    "message": "Language changed. Please refresh the page (F5) for the new language to take effect."
+  }
+}
