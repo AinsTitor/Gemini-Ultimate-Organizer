@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Version](https://img.shields.io/badge/version-1.5.1-blue)
-![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
+![License](https://img-shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
 ![Platform](https://img.shields.io/badge/platform-Chrome-googlechrome)
 
 **[English](#-english) | [Français](#-français)**
@@ -34,7 +34,7 @@
 *The extension is currently under review by Google.*
 
 #### Option 2: Manual Installation (Developer Mode)
-1.  **Download** [https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolderv1.5.1.zip](https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolder1.5.1.zip) or **Clone** this repository to your computer. 
+1.  **Download** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolder1.5.1.zip or **Clone** this repository to your computer. 
 2.  Open Google Chrome and navigate to `chrome://extensions/`.
 3.  Enable **Developer mode** (toggle in the top right corner).
 4.  Click on **Load unpacked**.
@@ -43,17 +43,20 @@
 
 ### 📖 How to Use
 
-1.  **Open the Panel:** You will see a floating panel "🗂️ FOLDERS" on the top right of your Gemini interface.
-2.  **Create a Folder:** Click the `+ New` button in the panel header. Give it a name.
-3.  **Add a Chat:**
-    * Hover over any chat in Gemini's native history list (left sidebar).
-    * Click the small round `+` button that appears.
-    * Select the destination folder from the context menu.
-4.  **Manage Folders:**
-    * **Open/Close:** Click the folder row.
-    * **Rename/Delete:** Hover over a folder and use the ✎ (Edit) or × (Delete) buttons.
-    * **Change Color:** Click the small color circle on the folder row to pick a new color.
-    * **Reorder:** Hover over a folder and use the ▲ / ▼ arrows.
+1. **Open the Panel:** You will see a floating panel "🗂️ FOLDERS" on the top right of your Gemini interface.
+
+2. **Create a Folder:** Click the `+ New` button in the panel header. Give it a name.
+
+3. **Add a Chat:**
+    * Hover over any chat in Gemini's native history list (left sidebar).
+    * Click the small round `+` button that appears.
+    * Select the destination folder from the context menu.
+
+4. **Manage Folders:**
+    * **Open/Close:** Click the folder row.
+    * **Rename/Delete:** Hover over a folder and use the ✎ (Edit) or × (Delete) buttons.
+    * **Change Color:** Click the small color circle on the folder row to pick a new color.
+    * **Reorder:** Hover over a folder and use the ▲ / ▼ arrows.
 
 ### 🔒 Privacy
 
@@ -84,7 +87,7 @@
 *L'extension est actuellement en cours de validation par Google.*
 
 #### Option 2 : Installation Manuelle
-1.  **Téléchargez** [https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolderv1.5.1.zip](https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolder1.5.1.zip) ou **Clonez** ce dépôt sur votre ordinateur.
+1.  **Téléchargez** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolder1.5.1.zip ou **Clonez** ce dépôt sur votre ordinateur.
 2.  Ouvrez Google Chrome et allez sur `chrome://extensions/`.
 3.  Activez le **Mode développeur** (bouton en haut à droite).
 4.  Cliquez sur **Charger l'extension non empaquetée** (Load unpacked).
@@ -93,19 +96,22 @@
 
 ### 📖 Comment l'utiliser
 
-1.  **Ouvrir le Panneau :** Vous verrez un panneau flottant "🗂️ FOLDERS" en haut à droite de votre interface Gemini.
-2.  **Créer un Dossier :** Cliquez sur le bouton `+ New` dans l'en-tête du panneau. Donnez-lui un nom.
-3.  **Ajouter un Chat :**
-    * Passez la souris sur n'importe quel chat dans la liste native de Gemini (barre latérale gauche).
-    * Cliquez sur le petit bouton rond `+` qui apparaît à droite du titre.
-    * Sélectionnez le dossier de destination dans le menu qui s'ouvre.
-4.  **Gérer les Dossiers :**
-    * **Ouvrir/Fermer :** Cliquez sur la ligne du dossier.
-    * **Renommer/Supprimer :** Au survol, utilisez les boutons ✎ (Modifier) ou × (Supprimer).
-    * **Changer la couleur :** Cliquez sur le petit cercle de couleur sur la ligne du dossier.
-    * **Réorganiser :** Au survol, utilisez les flèches ▲ / ▼.
+1. **Ouvrir le Panneau :** Vous verrez un panneau flottant "🗂️ FOLDERS" en haut à droite de votre interface Gemini.
 
-### 🔒 Confidentialité
+2. **Créer un Dossier :** Cliquez sur le bouton `+ New` dans l'en-tête du panneau. Donnez-lui un nom.
+
+3. **Ajouter un Chat :**
+    * Passez la souris sur n'importe quel chat dans la liste native de Gemini (barre latérale gauche).
+    * Cliquez sur le petit bouton rond `+` qui apparaît à droite du titre.
+    * Sélectionnez le dossier de destination dans le menu qui s'ouvre.
+
+4. **Gérer les Dossiers :**
+    * **Ouvrir/Fermer :** Cliquez sur la ligne du dossier.
+    * **Renommer/Supprimer :** Au survol, utilisez les boutons ✎ (Modifier) ou × (Supprimer).
+    * **Changer la couleur :** Cliquez sur le petit cercle de couleur sur la ligne du dossier.
+    * **Réorganiser :** Au survol, utilisez les flèches ▲ / ▼.
+
+### 🔒 Privacy
 
 * **Aucune collecte de données :** Cette extension ne collecte ni n'envoie aucune donnée personnelle à des serveurs externes.
 * **Stockage Local & Sync :** La structure de vos dossiers est stockée de manière sécurisée dans le stockage de votre navigateur Chrome (synchronisé via votre compte Google).
