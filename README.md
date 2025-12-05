@@ -34,7 +34,7 @@
 *The extension is currently under review by Google.*
 
 #### Option 2: Manual Installation (Developer Mode)
-1.  **Download** or **Clone** this repository to your computer.
+1.  **Download** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5/geminiultimatefolderv1.5.zip or **Clone** this repository to your computer. 
 2.  Open Google Chrome and navigate to `chrome://extensions/`.
 3.  Enable **Developer mode** (toggle in the top right corner).
 4.  Click on **Load unpacked**.
@@ -84,7 +84,7 @@
 *L'extension est actuellement en cours de validation par Google.*
 
 #### Option 2 : Installation Manuelle
-1.  **Téléchargez** ou **Clonez** ce dépôt sur votre ordinateur.
+1.  **Téléchargez** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5/geminiultimatefolderv1.5.zip ou **Clonez** ce dépôt sur votre ordinateur.
 2.  Ouvrez Google Chrome et allez sur `chrome://extensions/`.
 3.  Activez le **Mode développeur** (bouton en haut à droite).
 4.  Cliquez sur **Charger l'extension non empaquetée** (Load unpacked).
