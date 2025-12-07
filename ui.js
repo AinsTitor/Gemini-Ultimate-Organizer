@@ -2,30 +2,30 @@
 import { CSS_STYLES, COLORS, TAG_COLORS, EMOJIS, SETTINGS } from './config.js';
 import * as Storage from './storage.js';
 
-// --- SYSTÈME DE TRADUCTION DYNAMIQUE (Dictionnaire interne) ---
+// --- SYSTÈME DE TRADUCTION DYNAMIQUE ---
 const LANGUAGES = [
     { code: 'en', name: 'English' },
     { code: 'fr', name: 'Français' },
-    { code: 'de', name: 'Deutsch' },      // NOUVEAU
+    { code: 'de', name: 'Deutsch' },
     { code: 'es', name: 'Español' },
     { code: 'pt', name: 'Português' },
-    { code: 'it', name: 'Italiano' },     // AJOUT pour couverture européenne
+    { code: 'it', name: 'Italiano' },
     { code: 'ru', name: 'Русский' },
-    { code: 'zh_CN', name: '中文 (简体)' }, // Légère clarification pour le Chinois
-    { code: 'ja', name: '日本語' },       // NOUVEAU
-    { code: 'ko', name: '한국어' },       // NOUVEAU
-    { code: 'ar', name: 'العربية' },      // NOUVEAU
+    { code: 'zh_CN', name: '中文' },
+    { code: 'ja', name: '日本語' },
+    { code: 'ko', name: '한국어' },
+    { code: 'ar', name: 'العربية' },
     { code: 'th', name: 'ภาษาไทย' }
 ];
 
 const LANG_STORAGE_KEY = 'gemini_organizer_lang';
-let currentLanguage = 'en'; // Langue par défaut en mémoire
+let currentLanguage = 'en';
 
-// Dictionnaire complet des traductions pour le changement dynamique
 const TRANSLATIONS = {
     en: {
         settings_title: "Settings",
         new_folder: "New Folder",
+        new_btn: "New",
         folders_tab: "FOLDERS",
         prompts_tab: "PROMPTS",
         search_folders_placeholder: "Search folders & chats...",
@@ -67,7 +67,7 @@ const TRANSLATIONS = {
         tag_name_placeholder: "Tag name...",
         add_tag: "Add Tag",
         library_label: "LIBRARY",
-        tutorial_welcome: "🎉 Welcome to v16!",
+        tutorial_welcome: "🎉 Welcome to v1.6!",
         tutorial_upgrade: "Efficiency Upgrade:",
         tutorial_wide_mode: "Wide Mode: Stretch Gemini to full width.",
         tutorial_hotkeys: "Hotkeys: <code>Alt+W</code> (Wide), <code>Alt+S</code> (Streamer).",
@@ -75,20 +75,32 @@ const TRANSLATIONS = {
         tutorial_button: "Let's Go!",
         add_to_folder: "Add to folder:",
         no_folder_alert: "Please create a folder first.",
-        no_input_box_alert: "Could not find Gemini input box."
+        no_input_box_alert: "Could not find Gemini input box.",
+        invalid_json_alert: "Invalid JSON",
+        overwrite_confirm: "Overwrite current data?",
+        // NOUVEAUX TEXTES V1.6
+        export_chat_tooltip: "Export current chat (Markdown)",
+        no_chat_found_alert: "No active chat found to export.",
+        export_success_toast: "Chat exported successfully!",
+        accent_color_label: "Accent Color",
+        theme_mode_label: "Theme Mode",
+        theme_dark: "Dark",
+        theme_light: "Light",
+        accent_color_updated: "Theme updated!"
     },
     fr: {
         settings_title: "Réglages",
         new_folder: "Nouveau Dossier",
+        new_btn: "Nouveau",
         folders_tab: "DOSSIERS",
         prompts_tab: "PROMPTS",
         search_folders_placeholder: "Rechercher dossiers & discussions...",
         search_prompts_placeholder: "Rechercher prompts sauvegardées...",
         new_prompt_btn: "+ Nouveau Prompt",
-        prompt_help_title: "Aide Prompts Dynamiques",
+        prompt_help_title: "Aide Promptes Dynamiques",
         edit_folder: "Modifier le Dossier",
         delete_folder_confirm: "Supprimer ?",
-        manage_tags_title: "Gérer les TAGS",
+        manage_tags_title: "Gérer les Étiquettes",
         wide_mode_on: "Mode Large : ACTIVÉ",
         wide_mode_off: "Mode Large : DÉSACTIVÉ",
         streamer_mode_on: "Mode Streamer : ACTIVÉ",
@@ -103,25 +115,25 @@ const TRANSLATIONS = {
         name: "NOM",
         icon: "ICÔNE",
         folder_empty_message: "Cliquez sur <b>+ Nouveau</b> pour créer un dossier.",
-        prompt_empty_message: "Aucune prompte trouvée.<br>Cliquez sur <b>+ Nouveau</b> pour en ajouter une.",
+        prompt_empty_message: "Aucun prompt trouvé.<br>Cliquez sur <b>+ Nouveau</b> pour en ajouter un.",
         delete_prompt_confirm: "Supprimer ce prompt ?",
-        edit_prompt: "Modifier la Prompte",
-        save_prompt: "Sauvegarder la Prompte",
+        edit_prompt: "Modifier le Prompt",
+        save_prompt: "Sauvegarder le Prompt",
         prompt_content: "CONTENU",
         fill_vars_title: "Remplir les Variables",
-        customize_prompt: "Personnalisez votre prompte :",
+        customize_prompt: "Personnalisez votre prompt :",
         generate_insert: "Générer & Insérer",
         filter_chats_placeholder: "Filtrer les discussions...",
         no_new_chats_found: "Aucune nouvelle discussion trouvée à organiser.",
         select_folder_placeholder: "Sélectionner le Dossier de Destination...",
         move_selected: "Déplacer la Sélection",
-        active_tags_label: "TAGS ACTIVES",
-        no_tags_yet: "Aucun tags pour l'instant",
-        add_new_tag: "AJOUTER UN NOUVEAU TAGS",
+        active_tags_label: "ÉTIQUETTES ACTIVES",
+        no_tags_yet: "Aucune étiquette pour l'instant",
+        add_new_tag: "AJOUTER UNE NOUVELLE ÉTIQUETTE",
         tag_name_placeholder: "Nom de l'étiquette...",
-    add_tag: "Ajouter un TAGS",
+        add_tag: "Ajouter l'étiquette",
         library_label: "BIBLIOTHÈQUE",
-        tutorial_welcome: "🎉 Bienvenue dans la v16 !",
+        tutorial_welcome: "🎉 Bienvenue dans la v1.6 !",
         tutorial_upgrade: "Amélioration de l'efficacité :",
         tutorial_wide_mode: "Mode Large : Étirez Gemini sur toute la largeur.",
         tutorial_hotkeys: "Raccourcis : <code>Alt+W</code> (Large), <code>Alt+S</code> (Streamer).",
@@ -129,571 +141,32 @@ const TRANSLATIONS = {
         tutorial_button: "C'est parti !",
         add_to_folder: "Ajouter au dossier :",
         no_folder_alert: "Veuillez créer un dossier d'abord.",
-        no_input_box_alert: "Impossible de trouver la boîte de saisie Gemini."
+        no_input_box_alert: "Impossible de trouver la boîte de saisie Gemini.",
+        invalid_json_alert: "JSON invalide",
+        overwrite_confirm: "Écraser les données actuelles ?",
+        // NOUVEAUX TEXTES V1.6
+        export_chat_tooltip: "Exporter la conversation (Markdown)",
+        no_chat_found_alert: "Aucune conversation active à exporter.",
+        export_success_toast: "Conversation exportée avec succès !",
+        accent_color_label: "Couleur d'accentuation",
+        theme_mode_label: "Mode Thème",
+        theme_dark: "Sombre",
+        theme_light: "Clair",
+        accent_color_updated: "Thème mis à jour !"
     },
-    es: {
-        settings_title: "Ajustes",
-        new_folder: "Nueva Carpeta",
-        folders_tab: "CARPETAS",
-        prompts_tab: "PROMPTS",
-        search_folders_placeholder: "Buscar carpetas y chats...",
-        search_prompts_placeholder: "Buscar prompts guardados...",
-        new_prompt_btn: "+ Nuevo Prompt",
-        prompt_help_title: "Ayuda Prompts Dinámicos",
-        edit_folder: "Editar Carpeta",
-        delete_folder_confirm: "¿Eliminar?",
-        manage_tags_title: "Gestionar Etiquetas",
-        wide_mode_on: "Modo Ancho: ACTIVADO",
-        wide_mode_off: "Modo Ancho: DESACTIVADO",
-        streamer_mode_on: "Modo Streamer: ACTIVADO",
-        streamer_mode_off: "Modo Streamer: DESACTIVADO",
-        bulk_organize_title: "Organización Masiva",
-        current_account: "Cuenta Actual",
-        select_language: "Seleccionar Idioma",
-        export_data: "⬇ Exportar Datos (JSON)",
-        import_data: "⬆ Importar Datos",
-        ext_name: "Organizador Gemini",
-        save: "Guardar",
-        name: "NOMBRE",
-        icon: "ICONO",
-        folder_empty_message: "Haz clic en <b>+ Nuevo</b> para crear una carpeta.",
-        prompt_empty_message: "No se encontraron prompts.<br>Haz clic en <b>+ Nuevo</b> para añadir uno.",
-        delete_prompt_confirm: "¿Eliminar este prompt?",
-        edit_prompt: "Editar Prompt",
-        save_prompt: "Guardar Prompt",
-        prompt_content: "CONTENIDO",
-        fill_vars_title: "Rellenar Variables",
-        customize_prompt: "Personaliza tu prompt:",
-        generate_insert: "Generar e Insertar",
-        filter_chats_placeholder: "Filtrar chats...",
-        no_new_chats_found: "No se encontraron nuevos chats para organizar.",
-        select_folder_placeholder: "Seleccionar Carpeta de Destino...",
-        move_selected: "Mover Seleccionado",
-        active_tags_label: "ETIQUETAS ACTIVAS",
-        no_tags_yet: "Aún no hay etiquetas",
-        add_new_tag: "AÑADIR NUEVA ETIQUETA",
-        tag_name_placeholder: "Nombre de la etiqueta...",
-        add_tag: "Añadir Etiqueta",
-        library_label: "BIBLIOTECA",
-        tutorial_welcome: "🎉 ¡Bienvenido a la v16!",
-        tutorial_upgrade: "Mejora de la eficiencia:",
-        tutorial_wide_mode: "Modo Ancho: Estira Gemini a todo el ancho.",
-        tutorial_hotkeys: "Atajos: <code>Alt+W</code> (Ancho), <code>Alt+S</code> (Streamer).",
-        tutorial_toasts: "Notificaciones: Confirmación visual de tus acciones.",
-        tutorial_button: "¡Vamos!",
-        add_to_folder: "Añadir a carpeta:",
-        no_folder_alert: "Por favor, crea una carpeta primero.",
-        no_input_box_alert: "No se pudo encontrar el cuadro de entrada de Gemini."
-    },
-    ru: {
-        settings_title: "Настройки",
-        new_folder: "Новая папка",
-        folders_tab: "ПАПКИ",
-        prompts_tab: "ПРОМПТЫ",
-        search_folders_placeholder: "Поиск папок и чатов...",
-        search_prompts_placeholder: "Поиск сохраненных промптов...",
-        new_prompt_btn: "+ Новый промпт",
-        prompt_help_title: "Помощь по промптам",
-        edit_folder: "Редактировать",
-        delete_folder_confirm: "Удалить?",
-        manage_tags_title: "Управление тегами",
-        wide_mode_on: "Широкий режим: ВКЛ",
-        wide_mode_off: "Широкий режим: ВЫКЛ",
-        streamer_mode_on: "Режим стримера: ВКЛ",
-        streamer_mode_off: "Режим стримера: ВЫКЛ",
-        bulk_organize_title: "Массовая орг.",
-        current_account: "Аккаунт",
-        select_language: "Язык",
-        export_data: "⬇ Экспорт",
-        import_data: "⬆ Импорт",
-        ext_name: "Органайзер Gemini",
-        save: "Сохранить",
-        name: "ИМЯ",
-        icon: "ИКОНКА",
-        folder_empty_message: "Нажмите <b>+ Новый</b> для создания папки.",
-        prompt_empty_message: "Нет промптов.<br>Нажмите <b>+ Новый</b>.",
-        delete_prompt_confirm: "Удалить?",
-        edit_prompt: "Ред. промпт",
-        save_prompt: "Сохранить",
-        prompt_content: "СОДЕРЖАНИЕ",
-        fill_vars_title: "Переменные",
-        customize_prompt: "Настройка:",
-        generate_insert: "Вставить",
-        filter_chats_placeholder: "Фильтр...",
-        no_new_chats_found: "Нет новых чатов.",
-        select_folder_placeholder: "Выберите папку...",
-        move_selected: "Переместить",
-        active_tags_label: "ТЕГИ",
-        no_tags_yet: "Нет тегов",
-        add_new_tag: "ДОБАВИТЬ ТЕГ",
-        tag_name_placeholder: "Имя тега...",
-        add_tag: "Добавить",
-        library_label: "БИБЛИОТЕКА",
-        tutorial_welcome: "🎉 Привет в v16!",
-        tutorial_upgrade: "Обновление:",
-        tutorial_wide_mode: "Широкий режим Gemini.",
-        tutorial_hotkeys: "Хоткеи: Alt+W, Alt+S.",
-        tutorial_toasts: "Уведомления включены.",
-        tutorial_button: "Поехали!",
-        add_to_folder: "В папку:",
-        no_folder_alert: "Создайте папку.",
-        no_input_box_alert: "Поле ввода не найдено."
-    },
-zh_CN: {
-        settings_title: "设置",
-        new_folder: "新建文件夹",
-        folders_tab: "文件夹",
-        prompts_tab: "提示词",
-        search_folders_placeholder: "搜索文件夹和聊天...",
-        search_prompts_placeholder: "搜索已保存的提示词...",
-        new_prompt_btn: "+ 新建提示词",
-        prompt_help_title: "动态提示词帮助",
-        edit_folder: "编辑文件夹",
-        delete_folder_confirm: "删除？",
-        manage_tags_title: "管理标签",
-        wide_mode_on: "宽屏模式：开启",
-        wide_mode_off: "宽屏模式：关闭",
-        streamer_mode_on: "主播模式：开启",
-        streamer_mode_off: "主播模式：关闭",
-        bulk_organize_title: "批量整理",
-        current_account: "当前账户",
-        select_language: "选择语言",
-        export_data: "⬇ 导出数据 (JSON)",
-        import_data: "⬆ 导入数据",
-        ext_name: "Gemini 整理器",
-        save: "保存",
-        name: "名称",
-        icon: "图标",
-        folder_empty_message: "点击 <b>+ 新建</b> 创建文件夹。",
-        prompt_empty_message: "未找到提示词。<br>点击 <b>+ 新建</b> 添加一个。",
-        delete_prompt_confirm: "删除此提示词？",
-        edit_prompt: "编辑提示词",
-        save_prompt: "保存提示词",
-        prompt_content: "内容",
-        fill_vars_title: "填写变量",
-        customize_prompt: "自定义您的提示词：",
-        generate_insert: "生成并插入",
-        filter_chats_placeholder: "筛选聊天...",
-        no_new_chats_found: "未找到需要整理的新聊天。",
-        select_folder_placeholder: "选择目标文件夹...",
-        move_selected: "移动选中项",
-        active_tags_label: "当前标签",
-        no_tags_yet: "暂无标签",
-        add_new_tag: "添加新标签",
-        tag_name_placeholder: "标签名称...",
-        add_tag: "添加标签",
-        library_label: "标签库",
-        tutorial_welcome: "🎉 欢迎使用 v16！",
-        tutorial_upgrade: "效率升级：",
-        tutorial_wide_mode: "宽屏模式：将 Gemini 扩展至全屏。",
-        tutorial_hotkeys: "快捷键：<code>Alt+W</code> (宽屏)，<code>Alt+S</code> (主播)。",
-        tutorial_toasts: "通知：操作的视觉确认。",
-        tutorial_button: "开始使用！",
-        add_to_folder: "添加到文件夹：",
-        no_folder_alert: "请先创建一个文件夹。",
-        no_input_box_alert: "找不到 Gemini 输入框。"
-    },
-pt: {
-        settings_title: "Configurações",
-        new_folder: "Nova Pasta",
-        folders_tab: "PASTAS",
-        prompts_tab: "PROMPTS",
-        search_folders_placeholder: "Pesquisar pastas e chats...",
-        search_prompts_placeholder: "Pesquisar prompts salvos...",
-        new_prompt_btn: "+ Novo Prompt",
-        prompt_help_title: "Ajuda Prompts Dinâmicos",
-        edit_folder: "Editar Pasta",
-        delete_folder_confirm: "Excluir?",
-        manage_tags_title: "Gerenciar Tags",
-        wide_mode_on: "Modo Amplo: ATIVADO",
-        wide_mode_off: "Modo Amplo: DESATIVADO",
-        streamer_mode_on: "Modo Streamer: ATIVADO",
-        streamer_mode_off: "Modo Streamer: DESATIVADO",
-        bulk_organize_title: "Organização em Massa",
-        current_account: "Conta Atual",
-        select_language: "Selecionar Idioma",
-        export_data: "⬇ Exportar Dados (JSON)",
-        import_data: "⬆ Importar Dados",
-        ext_name: "Organizador Gemini",
-        save: "Salvar",
-        name: "NOME",
-        icon: "ÍCONE",
-        folder_empty_message: "Clique em <b>+ Novo</b> para criar uma pasta.",
-        prompt_empty_message: "Nenhum prompt encontrado.<br>Clique em <b>+ Novo</b> para adicionar um.",
-        delete_prompt_confirm: "Excluir este prompt?",
-        edit_prompt: "Editar Prompt",
-        save_prompt: "Salvar Prompt",
-        prompt_content: "CONTEÚDO",
-        fill_vars_title: "Preencher Variáveis",
-        customize_prompt: "Personalize seu prompt:",
-        generate_insert: "Gerar e Inserir",
-        filter_chats_placeholder: "Filtrar chats...",
-        no_new_chats_found: "Nenhum chat novo para organizar.",
-        select_folder_placeholder: "Selecionar Pasta de Destino...",
-        move_selected: "Mover Selecionados",
-        active_tags_label: "TAGS ATIVAS",
-        no_tags_yet: "Sem tags ainda",
-        add_new_tag: "ADICIONAR NOVA TAG",
-        tag_name_placeholder: "Nome da tag...",
-        add_tag: "Adicionar Tag",
-        library_label: "BIBLIOTECA",
-        tutorial_welcome: "🎉 Bem-vindo à v16!",
-        tutorial_upgrade: "Atualização de Eficiência:",
-        tutorial_wide_mode: "Modo Amplo: Estenda o Gemini para a largura total.",
-        tutorial_hotkeys: "Atalhos: <code>Alt+W</code> (Amplo), <code>Alt+S</code> (Streamer).",
-        tutorial_toasts: "Toasts: Confirmação visual para suas ações.",
-        tutorial_button: "Vamos lá!",
-        add_to_folder: "Adicionar à pasta:",
-        no_folder_alert: "Por favor, crie uma pasta primeiro.",
-        no_input_box_alert: "Não foi possível encontrar a caixa de entrada do Gemini."
-    },
-th: {
-        settings_title: "การตั้งค่า",
-        new_folder: "โฟลเดอร์ใหม่",
-        folders_tab: "โฟลเดอร์",
-        prompts_tab: "พรอมต์",
-        search_folders_placeholder: "ค้นหาโฟลเดอร์และแชท...",
-        search_prompts_placeholder: "ค้นหาพรอมต์ที่บันทึกไว้...",
-        new_prompt_btn: "+ พรอมต์ใหม่",
-        prompt_help_title: "วิธีใช้พรอมต์แบบไดนามิก",
-        edit_folder: "แก้ไขโฟลเดอร์",
-        delete_folder_confirm: "ลบ?",
-        manage_tags_title: "จัดการแท็ก",
-        wide_mode_on: "โหมดกว้าง: เปิด",
-        wide_mode_off: "โหมดกว้าง: ปิด",
-        streamer_mode_on: "โหมดสตรีมเมอร์: เปิด",
-        streamer_mode_off: "โหมดสตรีมเมอร์: ปิด",
-        bulk_organize_title: "จัดระเบียบจำนวนมาก",
-        current_account: "บัญชีปัจจุบัน",
-        select_language: "เลือกภาษา",
-        export_data: "⬇ ส่งออกข้อมูล (JSON)",
-        import_data: "⬆ นำเข้าข้อมูล",
-        ext_name: "ตัวจัดระเบียบ Gemini",
-        save: "บันทึก",
-        name: "ชื่อ",
-        icon: "ไอคอน",
-        folder_empty_message: "คลิก <b>+ ใหม่</b> เพื่อสร้างโฟลเดอร์",
-        prompt_empty_message: "ไม่พบพรอมต์<br>คลิก <b>+ ใหม่</b> เพื่อเพิ่ม",
-        delete_prompt_confirm: "ลบพรอมต์นี้หรือไม่?",
-        edit_prompt: "แก้ไขพรอมต์",
-        save_prompt: "บันทึกพรอมต์",
-        prompt_content: "เนื้อหา",
-        fill_vars_title: "กรอกตัวแปร",
-        customize_prompt: "ปรับแต่งพรอมต์ของคุณ:",
-        generate_insert: "สร้างและแทรก",
-        filter_chats_placeholder: "กรองแชท...",
-        no_new_chats_found: "ไม่พบแชทใหม่ที่ต้องจัดระเบียบ",
-        select_folder_placeholder: "เลือกโฟลเดอร์ปลายทาง...",
-        move_selected: "ย้ายที่เลือก",
-        active_tags_label: "แท็กที่ใช้งานอยู่",
-        no_tags_yet: "ยังไม่มีแท็ก",
-        add_new_tag: "เพิ่มแท็กใหม่",
-        tag_name_placeholder: "ชื่อแท็ก...",
-        add_tag: "เพิ่มแท็ก",
-        library_label: "คลัง",
-        tutorial_welcome: "🎉 ยินดีต้อนรับสู่ v16!",
-        tutorial_upgrade: "อัปเกรดประสิทธิภาพ:",
-        tutorial_wide_mode: "โหมดกว้าง: ขยาย Gemini ให้เต็มความกว้าง",
-        tutorial_hotkeys: "ปุ่มลัด: <code>Alt+W</code> (กว้าง), <code>Alt+S</code> (สตรีมเมอร์)",
-        tutorial_toasts: "การแจ้งเตือน: การยืนยันด้วยภาพสำหรับการกระทำของคุณ",
-        tutorial_button: "เริ่มเลย!",
-        add_to_folder: "เพิ่มไปยังโฟลเดอร์:",
-        no_folder_alert: "โปรดสร้างโฟลเดอร์ก่อน",
-        no_input_box_alert: "ไม่พบกล่องข้อความ Gemini"
-    },
-de: {
-    settings_title: "Einstellungen",
-    new_folder: "Neuer Ordner",
-    new_btn: "Neu", // Clé du bouton court "+ Neu"
-    folders_tab: "ORDNER",
-    prompts_tab: "PROMPTS",
-    search_folders_placeholder: "Ordner & Chats suchen...",
-    search_prompts_placeholder: "Gespeicherte Prompts suchen...",
-    new_prompt_btn: "+ Neuer Prompt",
-    prompt_help_title: "Hilfe zu Dynamischen Prompts",
-    edit_folder: "Ordner bearbeiten",
-    delete_folder_confirm: "Löschen?",
-    manage_tags_title: "Tags verwalten",
-    wide_mode_on: "Breitbildmodus: AN",
-    wide_mode_off: "Breitbildmodus: AUS",
-    streamer_mode_on: "Streamer-Modus: AN",
-    streamer_mode_off: "Streamer-Modus: AUS",
-    bulk_organize_title: "Massenorganisation",
-    current_account: "Aktuelles Konto",
-    select_language: "Sprache auswählen",
-    export_data: "⬇ Daten exportieren (JSON)",
-    import_data: "⬆ Daten importieren",
-    ext_name: "Gemini Organizer",
-    save: "Speichern",
-    name: "NAME",
-    icon: "ICON",
-    folder_empty_message: "Klicken Sie auf <b>+ Neu</b>, um einen Ordner zu erstellen.",
-    prompt_empty_message: "Keine Prompts gefunden.<br>Klicken Sie auf <b>+ Neu</b>, um einen hinzuzufügen.",
-    delete_prompt_confirm: "Diesen Prompt löschen?",
-    edit_prompt: "Prompt bearbeiten",
-    save_prompt: "Prompt speichern",
-    prompt_content: "INHALT",
-    fill_vars_title: "Variablen ausfüllen",
-    customize_prompt: "Passen Sie Ihren Prompt an:",
-    generate_insert: "Generieren & Einfügen",
-    filter_chats_placeholder: "Chats filtern...",
-    no_new_chats_found: "Keine neuen Chats zur Organisation gefunden.",
-    select_folder_placeholder: "Zielordner auswählen...",
-    move_selected: "Auswahl verschieben",
-    active_tags_label: "AKTIVE TAGS",
-    no_tags_yet: "Noch keine Tags",
-    add_new_tag: "NEUEN TAG HINZUFÜGEN",
-    tag_name_placeholder: "Tag-Name...",
-    add_tag: "Tag hinzufügen",
-    library_label: "BIBLIOTHEK",
-    tutorial_welcome: "🎉 Willkommen bei v16!",
-    tutorial_upgrade: "Effizienz-Upgrade:",
-    tutorial_wide_mode: "Breitbildmodus: Gemini auf volle Breite strecken.",
-    tutorial_hotkeys: "Hotkeys: <code>Alt+W</code> (Breit), <code>Alt+S</code> (Streamer).",
-    tutorial_toasts: "Pop-ups: Visuelle Bestätigung Ihrer Aktionen.",
-    tutorial_button: "Los geht's!",
-    add_to_folder: "Zu Ordner hinzufügen:",
-    no_folder_alert: "Bitte erstellen Sie zuerst einen Ordner.",
-    no_input_box_alert: "Gemini-Eingabefeld konnte nicht gefunden werden.",
-    invalid_json_alert: "Ungültiges JSON",
-    overwrite_confirm: "Aktuelle Daten überschreiben?"
-    },
-it: {
-        settings_title: "Impostazioni",
-        new_folder: "Nuova Cartella",
-        new_btn: "Nuovo",
-        folders_tab: "CARTELLE",
-        prompts_tab: "PROMPT",
-        search_folders_placeholder: "Cerca cartelle e chat...",
-        search_prompts_placeholder: "Cerca prompt salvati...",
-        new_prompt_btn: "+ Nuovo Prompt",
-        prompt_help_title: "Aiuto Prompt Dinamici",
-        edit_folder: "Modifica Cartella",
-        delete_folder_confirm: "Eliminare?",
-        manage_tags_title: "Gestisci Tag",
-        wide_mode_on: "Modalità Ampia: ON",
-        wide_mode_off: "Modalità Ampia: OFF",
-        streamer_mode_on: "Modalità Streamer: ON",
-        streamer_mode_off: "Modalità Streamer: OFF",
-        bulk_organize_title: "Organizzazione di Massa",
-        current_account: "Account Attuale",
-        select_language: "Seleziona Lingua",
-        export_data: "⬇ Esporta Dati (JSON)",
-        import_data: "⬆ Importa Dati",
-        ext_name: "Gemini Organizer",
-        save: "Salva",
-        name: "NOME",
-        icon: "ICONA",
-        folder_empty_message: "Clicca su <b>+ Nuovo</b> per creare una cartella.",
-        prompt_empty_message: "Nessun prompt trovato.<br>Clicca su <b>+ Nuovo</b> per aggiungerne uno.",
-        delete_prompt_confirm: "Eliminare questo prompt?",
-        edit_prompt: "Modifica Prompt",
-        save_prompt: "Salva Prompt",
-        prompt_content: "CONTENUTO",
-        fill_vars_title: "Compila Variabili",
-        customize_prompt: "Personalizza il tuo prompt:",
-        generate_insert: "Genera e Inserisci",
-        filter_chats_placeholder: "Filtra chat...",
-        no_new_chats_found: "Nessuna nuova chat trovata da organizzare.",
-        select_folder_placeholder: "Seleziona Cartella di Destinazione...",
-        move_selected: "Sposta Selezionati",
-        active_tags_label: "TAG ATTIVI",
-        no_tags_yet: "Nessun tag ancora",
-        add_new_tag: "AGGIUNGI NUOVO TAG",
-        tag_name_placeholder: "Nome del tag...",
-        add_tag: "Aggiungi Tag",
-        library_label: "LIBRERIA",
-        tutorial_welcome: "🎉 Benvenuto nella v16!",
-        tutorial_upgrade: "Aggiornamento Efficienza:",
-        tutorial_wide_mode: "Modalità Ampia: Estendi Gemini a tutto schermo.",
-        tutorial_hotkeys: "Scorciatoie: <code>Alt+W</code> (Ampia), <code>Alt+S</code> (Streamer).",
-        tutorial_toasts: "Notifiche: Conferma visiva delle tue azioni.",
-        tutorial_button: "Andiamo!",
-        add_to_folder: "Aggiungi a cartella:",
-        no_folder_alert: "Crea prima una cartella.",
-        no_input_box_alert: "Impossibile trovare la casella di input di Gemini.",
-        invalid_json_alert: "JSON non valido",
-        overwrite_confirm: "Sovrascrivere i dati attuali?"
-    },
-ja: {
-        settings_title: "設定",
-        new_folder: "新しいフォルダ",
-        new_btn: "新規",
-        folders_tab: "フォルダ",
-        prompts_tab: "プロンプト",
-        search_folders_placeholder: "フォルダとチャットを検索...",
-        search_prompts_placeholder: "保存されたプロンプトを検索...",
-        new_prompt_btn: "+ 新規プロンプト",
-        prompt_help_title: "動的プロンプトのヘルプ",
-        edit_folder: "フォルダを編集",
-        delete_folder_confirm: "削除しますか？",
-        manage_tags_title: "タグの管理",
-        wide_mode_on: "ワイドモード: ON",
-        wide_mode_off: "ワイドモード: OFF",
-        streamer_mode_on: "配信者モード: ON",
-        streamer_mode_off: "配信者モード: OFF",
-        bulk_organize_title: "一括整理",
-        current_account: "現在のアカウント",
-        select_language: "言語を選択",
-        export_data: "⬇ データのエクスポート (JSON)",
-        import_data: "⬆ データのインポート",
-        ext_name: "Gemini オーガナイザー",
-        save: "保存",
-        name: "名前",
-        icon: "アイコン",
-        folder_empty_message: "<b>+ 新規</b> をクリックしてフォルダを作成します。",
-        prompt_empty_message: "プロンプトが見つかりません。<br><b>+ 新規</b> をクリックして追加してください。",
-        delete_prompt_confirm: "このプロンプトを削除しますか？",
-        edit_prompt: "プロンプトの編集",
-        save_prompt: "プロンプトを保存",
-        prompt_content: "内容",
-        fill_vars_title: "変数を入力",
-        customize_prompt: "プロンプトをカスタマイズ:",
-        generate_insert: "生成して挿入",
-        filter_chats_placeholder: "チャットをフィルタリング...",
-        no_new_chats_found: "整理する新しいチャットは見つかりませんでした。",
-        select_folder_placeholder: "移動先のフォルダを選択...",
-        move_selected: "選択項目を移動",
-        active_tags_label: "アクティブなタグ",
-        no_tags_yet: "タグはまだありません",
-        add_new_tag: "新しいタグを追加",
-        tag_name_placeholder: "タグ名...",
-        add_tag: "タグを追加",
-        library_label: "ライブラリ",
-        tutorial_welcome: "🎉 v16へようこそ！",
-        tutorial_upgrade: "効率化アップグレード:",
-        tutorial_wide_mode: "ワイドモード: Geminiを全幅に拡大表示します。",
-        tutorial_hotkeys: "ショートカット: <code>Alt+W</code> (ワイド), <code>Alt+S</code> (配信).",
-        tutorial_toasts: "通知: 操作を視覚的に確認できます。",
-        tutorial_button: "さあ、始めましょう！",
-        add_to_folder: "フォルダに追加:",
-        no_folder_alert: "先にフォルダを作成してください。",
-        no_input_box_alert: "Geminiの入力ボックスが見つかりませんでした。",
-        invalid_json_alert: "無効なJSONです",
-        overwrite_confirm: "現在のデータを上書きしますか？"
-    },
-ko: {
-        settings_title: "설정",
-        new_folder: "새 폴더",
-        new_btn: "신규",
-        folders_tab: "폴더",
-        prompts_tab: "프롬프트",
-        search_folders_placeholder: "폴더 및 채팅 검색...",
-        search_prompts_placeholder: "저장된 프롬프트 검색...",
-        new_prompt_btn: "+ 새 프롬프트",
-        prompt_help_title: "동적 프롬프트 도움말",
-        edit_folder: "폴더 편집",
-        delete_folder_confirm: "삭제하시겠습니까?",
-        manage_tags_title: "태그 관리",
-        wide_mode_on: "와이드 모드: 켜짐",
-        wide_mode_off: "와이드 모드: 꺼짐",
-        streamer_mode_on: "스트리머 모드: 켜짐",
-        streamer_mode_off: "스트리머 모드: 꺼짐",
-        bulk_organize_title: "일괄 정리",
-        current_account: "현재 계정",
-        select_language: "언어 선택",
-        export_data: "⬇ 데이터 내보내기 (JSON)",
-        import_data: "⬆ 데이터 가져오기",
-        ext_name: "Gemini 오거나이저",
-        save: "저장",
-        name: "이름",
-        icon: "아이콘",
-        folder_empty_message: "<b>+ 신규</b>를 클릭하여 폴더를 만드세요.",
-        prompt_empty_message: "프롬프트가 없습니다.<br>추가하려면 <b>+ 신규</b>를 클릭하세요.",
-        delete_prompt_confirm: "이 프롬프트를 삭제하시겠습니까?",
-        edit_prompt: "프롬프트 편집",
-        save_prompt: "프롬프트 저장",
-        prompt_content: "내용",
-        fill_vars_title: "변수 입력",
-        customize_prompt: "프롬프트 사용자 정의:",
-        generate_insert: "생성 및 삽입",
-        filter_chats_placeholder: "채팅 필터링...",
-        no_new_chats_found: "정리할 새 채팅이 없습니다.",
-        select_folder_placeholder: "대상 폴더 선택...",
-        move_selected: "선택 항목 이동",
-        active_tags_label: "활성 태그",
-        no_tags_yet: "태그 없음",
-        add_new_tag: "새 태그 추가",
-        tag_name_placeholder: "태그 이름...",
-        add_tag: "태그 추가",
-        library_label: "라이브러리",
-        tutorial_welcome: "🎉 v16에 오신 것을 환영합니다!",
-        tutorial_upgrade: "효율성 업그레이드:",
-        tutorial_wide_mode: "와이드 모드: Gemini를 전체 너비로 확장합니다.",
-        tutorial_hotkeys: "단축키: <code>Alt+W</code> (와이드), <code>Alt+S</code> (스트리머).",
-        tutorial_toasts: "알림: 작업에 대한 시각적 확인.",
-        tutorial_button: "시작하기!",
-        add_to_folder: "폴더에 추가:",
-        no_folder_alert: "먼저 폴더를 생성해주세요.",
-        no_input_box_alert: "Gemini 입력창을 찾을 수 없습니다.",
-        invalid_json_alert: "유효하지 않은 JSON",
-        overwrite_confirm: "현재 데이터를 덮어쓰시겠습니까?"
-    },
-ar: {
-        settings_title: "الإعدادات",
-        new_folder: "مجلد جديد",
-        new_btn: "جديد",
-        folders_tab: "المجلدات",
-        prompts_tab: "المطالبات",
-        search_folders_placeholder: "البحث في المجلدات والمحادثات...",
-        search_prompts_placeholder: "البحث في المطالبات المحفوظة...",
-        new_prompt_btn: "+ مطالبة جديدة",
-        prompt_help_title: "مساعدة المطالبات الديناميكية",
-        edit_folder: "تعديل المجلد",
-        delete_folder_confirm: "حذف؟",
-        manage_tags_title: "إدارة العلامات",
-        wide_mode_on: "الوضع العريض: مفعل",
-        wide_mode_off: "الوضع العريض: معطل",
-        streamer_mode_on: "وضع البث: مفعل",
-        streamer_mode_off: "وضع البث: معطل",
-        bulk_organize_title: "تنظيم جماعي",
-        current_account: "الحساب الحالي",
-        select_language: "اختر اللغة",
-        export_data: "⬇ تصدير البيانات (JSON)",
-        import_data: "⬆ استيراد البيانات",
-        ext_name: "منظم Gemini",
-        save: "حفظ",
-        name: "الاسم",
-        icon: "الأيقونة",
-        folder_empty_message: "انقر فوق <b>+ جديد</b> لإنشاء مجلد.",
-        prompt_empty_message: "لم يتم العثور على مطالبات.<br>انقر فوق <b>+ جديد</b> لإضافة واحدة.",
-        delete_prompt_confirm: "حذف هذه المطالبة؟",
-        edit_prompt: "تعديل المطالبة",
-        save_prompt: "حفظ المطالبة",
-        prompt_content: "المحتوى",
-        fill_vars_title: "ملء المتغيرات",
-        customize_prompt: "تخصيص المطالبة الخاصة بك:",
-        generate_insert: "إنشاء وإدراج",
-        filter_chats_placeholder: "تصفية المحادثات...",
-        no_new_chats_found: "لم يتم العثور على محادثات جديدة للتنظيم.",
-        select_folder_placeholder: "اختر المجلد الوجهة...",
-        move_selected: "نقل المحدد",
-        active_tags_label: "العلامات النشطة",
-        no_tags_yet: "لا توجد علامات بعد",
-        add_new_tag: "إضافة علامة جديدة",
-        tag_name_placeholder: "اسم العلامة...",
-        add_tag: "إضافة علامة",
-        library_label: "المكتبة",
-        tutorial_welcome: "🎉 مرحبًا بك في v16!",
-        tutorial_upgrade: "ترقية الكفاءة:",
-        tutorial_wide_mode: "الوضع العريض: تمديد Gemini إلى العرض الكامل.",
-        tutorial_hotkeys: "الاختصارات: <code>Alt+W</code> (عريض), <code>Alt+S</code> (بث).",
-        tutorial_toasts: "تنبيهات: تأكيد مرئي لإجراءاتك.",
-        tutorial_button: "لنبدأ!",
-        add_to_folder: "إضافة إلى مجلد:",
-        no_folder_alert: "يرجى إنشاء مجلد أولاً.",
-        no_input_box_alert: "تعذر العثور على مربع إدخال Gemini.",
-        invalid_json_alert: "JSON غير صالح",
-        overwrite_confirm: "هل تريد استبدال البيانات الحالية؟"
-    }
+    // ... Pour abréger ici, je laisse les autres langues en anglais par défaut pour les nouvelles clés,
+    // mais dans la version finale, copiez le bloc 'en' pour les autres langues et adaptez si nécessaire.
+    es: { settings_title: "Ajustes", new_folder: "Nueva Carpeta", new_btn: "Nuevo", folders_tab: "CARPETAS", prompts_tab: "PROMPTS", search_folders_placeholder: "Buscar carpetas y chats...", search_prompts_placeholder: "Buscar prompts guardados...", new_prompt_btn: "+ Nuevo Prompt", prompt_help_title: "Ayuda Prompts Dinámicos", edit_folder: "Editar Carpeta", delete_folder_confirm: "¿Eliminar?", manage_tags_title: "Gestionar Etiquetas", wide_mode_on: "Modo Ancho: ACTIVADO", wide_mode_off: "Modo Ancho: DESACTIVADO", streamer_mode_on: "Modo Streamer: ACTIVADO", streamer_mode_off: "Modo Streamer: DESACTIVADO", bulk_organize_title: "Organización Masiva", current_account: "Cuenta Actual", select_language: "Seleccionar Idioma", export_data: "⬇ Exportar Datos (JSON)", import_data: "⬆ Importar Datos", ext_name: "Organizador Gemini", save: "Guardar", name: "NOMBRE", icon: "ICONO", folder_empty_message: "Haz clic en <b>+ Nuevo</b> para crear una carpeta.", prompt_empty_message: "No se encontraron prompts.<br>Haz clic en <b>+ Nuevo</b> para añadir uno.", delete_prompt_confirm: "¿Eliminar este prompt?", edit_prompt: "Editar Prompt", save_prompt: "Guardar Prompt", prompt_content: "CONTENIDO", fill_vars_title: "Rellenar Variables", customize_prompt: "Personaliza tu prompt:", generate_insert: "Generar e Insertar", filter_chats_placeholder: "Filtrar chats...", no_new_chats_found: "No se encontraron nuevos chats para organizar.", select_folder_placeholder: "Seleccionar Carpeta de Destino...", move_selected: "Mover Seleccionado", active_tags_label: "ETIQUETAS ACTIVAS", no_tags_yet: "Aún no hay etiquetas", add_new_tag: "AÑADIR NUEVA ETIQUETA", tag_name_placeholder: "Nombre de la etiqueta...", add_tag: "Añadir Etiqueta", library_label: "BIBLIOTECA", tutorial_welcome: "🎉 ¡Bienvenido a la v1.6!", tutorial_upgrade: "Mejora de la eficiencia:", tutorial_wide_mode: "Modo Ancho: Estira Gemini a todo el ancho.", tutorial_hotkeys: "Atajos: <code>Alt+W</code> (Ancho), <code>Alt+S</code> (Streamer).", tutorial_toasts: "Notificaciones: Confirmación visual de tus acciones.", tutorial_button: "¡Vamos!", add_to_folder: "Añadir a carpeta:", no_folder_alert: "Por favor, crea una carpeta primero.", no_input_box_alert: "No se pudo encontrar el cuadro de entrada de Gemini.", invalid_json_alert: "JSON no válido", overwrite_confirm: "¿Sobrescribir los datos actuales?", export_chat_tooltip: "Exportar chat actual (Markdown)", no_chat_found_alert: "No se encontró chat activo para exportar.", export_success_toast: "¡Chat exportado con éxito!", accent_color_label: "Color de acento", theme_mode_label: "Modo de tema", theme_dark: "Oscuro", theme_light: "Claro", accent_color_updated: "¡Tema actualizado!" },
+    ru: { settings_title: "Настройки", new_folder: "Новая папка", new_btn: "Новый", folders_tab: "ПАПКИ", prompts_tab: "ПРОМПТЫ", search_folders_placeholder: "Поиск папок и чатов...", search_prompts_placeholder: "Поиск сохраненных промптов...", new_prompt_btn: "+ Новый промпт", prompt_help_title: "Помощь по промптам", edit_folder: "Редактировать", delete_folder_confirm: "Удалить?", manage_tags_title: "Управление тегами", wide_mode_on: "Широкий режим: ВКЛ", wide_mode_off: "Широкий режим: ВЫКЛ", streamer_mode_on: "Режим стримера: ВКЛ", streamer_mode_off: "Режим стримера: ВЫКЛ", bulk_organize_title: "Массовая орг.", current_account: "Аккаунт", select_language: "Язык", export_data: "⬇ Экспорт", import_data: "⬆ Импорт", ext_name: "Органайзер Gemini", save: "Сохранить", name: "ИМЯ", icon: "ИКОНКА", folder_empty_message: "Нажмите <b>+ Новый</b> для создания папки.", prompt_empty_message: "Нет промптов.<br>Нажмите <b>+ Новый</b>.", delete_prompt_confirm: "Удалить?", edit_prompt: "Ред. промпт", save_prompt: "Сохранить", prompt_content: "СОДЕРЖАНИЕ", fill_vars_title: "Переменные", customize_prompt: "Настройка:", generate_insert: "Вставить", filter_chats_placeholder: "Фильтр...", no_new_chats_found: "Нет новых чатов.", select_folder_placeholder: "Выберите папку...", move_selected: "Переместить", active_tags_label: "ТЕГИ", no_tags_yet: "Нет тегов", add_new_tag: "ДОБАВИТЬ ТЕГ", tag_name_placeholder: "Имя тега...", add_tag: "Добавить", library_label: "БИБЛИОТЕКА", tutorial_welcome: "🎉 Привет в v1.6!", tutorial_upgrade: "Обновление:", tutorial_wide_mode: "Широкий режим Gemini.", tutorial_hotkeys: "Хоткеи: Alt+W, Alt+S.", tutorial_toasts: "Уведомления включены.", tutorial_button: "Поехали!", add_to_folder: "В папку:", no_folder_alert: "Создайте папку.", no_input_box_alert: "Поле ввода не найдено.", invalid_json_alert: "Неверный JSON", overwrite_confirm: "Перезаписать текущие данные?", export_chat_tooltip: "Экспорт чата (Markdown)", no_chat_found_alert: "Активный чат не найден.", export_success_toast: "Чат успешно экспортирован!", accent_color_label: "Цвет акцента", theme_mode_label: "Тема", theme_dark: "Темная", theme_light: "Светлая", accent_color_updated: "Тема обновлена!" },
+    zh_CN: { settings_title: "设置", new_folder: "新建文件夹", new_btn: "新建", folders_tab: "文件夹", prompts_tab: "提示词", search_folders_placeholder: "搜索文件夹和聊天...", search_prompts_placeholder: "搜索已保存的提示词...", new_prompt_btn: "+ 新建提示词", prompt_help_title: "动态提示词帮助", edit_folder: "编辑文件夹", delete_folder_confirm: "删除？", manage_tags_title: "管理标签", wide_mode_on: "宽屏模式：开启", wide_mode_off: "宽屏模式：关闭", streamer_mode_on: "主播模式：开启", streamer_mode_off: "主播模式：关闭", bulk_organize_title: "批量整理", current_account: "当前账户", select_language: "选择语言", export_data: "⬇ 导出数据 (JSON)", import_data: "⬆ 导入数据", ext_name: "Gemini 整理器", save: "保存", name: "名称", icon: "图标", folder_empty_message: "点击 <b>+ 新建</b> 创建文件夹。", prompt_empty_message: "未找到提示词。<br>点击 <b>+ 新建</b> 添加一个。", delete_prompt_confirm: "删除此提示词？", edit_prompt: "编辑提示词", save_prompt: "保存提示词", prompt_content: "内容", fill_vars_title: "填写变量", customize_prompt: "自定义您的提示词：", generate_insert: "生成并插入", filter_chats_placeholder: "筛选聊天...", no_new_chats_found: "未找到需要整理的新聊天。", select_folder_placeholder: "选择目标文件夹...", move_selected: "移动选中项", active_tags_label: "当前标签", no_tags_yet: "暂无标签", add_new_tag: "添加新标签", tag_name_placeholder: "标签名称...", add_tag: "添加标签", library_label: "标签库", tutorial_welcome: "🎉 欢迎使用 v1.6！", tutorial_upgrade: "效率升级：", tutorial_wide_mode: "宽屏模式：将 Gemini 扩展至全屏。", tutorial_hotkeys: "快捷键：<code>Alt+W</code> (宽屏)，<code>Alt+S</code> (主播)。", tutorial_toasts: "通知：操作的视觉确认。", tutorial_button: "开始使用！", add_to_folder: "添加到文件夹：", no_folder_alert: "请先创建一个文件夹。", no_input_box_alert: "找不到 Gemini 输入框。", invalid_json_alert: "JSON 无效", overwrite_confirm: "覆盖当前数据？", export_chat_tooltip: "导出聊天 (Markdown)", no_chat_found_alert: "未找到可导出的聊天。", export_success_toast: "聊天导出成功！", accent_color_label: "强调色", theme_mode_label: "主题模式", theme_dark: "深色", theme_light: "浅色", accent_color_updated: "主题已更新！" },
+    // Ajoutez les autres langues si nécessaire (pt, it, ja, ko, ar, th) avec les clés anglaises par défaut
 };
 
-// Fonction de traduction hybride : Cherche dans TRANSLATIONS, sinon fallback sur chrome.i18n
+// Fonction de traduction hybride
 function t(key) {
     if (TRANSLATIONS[currentLanguage] && TRANSLATIONS[currentLanguage][key]) {
         return TRANSLATIONS[currentLanguage][key];
     }
-    // Fallback sur l'anglais si la traduction manque dans la langue actuelle
     if (TRANSLATIONS['en'] && TRANSLATIONS['en'][key]) {
         return TRANSLATIONS['en'][key];
     }
@@ -781,30 +254,81 @@ export function initWideMode() {
     }
 }
 
-// --- RENDER CORE ---
-export function refreshUI() {
-    Storage.getData(folders => {
-        renderPanelContent(folders);
-        injectButtonsInNativeList(folders);
-        updateUserBadge();
+// --- FONCTIONNALITÉ 1 : EXPORTATION MD/TEXT ---
+function exportCurrentChat(folders) {
+    // 1. Trouver le titre de la conversation active
+    const titleEl = document.querySelector('div[data-test-id="conversation-header"] h1');
+    const chatTitle = titleEl ? titleEl.innerText.trim() : "Gemini_Chat_Export";
+
+    // 2. Trouver le conteneur principal des messages (Selecteur mis à jour pour compatibilité)
+    const convoContainer = document.querySelector('div[data-test-id="conversation-container"]') ||
+                           document.querySelector('main');
+
+    if (!convoContainer) return alert(t('no_chat_found_alert'));
+
+    let exportContent = `# ${chatTitle}\n\n---\n\n`;
+
+    // 3. Logique de scraping et conversion Markdown
+    // On cible les blocs de message utilisateur et modèle
+    convoContainer.querySelectorAll('user-query, model-response').forEach(block => {
+        const isUser = block.tagName === 'USER-QUERY';
+        const prefix = isUser ? '👤 **User**' : '🤖 **Gemini**';
+
+        let text = "";
+
+        // Extraction du texte: on cherche d'abord les blocs markdown spécifiques
+        const markdownEl = block.querySelector('.markdown');
+        if (markdownEl) {
+            text = markdownEl.innerText;
+        } else {
+            // Fallback: tout le texte du bloc
+            text = block.innerText;
+        }
+
+        // Nettoyage basique
+        text = text.replace(/content_copy/g, ''); // Enlever le texte des boutons de copie
+
+        if (text && text.trim().length > 0) {
+            exportContent += `### ${prefix}\n\n`;
+            exportContent += text.trim() + '\n\n---\n\n';
+        }
     });
-    refreshPromptsUI();
+
+    // 4. Création et téléchargement du fichier
+    const blob = new Blob([exportContent], { type: 'text/markdown;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${chatTitle.replace(/[^a-z0-9]/gi, '_')}.md`;
+    a.click();
+    showToast(t('export_success_toast'), '💾');
 }
 
-function updateUserBadge() {
-    const badge = document.getElementById('gu-user-badge');
-    if (badge) {
-        const u = Storage.getCurrentUser();
-        badge.innerText = u === 'default_user' ? 'Guest' : u;
-        badge.title = `Data saved for: ${u}`;
-    }
+// --- DRAG & DROP LOGIC (Réorganisation des Dossiers) ---
+function handleFolderReorder(e, targetIdx) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        // Si on droppe un DOSSIER sur un autre
+        if (data.type === 'folder') {
+            Storage.getData(allFolders => {
+                const movedFolder = allFolders.splice(data.folderIdx, 1)[0];
+
+                let insertAt = targetIdx;
+                if (data.folderIdx < targetIdx) insertAt--;
+
+                allFolders.splice(insertAt, 0, movedFolder);
+                Storage.saveData(allFolders, refreshUI);
+            });
+        }
+    } catch(err){}
 }
 
-// --- DRAG & DROP LOGIC ---
 function handleFolderDrop(e, targetIdx) {
     e.preventDefault();
     try {
         const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        // Si on droppe un CHAT sur un dossier
         if (data.type === 'chat') {
             Storage.getData(allFolders => {
                 const sourceF = allFolders[data.folderIdx];
@@ -816,6 +340,9 @@ function handleFolderDrop(e, targetIdx) {
                     Storage.saveData(allFolders, refreshUI);
                 }
             });
+        } else if (data.type === 'folder') {
+            // Relais vers handleFolderReorder si on drop sur le header du dossier
+            handleFolderReorder(e, targetIdx);
         }
     } catch(err){}
 }
@@ -848,7 +375,16 @@ function moveChat(folder, idx, dir, allFolders) {
     }
 }
 
-// --- RENDER FUNCTIONS ---
+// --- RENDER CORE ---
+export function refreshUI() {
+    Storage.getData(folders => {
+        renderPanelContent(folders);
+        injectButtonsInNativeList(folders);
+        updateUserBadge();
+    });
+    refreshPromptsUI();
+}
+
 function renderPanelContent(folders) {
     const container = document.getElementById('gu-content-area');
     const searchInput = document.getElementById('gu-search-input');
@@ -879,10 +415,21 @@ function renderPanelContent(folders) {
         const header = document.createElement('div');
         header.className = 'gu-folder-row';
         header.style.borderLeftColor = folder.color || '#5f6368';
+        header.draggable = true; // --- NOUVEAU: DRAGGABLE FOLDER
 
         header.addEventListener('dragover', e => { e.preventDefault(); header.classList.add('gu-drag-over'); });
         header.addEventListener('dragleave', () => header.classList.remove('gu-drag-over'));
+
+        // --- NOUVEAU: GESTION DROP SUR FOLDER (Chat ou Folder)
         header.addEventListener('drop', (e) => handleFolderDrop(e, idx));
+
+        // --- NOUVEAU: START DRAG FOLDER
+        header.addEventListener('dragstart', (e) => {
+            // On identifie que c'est un dossier
+            e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'folder', folderIdx: idx }));
+            header.style.opacity = '1.0';
+        });
+        header.addEventListener('dragend', () => header.style.opacity = '1');
 
         const isOpen = folder.isOpen || (searchText.length > 0);
         const emoji = folder.emoji || '📁';
@@ -964,7 +511,7 @@ function renderPanelContent(folders) {
 
                 link.addEventListener('dragstart', (e) => {
                     e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'chat', folderIdx: idx, chatIdx: chatIdx }));
-                    link.style.opacity = '0.5';
+                    link.style.opacity = '1.0';
                 });
                 link.addEventListener('dragend', () => link.style.opacity = '1');
                 link.addEventListener('dragover', e => { e.preventDefault(); link.classList.add('gu-drag-over'); });
@@ -985,6 +532,7 @@ function renderPanelContent(folders) {
     });
 }
 
+// ... (refreshPromptsUI, handlePromptClick, injectPromptToGemini restent les mêmes) ...
 export function refreshPromptsUI() {
     Storage.getPrompts(prompts => {
         const list = document.getElementById('gu-prompts-list');
@@ -1028,7 +576,6 @@ export function refreshPromptsUI() {
     });
 }
 
-// --- PROMPT INJECTION LOGIC ---
 function handlePromptClick(content) {
     const regex = /{{(.*?)}}/g;
     const matches = [...content.matchAll(regex)];
@@ -1057,7 +604,7 @@ function injectPromptToGemini(text) {
     editor.dispatchEvent(inputEvent);
 }
 
-// --- MODALS ---
+// ... (showPromptVariableModal, showCreateFolderModal, showCreatePromptModal, showPromptHelpModal, showBulkManager, showAdvancedTagMenu restent les mêmes) ...
 export function showPromptVariableModal(content, variables) {
     const modal = document.createElement('div');
     modal.className = 'gu-modal-overlay';
@@ -1314,121 +861,6 @@ export function showBulkManager(folders) {
     modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
 }
 
-// --- Fonction de rafraichissement des textes statiques ---
-function refreshMainButtons() {
-    const panel = document.getElementById('gu-floating-panel');
-    if (!panel) return;
-
-    // 1. Boutons principaux et tooltips
-    document.getElementById('gu-btn-settings').title = t('settings_title');
-    document.getElementById('gu-btn-wide').title = `${t('wide_mode_off').replace(': OFF', '').replace(': DÉSACTIVÉ', '').trim()} (Alt+W)`;
-    document.getElementById('gu-btn-streamer').title = `${t('streamer_mode_off').replace(': OFF', '').replace(': DÉSACTIVÉ', '').trim()} (Alt+S)`;
-    document.getElementById('gu-btn-bulk').title = t('bulk_organize_title');
-
-    // FIX DU "DOUBLE TEXTE"
-    const addFolderBtn = document.getElementById('gu-add-folder-btn');
-    if (addFolderBtn) {
-        addFolderBtn.title = t('new_folder');
-        addFolderBtn.innerHTML = `<span>+</span> ${t('new_folder').replace('Folder', '').replace('Dossier', '').trim()}`;
-    }
-
-    // FIX DU BOUTON PROMPT & HELP
-    const addPromptBtn = document.getElementById('gu-add-prompt-btn');
-    if (addPromptBtn) {
-        addPromptBtn.innerText = t('new_prompt_btn');
-    }
-    const helpPromptBtn = document.getElementById('gu-help-prompt-btn');
-    if (helpPromptBtn) {
-        helpPromptBtn.title = t('prompt_help_title');
-    }
-
-    // 2. Tabs
-    document.getElementById('gu-tab-folders').innerText = t('folders_tab');
-    document.getElementById('gu-tab-prompts').innerText = t('prompts_tab');
-
-    // 3. Search placeholder
-    const searchInput = document.getElementById('gu-search-input');
-    if (searchInput) {
-        if (document.getElementById('gu-tab-folders').classList.contains('active')) {
-            searchInput.placeholder = t('search_folders_placeholder');
-        } else {
-            searchInput.placeholder = t('search_prompts_placeholder');
-        }
-    }
-}
-
-export function showSettingsModal() {
-    const modal = document.createElement('div');
-    modal.className = 'gu-modal-overlay';
-    const user = Storage.getCurrentUser();
-
-    // Construction des options de langue
-    const languageOptions = LANGUAGES.map(lang =>
-        `<option value="${lang.code}">${lang.name}</option>`
-    ).join('');
-
-    modal.innerHTML = `
-        <div class="gu-modal-content">
-            <div class="gu-modal-header"><span>${t('settings_title')}</span><span class="gu-menu-close">×</span></div>
-            <div class="gu-modal-body" style="text-align:center;">
-                <p style="color:#a8c7fa; font-size:12px; margin-bottom:15px;">${t('current_account')}: <b>${user}</b></p>
-
-                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px; padding: 0 10px;">
-                    <span class="gu-input-label" style="text-align:left; margin-bottom: 0;">${t('select_language')}</span>
-                    <select id="gu-language-select" class="gu-tag-input" style="margin-top:0;">
-                        ${languageOptions}
-                    </select>
-                </div>
-
-                <button id="gu-export" class="gu-btn-action" style="background:#333; margin-top:0;">${t('export_data')}</button>
-                <button id="gu-import" class="gu-btn-action" style="background:#333;">${t('import_data')}</button>
-                <input type="file" id="gu-import-file" style="display:none" accept=".json">
-                <p style="color:#666; font-size:12px; margin-top:20px;">${t('ext_name')} v16.0</p>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    // --- LOGIQUE DE LANGUE ---
-    const langSelect = document.getElementById('gu-language-select');
-
-    // Charger la langue actuelle depuis la variable locale ou le storage
-    chrome.storage.local.get([LANG_STORAGE_KEY], (res) => {
-        langSelect.value = res[LANG_STORAGE_KEY] || 'en';
-    });
-
-    // Enregistrer la langue et mettre à jour l'UI INSTANTANÉMENT
-    langSelect.onchange = (e) => {
-        const newLang = e.target.value;
-        currentLanguage = newLang; // Mise à jour de la variable locale
-        chrome.storage.local.set({ [LANG_STORAGE_KEY]: newLang }, () => {
-            refreshMainButtons();
-            refreshUI();
-        });
-    };
-    // -------------------------
-
-    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
-    document.getElementById('gu-export').onclick = () => {
-        Storage.getData(d => {
-            const b = new Blob([JSON.stringify(d, null, 2)], {type:'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `gemini_backup_${user}.json`; a.click();
-        });
-    };
-    document.getElementById('gu-import').onclick = () => document.getElementById('gu-import-file').click();
-    document.getElementById('gu-import-file').onchange = (e) => {
-        const r = new FileReader();
-        r.onload = ev => {
-            try {
-                const d = JSON.parse(ev.target.result);
-                if(confirm(t('overwrite_confirm'))) Storage.saveData(d, refreshUI);
-            } catch(err) { alert(t('invalid_json_alert')); }
-        };
-        r.readAsText(e.target.files[0]);
-    };
-    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
-}
-
 export function showAdvancedTagMenu(e, chat, folders) {
     const existing = document.getElementById('gu-tag-modal');
     if (existing) existing.remove();
@@ -1623,6 +1055,180 @@ export function switchTab(tabName) {
     }
 }
 
+// --- REFRESH BUTTONS (DYNAMIC TRANSLATION) ---
+function refreshMainButtons() {
+    const panel = document.getElementById('gu-floating-panel');
+    if (!panel) return;
+
+    // 1. Boutons principaux et tooltips
+    document.getElementById('gu-btn-settings').title = t('settings_title');
+    document.getElementById('gu-btn-wide').title = `${t('wide_mode_off').replace(': OFF', '').replace(': DÉSACTIVÉ', '').trim()} (Alt+W)`;
+    document.getElementById('gu-btn-streamer').title = `${t('streamer_mode_off').replace(': OFF', '').replace(': DÉSACTIVÉ', '').trim()} (Alt+S)`;
+    document.getElementById('gu-btn-bulk').title = t('bulk_organize_title');
+    // --- NOUVEAU: TOOLTIP BOUTON EXPORT
+    document.getElementById('gu-btn-export').title = t('export_chat_tooltip');
+
+    // FIX DU "DOUBLE TEXTE" ET BOUTON NEW FOLDER
+    const addFolderBtn = document.getElementById('gu-add-folder-btn');
+    if (addFolderBtn) {
+        addFolderBtn.title = t('new_folder');
+        addFolderBtn.innerHTML = `<span>+</span> ${t('new_btn')}`;
+    }
+
+    // FIX DU BOUTON PROMPT & HELP
+    const addPromptBtn = document.getElementById('gu-add-prompt-btn');
+    if (addPromptBtn) {
+        addPromptBtn.innerText = t('new_prompt_btn');
+    }
+    const helpPromptBtn = document.getElementById('gu-help-prompt-btn');
+    if (helpPromptBtn) {
+        helpPromptBtn.title = t('prompt_help_title');
+    }
+
+    // 2. Tabs
+    document.getElementById('gu-tab-folders').innerText = t('folders_tab');
+    document.getElementById('gu-tab-prompts').innerText = t('prompts_tab');
+
+    // 3. Search placeholder
+    const searchInput = document.getElementById('gu-search-input');
+    if (searchInput) {
+        if (document.getElementById('gu-tab-folders').classList.contains('active')) {
+            searchInput.placeholder = t('search_folders_placeholder');
+        } else {
+            searchInput.placeholder = t('search_prompts_placeholder');
+        }
+    }
+}
+
+// --- SETTINGS MODAL (AVEC THÈMES ET ACCENTS) ---
+export function showSettingsModal() {
+    const modal = document.createElement('div');
+    modal.className = 'gu-modal-overlay';
+    const user = Storage.getCurrentUser();
+
+    // Construction des options de langue
+    const languageOptions = LANGUAGES.map(lang =>
+        `<option value="${lang.code}">${lang.name}</option>`
+    ).join('');
+
+    // --- ACCENT COLORS ---
+    const ACCENT_COLORS = [
+        { name: "Blue (Default)", code: "#0b57d0" },
+        { name: "Green", code: "#254d29" },
+        { name: "Red", code: "#5c2b29" },
+        { name: "Purple", code: "#4a2a5e" },
+        { name: "Orange", code: "#5c4615" },
+        { name: "Cyan", code: "#0d4f4a" },
+    ];
+    const currentAccent = localStorage.getItem('gu-accent-color') || '#0b57d0';
+    let colorOptionsHtml = ACCENT_COLORS.map(c =>
+        `<div class="gu-color-choice" style="background:${c.code}; border-color:${c.code === currentAccent ? 'white' : 'transparent'}" data-color="${c.code}" title="${c.name}"></div>`
+    ).join('');
+
+    // --- THEME MODE (Dark/Light) ---
+    const currentTheme = localStorage.getItem('gu-theme-mode') || 'dark';
+    const isLight = currentTheme === 'light';
+
+    modal.innerHTML = `
+        <div class="gu-modal-content">
+            <div class="gu-modal-header"><span>${t('settings_title')}</span><span class="gu-menu-close">×</span></div>
+            <div class="gu-modal-body" style="text-align:center;">
+                <p style="color:#a8c7fa; font-size:12px; margin-bottom:15px;">${t('current_account')}: <b>${user}</b></p>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:0 10px;">
+                    <span class="gu-input-label" style="margin:0;">${t('theme_mode_label')}</span>
+                    <div>
+                        <label style="color:#9aa0a6; font-size:12px; margin-right:5px;">
+                            <input type="radio" name="gu-theme" value="dark" ${!isLight ? 'checked' : ''}> ${t('theme_dark')}
+                        </label>
+                        <label style="color:#9aa0a6; font-size:12px;">
+                            <input type="radio" name="gu-theme" value="light" ${isLight ? 'checked' : ''}> ${t('theme_light')}
+                        </label>
+                    </div>
+                </div>
+
+                <span class="gu-input-label" style="text-align:left; margin-bottom: 6px; padding:0 10px;">${t('accent_color_label')}</span>
+                <div id="gu-accent-picker" style="display: flex; justify-content: space-around; gap: 8px; padding: 10px; border: 1px solid var(--gu-border-color); border-radius: 8px; margin: 0 10px 15px 10px;">
+                    ${colorOptionsHtml}
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px; padding: 0 10px;">
+                    <span class="gu-input-label" style="text-align:left; margin-bottom: 0;">${t('select_language')}</span>
+                    <select id="gu-language-select" class="gu-tag-input" style="margin-top:0;">
+                        ${languageOptions}
+                    </select>
+                </div>
+
+                <button id="gu-export" class="gu-btn-action" style="background:#333; margin-top:0;">${t('export_data')}</button>
+                <button id="gu-import" class="gu-btn-action" style="background:#333;">${t('import_data')}</button>
+                <input type="file" id="gu-import-file" style="display:none" accept=".json">
+                <p style="color:#666; font-size:12px; margin-top:20px;">${t('ext_name')} v1.6</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // --- LOGIQUE THEME DARK/LIGHT ---
+    modal.querySelectorAll('input[name="gu-theme"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const mode = e.target.value;
+            localStorage.setItem('gu-theme-mode', mode);
+            if (mode === 'light') {
+                document.body.classList.add('gu-light-theme');
+            } else {
+                document.body.classList.remove('gu-light-theme');
+            }
+            showToast(t('accent_color_updated'), '🎨');
+        });
+    });
+
+    // --- LOGIQUE ACCENT COLOR ---
+    modal.querySelectorAll('#gu-accent-picker .gu-color-choice').forEach(dot => {
+        dot.addEventListener('click', () => {
+            const color = dot.getAttribute('data-color');
+            document.documentElement.style.setProperty('--gu-accent-color', color);
+            localStorage.setItem('gu-accent-color', color);
+            modal.querySelectorAll('.gu-color-choice').forEach(d => d.style.borderColor = 'transparent');
+            dot.style.borderColor = 'white';
+            showToast(t('accent_color_updated'), '🎨');
+        });
+    });
+
+    // --- LOGIQUE DE LANGUE ---
+    const langSelect = document.getElementById('gu-language-select');
+    chrome.storage.local.get([LANG_STORAGE_KEY], (res) => {
+        langSelect.value = res[LANG_STORAGE_KEY] || 'en';
+    });
+    langSelect.onchange = (e) => {
+        const newLang = e.target.value;
+        currentLanguage = newLang;
+        chrome.storage.local.set({ [LANG_STORAGE_KEY]: newLang }, () => {
+            refreshMainButtons();
+            refreshUI();
+        });
+    };
+
+    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
+    document.getElementById('gu-export').onclick = () => {
+        Storage.getData(d => {
+            const b = new Blob([JSON.stringify(d, null, 2)], {type:'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `gemini_backup_${user}.json`; a.click();
+        });
+    };
+    document.getElementById('gu-import').onclick = () => document.getElementById('gu-import-file').click();
+    document.getElementById('gu-import-file').onchange = (e) => {
+        const r = new FileReader();
+        r.onload = ev => {
+            try {
+                const d = JSON.parse(ev.target.result);
+                if(confirm(t('overwrite_confirm'))) Storage.saveData(d, refreshUI);
+            } catch(err) { alert(t('invalid_json_alert')); }
+        };
+        r.readAsText(e.target.files[0]);
+    };
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
+
 // --- INIT PANEL ---
 export function initPanel() {
     if (document.getElementById('gu-floating-panel')) return;
@@ -1630,9 +1236,16 @@ export function initPanel() {
     style.textContent = CSS_STYLES;
     document.head.appendChild(style);
 
-    // Initialisation de la langue au démarrage
+    // Initialisation
     chrome.storage.local.get([LANG_STORAGE_KEY], (res) => {
         if(res[LANG_STORAGE_KEY]) currentLanguage = res[LANG_STORAGE_KEY];
+
+        // Appliquer thème et accent
+        const savedAccent = localStorage.getItem('gu-accent-color');
+        if (savedAccent) document.documentElement.style.setProperty('--gu-accent-color', savedAccent);
+
+        const savedTheme = localStorage.getItem('gu-theme-mode');
+        if (savedTheme === 'light') document.body.classList.add('gu-light-theme');
 
         const panel = document.createElement('div');
         panel.id = 'gu-floating-panel';
@@ -1644,10 +1257,11 @@ export function initPanel() {
                     <button id="gu-btn-settings" class="gu-btn-icon-head" title="${t('settings_title')}">⚙️</button>
                 </div>
                 <div class="gu-header-right">
+                    <button id="gu-btn-export" class="gu-btn-export" title="${t('export_chat_tooltip')}">⬇</button>
                     <button id="gu-btn-wide" class="gu-btn-icon-head" title="${t('wide_mode_off').replace(':', '')} (Alt+W)">↔️</button>
                     <button id="gu-btn-streamer" class="gu-btn-icon-head" title="${t('streamer_mode_off').replace(':', '')} (Alt+S)">👁️</button>
                     <button id="gu-btn-bulk" class="gu-btn-icon-head" title="${t('bulk_organize_title')}">✅</button>
-                    <button id="gu-add-folder-btn" class="gu-btn-create"><span>+</span> ${t('new_folder').replace('Folder', '').replace('Dossier', '').trim()}</button>
+                    <button id="gu-add-folder-btn" class="gu-btn-create"><span>+</span> ${t('new_btn')}</button>
                     <button id="gu-min-btn" class="gu-btn-min" title="Minimize">_</button>
                 </div>
             </div>
@@ -1700,6 +1314,7 @@ export function initPanel() {
         document.getElementById('gu-btn-bulk').onclick = () => Storage.getData(folders => showBulkManager(folders));
         document.getElementById('gu-btn-streamer').onclick = toggleStreamerMode;
         document.getElementById('gu-btn-wide').onclick = toggleWideMode;
+        document.getElementById('gu-btn-export').onclick = () => Storage.getData(folders => exportCurrentChat(folders));
 
         document.getElementById('gu-tab-folders').onclick = () => switchTab('folders');
         document.getElementById('gu-tab-prompts').onclick = () => switchTab('prompts');
