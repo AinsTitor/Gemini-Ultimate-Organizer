@@ -31,7 +31,7 @@
 ### 📥 Installation
 
 #### Option 1: Chrome Web Store (Coming Soon)
-*The extension is currently under review by Google.*
+[*He's finally here!*](https://chromewebstore.google.com/detail/organisateur-gemini/bbncieemlfbomohgmapffdighjkmbpli?hl=fr&authuser=0)
 
 #### Option 2: Manual Installation (Developer Mode)
 1.  **Download** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolder1.5.1.zip or **Clone** this repository to your computer. 
@@ -84,7 +84,7 @@
 ### 📥 Installation
 
 #### Option 1 : Chrome Web Store (Bientôt disponible)
-*L'extension est actuellement en cours de validation par Google.*
+[*Il est là enfin !*](https://chromewebstore.google.com/detail/organisateur-gemini/bbncieemlfbomohgmapffdighjkmbpli?hl=fr&authuser=0)
 
 #### Option 2 : Installation Manuelle
 1.  **Téléchargez** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.5.1/geminiultimatefolder1.5.1.zip ou **Clonez** ce dépôt sur votre ordinateur.
