@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.6-blue)
+![Version](https://img.shields.io/badge/version-2.0-blue)
 ![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey)
 ![Platform](https://img.shields.io/badge/platform-Chrome-googlechrome)
 
@@ -18,15 +18,17 @@
 
 ### ✨ Key Features
 
-* **📁 Custom Folders:** Create, rename, and delete folders to categorize your chats.
-* **🎨 Color Coding:** Assign specific colors to folders for quick visual identification.
-* **🌍 Multi-language Support:** **English is the default language.** The extension now fully supports **12 languages**: **French, Spanish, Portuguese, Chinese, Thai, Russian, German, Italian, Japanese, Korean, and Arabic** based on your browser settings.
-* **↕️ Reorder Folders:** Easily move folders up or down to prioritize your workflow.
-* **➕ Easy Save:** Add any chat to a folder instantly using the floating `+` button next to the chat title.
-* **🔍 Global Search:** Instantly find a folder or a specific chat inside your library.
-* **☁️ Cloud Sync:** Your folders are saved to your Google Account (`chrome.storage.sync`), so you find them on any computer.
-* **💾 Backup & Restore:** Export your organization to JSON and import it anytime (useful for backups or sharing).
-* **🖥️ Native Look:** A dark-mode UI that blends perfectly with Gemini's design.
+- 📂 Unified Folder System: Create folders not just for Chats, but now for Prompts too! Categorize every aspect of your workflow.
+- ⚡ Dynamic Prompts Manager: Store your favorite prompts, organize them into folders, and use variables (e.g., {{variable}}) for quick insertion.
+- 🛡️ Enhanced Streamer Mode: A reinforced privacy mode that blurs sensitive data (names, emails, recent chats) instantly. Perfect for screen sharing or recording.
+- 📤 Chat Export: Export any Gemini conversation to Markdown format with a single click.
+- 🗂️ Bulk Organizer: A dedicated interface to reorganize, move, and manage your chats and prompts folders via Drag & Drop.
+- 🎨 Color Coding: Assign specific colors to folders for quick visual identification.
+- 🌍 Robust Multi-language Support: Powered by a new i18n module, the extension fully supports 12 languages: English, French, Spanish, Portuguese, Chinese, Thai, Russian, German, Italian, Japanese, Korean, and Arabic.
+- ➕ Easy Save: Add any chat to a folder instantly using the floating + button next to the chat title.
+- ✨ Refined UI: A polished, native-feeling "Dark Mode" interface that blends perfectly with Gemini's latest design.
+- ☁️ Cloud Sync: Your folders and prompts are saved to your Google Account (chrome.storage.sync), accessible on any computer.
+- 💾 Backup & Restore: Export your entire configuration to JSON and import it anytime.
 
 ### 📥 Installation
 
@@ -34,25 +36,25 @@
 [*He's finally here!*](https://chromewebstore.google.com/detail/organisateur-gemini/bbncieemlfbomohgmapffdighjkmbpli?hl=fr&authuser=0)
 
 #### Option 2: Manual Installation (Developer Mode)
-1.  **Download** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.6/Gemini-Ultimate-Organizer-main-v1.6.zip or **Clone** this repository to your computer. 
-2.  Open Google Chrome and navigate to `chrome://extensions/`.
-3.  Enable **Developer mode** (toggle in the top right corner).
-4.  Click on **Load unpacked**.
-5.  Select the folder containing the extension files.
-6.  Refresh the Gemini page (gemini.google.com).
+-   **Download** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.6/Gemini-Ultimate-Organizer-main-v1.6.zip or **Clone** this repository to your computer. 
+-   Open Google Chrome and navigate to `chrome://extensions/`.
+-   Enable **Developer mode** (toggle in the top right corner).
+-   Click on **Load unpacked**.
+-   Select the folder containing the extension files.
+-   Refresh the Gemini page (gemini.google.com).
 
 ### 📖 How to Use
 
-1. **Open the Panel:** You will see a floating panel "🗂️ FOLDERS" on the top right of your Gemini interface.
+-  **Open the Panel:** You will see a floating panel "🗂️ FOLDERS" on the top right of your Gemini interface.
 
-2. **Create a Folder:** Click the `+ New` button in the panel header. Give it a name.
+-  **Create a Folder:** Click the `+ New` button in the panel header. Give it a name.
 
-3. **Add a Chat:**
+-  **Add a Chat:**
     * Hover over any chat in Gemini's native history list (left sidebar).
     * Click the small round `+` button that appears.
     * Select the destination folder from the context menu.
 
-4. **Manage Folders:**
+-  **Manage Folders:**
     * **Open/Close:** Click the folder row.
     * **Rename/Delete:** Hover over a folder and use the ✎ (Edit) or × (Delete) buttons.
     * **Change Color:** Click the small color circle on the folder row to pick a new color.
@@ -71,15 +73,17 @@
 
 ### ✨ Fonctionnalités Clés
 
-* **📁 Dossiers Personnalisés :** Créez, renommez et supprimez des dossiers pour classer vos discussions.
-* **🎨 Code Couleur :** Assignez des couleurs spécifiques aux dossiers pour un repérage visuel rapide.
-* **🌍 Multi-langues :** **L'anglais est la langue par défaut.** L'extension supporte désormais un total de **12 langues** : **le Français, l'Espagnol, le Portugais, le Chinois, le Thaïlandais, le Russe, l'Allemand, l'Italien, le Japonais, le Coréen et l'Arabe** selon la configuration de votre navigateur.
-* **↕️ Réorganisation :** Montez ou descendez vos dossiers pour prioriser vos projets.
-* **➕ Sauvegarde Facile :** Ajoutez n'importe quel chat à un dossier instantanément via le bouton `+` situé à côté du titre du chat.
-* **🔍 Recherche Globale :** Trouvez instantanément un dossier ou une discussion spécifique dans votre bibliothèque.
-* **☁️ Synchronisation Cloud :** Vos dossiers sont sauvegardés sur votre compte Google (`chrome.storage.sync`) et accessibles sur tous vos ordinateurs.
-* **💾 Sauvegarde et Restauration :** Exportez votre organisation en JSON et réimportez-la à tout moment.
-* **🖥️ Design Natif :** Une interface "Dark Mode" qui s'intègre parfaitement au design de Gemini.
+- 📂 Système de Dossiers Unifié : Créez des dossiers non seulement pour vos discussions, mais maintenant aussi pour vos Prompts !
+- ⚡ Gestionnaire de Prompts Dynamiques : Sauvegardez vos prompts favoris, classez-les dans des dossiers et utilisez des variables (ex: {{variable}}) pour une insertion rapide.
+- 🛡️ Mode Streamer Renforcé : Un mode confidentialité amélioré qui floute instantanément les données sensibles (noms, emails, tchats récents). Idéal pour le partage d'écran ou le streaming.
+- 📤 Export de Tchat : Exportez n'importe quelle conversation Gemini au format Markdown en un clic.
+- 🗂️ Organisateur en Vrac : Une interface dédiée pour réorganiser, déplacer et gérer vos dossiers de tchats et prompts via Drag & Drop.
+- 🎨 Code Couleur : Assignez des couleurs spécifiques aux dossiers pour un repérage visuel rapide.
+- 🌍 Multi-langues : Grâce à un nouveau module i18n, l'extension supporte parfaitement 12 langues : Français, Anglais, Espagnol, Portugais, Chinois, Thaïlandais, Russe, Allemand, Italien, Japonais, Coréen et Arabe.
+- ➕ Sauvegarde Facile : Ajoutez n'importe quel chat à un dossier instantanément via le bouton + situé à côté du titre du chat.
+- ✨ Interface Sublimée : Une nouvelle interface "Dark Mode" plus fluide qui s'intègre parfaitement au design de Gemini.
+- ☁️ Synchronisation Cloud : Vos données sont sauvegardées sur votre compte Google (chrome.storage.sync) et accessibles partout.
+- 💾 Sauvegarde et Restauration : Exportez votre organisation en JSON et réimportez-la à tout moment.
 
 ### 📥 Installation
 
@@ -87,25 +91,25 @@
 [*Il est là enfin !*](https://chromewebstore.google.com/detail/organisateur-gemini/bbncieemlfbomohgmapffdighjkmbpli?hl=fr&authuser=0)
 
 #### Option 2 : Installation Manuelle
-1.  **Téléchargez** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.6/Gemini-Ultimate-Organizer-main-v1.6.zip ou **Clonez** ce dépôt sur votre ordinateur.
-2.  Ouvrez Google Chrome et allez sur `chrome://extensions/`.
-3.  Activez le **Mode développeur** (bouton en haut à droite).
-4.  Cliquez sur **Charger l'extension non empaquetée** (Load unpacked).
-5.  Sélectionnez le dossier contenant les fichiers de l'extension.
-6.  Actualisez la page Gemini (gemini.google.com).
+-  **Téléchargez** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.6/Gemini-Ultimate-Organizer-main-v1.6.zip ou **Clonez** ce dépôt sur votre ordinateur.
+-  Ouvrez Google Chrome et allez sur `chrome://extensions/`.
+-  Activez le **Mode développeur** (bouton en haut à droite).
+-  Cliquez sur **Charger l'extension non empaquetée** (Load unpacked).
+-  Sélectionnez le dossier contenant les fichiers de l'extension.
+-  Actualisez la page Gemini (gemini.google.com).
 
 ### 📖 Comment l'utiliser
 
-1. **Ouvrir le Panneau :** Vous verrez un panneau flottant "🗂️ FOLDERS" en haut à droite de votre interface Gemini.
+- **Ouvrir le Panneau :** Vous verrez un panneau flottant "🗂️ FOLDERS" en haut à droite de votre interface Gemini.
 
-2. **Créer un Dossier :** Cliquez sur le bouton `+ New` dans l'en-tête du panneau. Donnez-lui un nom.
+- **Créer un Dossier :** Cliquez sur le bouton `+ New` dans l'en-tête du panneau. Donnez-lui un nom.
 
-3. **Ajouter un Chat :**
+- **Ajouter un Chat :**
     * Passez la souris sur n'importe quel chat dans la liste native de Gemini (barre latérale gauche).
     * Cliquez sur le petit bouton rond `+` qui apparaît à droite du titre.
     * Sélectionnez le dossier de destination dans le menu qui s'ouvre.
 
-4. **Gérer les Dossiers :**
+- **Gérer les Dossiers :**
     * **Ouvrir/Fermer :** Cliquez sur la ligne du dossier.
     * **Renommer/Supprimer :** Au survol, utilisez les boutons ✎ (Modifier) ou × (Supprimer).
     * **Changer la couleur :** Cliquez sur le petit cercle de couleur sur la ligne du dossier.
@@ -120,13 +124,17 @@
 
 ## 📸 Screenshots / Captures d'écran
 
-| Main Interface | Create Folder |
+| Main Interface (Tchats) | Main Interface (Prompts) 
 |:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/43ae8037-6c09-4e17-b38a-af5ae95867c6" width="400" /> | <img src="https://github.com/user-attachments/assets/2356ab9d-63f0-419a-81d9-caaa72427610" width="400" /> |
+| <img src="https://github.com/user-attachments/assets/88189f59-f5da-4ed9-9691-605301adb343" width="400" /> | <img src="https://github.com/user-attachments/assets/568f5fd1-9b75-408a-a29b-feb10da50b9e" width="400" /> |
 
-| Variable Prompt | Bulk Folder | Tags Manager |
-|:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/80c9a1aa-ca74-4b09-98b0-41d89f3a0832" width="250" /> | <img src="https://github.com/user-attachments/assets/5271575c-348a-4a9c-b660-947ca4b59c78" width="250" /> | <img src="https://github.com/user-attachments/assets/0df1153e-e2db-4cd2-a0e7-6013f35522d8" width="250" /> |
+| Create Folder | Streamer Mod Config (Right Click)
+|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/4aa53e2a-1a51-4939-a755-328c438c0403" width="400" /> | <img src="https://github.com/user-attachments/assets/5802f807-4e85-4337-a75d-158238245122" width="400" /> | 
+
+| Variable Prompt | Bulk Folder | Tags Manager | Reorganize (Folder/Prompt)
+|:---:|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/80c9a1aa-ca74-4b09-98b0-41d89f3a0832" width="250" /> | <img src="https://github.com/user-attachments/assets/5271575c-348a-4a9c-b660-947ca4b59c78" width="250" /> | <img src="https://github.com/user-attachments/assets/0df1153e-e2db-4cd2-a0e7-6013f35522d8" width="250" /> | <img src="https://github.com/user-attachments/assets/3b272b0e-d932-4b6e-a6b0-2de8e5fdbd25" width="250" /> |
 
 ---
 
