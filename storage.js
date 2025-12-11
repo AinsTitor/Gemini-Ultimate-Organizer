@@ -1,7 +1,7 @@
+
 // storage.js
 import { SETTINGS } from './config.js';
 
-// Utilitaires de détection utilisateur
 export function getCurrentUser() {
     const accBtn = document.querySelector('a[href^="https://accounts.google.com"]');
     if (accBtn) {
@@ -19,11 +19,11 @@ function getKeys() {
     return {
         folders: `${SETTINGS.BASE_STORAGE_KEY}_${user}`,
         prompts: `${SETTINGS.BASE_PROMPT_KEY}_${user}`,
+        promptFolders: `${SETTINGS.BASE_PROMPT_KEY}_folders_${user}`,
         user: user
     };
 }
 
-// Gestion des données
 export function migrateOldData(callback) {
     const k = getKeys();
     chrome.storage.sync.get([k.folders, k.prompts, SETTINGS.OLD_STORAGE_KEY, SETTINGS.OLD_PROMPTS_KEY], (result) => {
@@ -50,7 +50,6 @@ export function getData(cb) {
     chrome.storage.sync.get([k.folders], r => cb(r[k.folders] || []));
 }
 
-// Note: callback is executed after save. UI refresh must be triggered by the caller's callback.
 export function saveData(d, cb) {
     const k = getKeys();
     chrome.storage.sync.set({ [k.folders]: d }, () => { if(cb) cb(); });
@@ -64,4 +63,14 @@ export function getPrompts(cb) {
 export function savePrompts(d, cb) {
     const k = getKeys();
     chrome.storage.sync.set({ [k.prompts]: d }, () => { if(cb) cb(); });
+}
+
+export function getPromptFolders(cb) {
+    const k = getKeys();
+    chrome.storage.sync.get([k.promptFolders], r => cb(r[k.promptFolders] || []));
+}
+
+export function savePromptFolders(d, cb) {
+    const k = getKeys();
+    chrome.storage.sync.set({ [k.promptFolders]: d }, () => { if(cb) cb(); });
 }

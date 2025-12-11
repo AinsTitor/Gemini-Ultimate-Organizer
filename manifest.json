@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "__MSG_ext_name__",
-  "version": "1.6",
-  "description": "Synchronization, search and organization folders for Gemini. Author: AinsTitor",
+  "name": "Gemini Ultimate Organizer",
+  "version": "2.0",
+  "description": "Gemini Ultimate Organizer is a Chrome extension specializing in file organization, prompt folder, streamer mode, wide mode etc. offering several interesting features.",
   "default_locale": "en",
   "action": {
     "default_popup": "popup.html"
@@ -19,7 +19,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["config.js", "storage.js", "ui.js", "main.js"],
+      "resources": ["config.js", "storage.js", "ui.js", "main.js", "i18n.js"],
       "matches": ["https://gemini.google.com/*"]
     }
   ]
