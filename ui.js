@@ -1054,90 +1054,77 @@ function showMoveMenu(e, type, data) {
 }
 
 export function injectButtonsInNativeList(folders) {
-    // 1. Récupérer les URLs déjà archivées
     const archivedSet = new Set();
     folders.forEach(f => f.chats.forEach(c => archivedSet.add(c.url)));
 
-    // 2. Cibler les nouveaux éléments de conversation (div au lieu de a)
-    // On cible l'élément qui porte l'attribut data-test-id="conversation"
     const conversationItems = Array.from(document.querySelectorAll('div[data-test-id="conversation"]'));
 
     conversationItems.forEach(item => {
         let chatId = null;
 
-        // Méthode A : Essayer de trouver l'ID dans l'attribut jslog (ex: "c_12345...")
-        // Le jslog ressemble souvent à : ...["c_0e9ef35afa9f1dbd",null,1]...
+        // Extraction ID via jslog
         const jslog = item.getAttribute('jslog');
         if (jslog) {
+            // On capture l'ID (ex: "c_12345")
             const match = jslog.match(/"(c_[^"]+)"/);
-            if (match) chatId = match[1];
-        }
-
-        // Méthode B : Fallback sur le lien parent si jamais Google revient en arrière
-        if (!chatId) {
-            const link = item.closest('a');
-            if (link && link.href.includes('/app/')) {
-                chatId = link.href.split('/').pop();
+            if (match) {
+                // CORRECTION IMPORTANTE : On retire le préfixe "c_" ici !
+                chatId = match[1].replace(/^c_/, '');
             }
         }
 
-        if (!chatId) return; // Si pas d'ID, on passe
+        // Fallback lien (au cas où)
+        if (!chatId) {
+            const link = item.closest('a');
+            if (link && link.href.includes('/app/')) {
+                // On s'assure aussi de nettoyer l'ID ici
+                chatId = link.href.split('/').pop().replace(/^c_/, '');
+            }
+        }
 
+        if (!chatId) return;
+
+        // On construit l'URL PROPRE (sans c_)
         const fullUrl = `https://gemini.google.com/app/${chatId}`;
 
-        // Titre
+        // ... (Le reste de la fonction reste identique pour l'affichage/archivage)
+
         let title = "Conversation";
         const titleEl = item.querySelector('.conversation-title');
         if (titleEl) title = titleEl.innerText.trim();
 
-        // GESTION ARCHIVAGE (Masquer si déjà dans un dossier)
-        // L'élément item est la ligne cliquable. Son parent est souvent le conteneur de liste.
-        // On masque l'item directement ou son conteneur direct pour ne pas laisser de trous.
         if (archivedSet.has(fullUrl)) {
             item.style.display = 'none';
-            // Optionnel : masquer le parent wrapper si besoin (souvent .conversation-items-container)
-            // if(item.parentElement.classList.contains('conversation-items-container')) item.parentElement.style.display = 'none';
             return;
         } else {
-            item.style.display = ''; // Réafficher si on le sort d'un dossier
+            item.style.display = '';
         }
 
-        // INJECTION DU BOUTON "+"
-        // On vérifie si le bouton existe déjà DANS cet item
         let addButton = item.querySelector('.gu-float-add');
-
         if (!addButton) {
-            // Important : le parent doit être relatif pour que le bouton absolute se place bien
-            if (getComputedStyle(item).position === 'static') {
-                item.style.position = 'relative';
-            }
+            if (getComputedStyle(item).position === 'static') item.style.position = 'relative';
 
             addButton = document.createElement('div');
             addButton.className = 'gu-float-add';
             addButton.innerText = '+';
             addButton.title = "Add to folder";
-
-            // Ajustement de style spécifique pour ce nouveau layout
-            addButton.style.right = '40px'; // Un peu plus à gauche pour ne pas chevaucher le menu "..."
+            addButton.style.right = '40px';
 
             item.appendChild(addButton);
 
-            // Événement au clic
             addButton.addEventListener('click', (e) => {
                 e.preventDefault();
-                e.stopPropagation(); // Empêche d'ouvrir la conv
-
+                e.stopPropagation();
                 Storage.getData(currentFolders => {
                     if (currentFolders.length === 0) {
                         alert(t('no_folder_alert'));
                         return;
                     }
-                    // On appelle le menu pour choisir le dossier
+                    // On sauvegarde avec l'URL propre !
                     showFolderMenu(e, currentFolders, title, fullUrl);
                 });
             });
 
-            // Gestion du hover pour ne pas interférer avec les styles Google
             addButton.addEventListener('mouseenter', () => item.classList.add('gu-hover-force'));
             addButton.addEventListener('mouseleave', () => item.classList.remove('gu-hover-force'));
         }
