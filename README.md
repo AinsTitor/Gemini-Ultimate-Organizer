@@ -36,7 +36,7 @@
 [*He's finally here!*](https://chromewebstore.google.com/detail/organisateur-gemini/bbncieemlfbomohgmapffdighjkmbpli?hl=fr&authuser=0)
 
 #### Option 2: Manual Installation (Developer Mode)
--   **Download** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.6/Gemini-Ultimate-Organizer-main-v1.6.zip or **Clone** this repository to your computer. 
+-   **Download** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/2.0-fix-atf/GeminiUltimateOrganizerV2.zip or **Clone** this repository to your computer. 
 -   Open Google Chrome and navigate to `chrome://extensions/`.
 -   Enable **Developer mode** (toggle in the top right corner).
 -   Click on **Load unpacked**.
@@ -91,7 +91,7 @@
 [*Il est là enfin !*](https://chromewebstore.google.com/detail/organisateur-gemini/bbncieemlfbomohgmapffdighjkmbpli?hl=fr&authuser=0)
 
 #### Option 2 : Installation Manuelle
--  **Téléchargez** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/1.6/Gemini-Ultimate-Organizer-main-v1.6.zip ou **Clonez** ce dépôt sur votre ordinateur.
+-  **Téléchargez** https://github.com/AinsTitor/Gemini-Ultimate-Organizer/releases/download/2.0-fix-atf/GeminiUltimateOrganizerV2.zip ou **Clonez** ce dépôt sur votre ordinateur.
 -  Ouvrez Google Chrome et allez sur `chrome://extensions/`.
 -  Activez le **Mode développeur** (bouton en haut à droite).
 -  Cliquez sur **Charger l'extension non empaquetée** (Load unpacked).
