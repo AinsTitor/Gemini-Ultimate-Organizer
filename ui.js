@@ -646,13 +646,35 @@ export function showCreatePromptModal(existingPrompt = null, folderIdx = null, p
             <div class="gu-modal-body">
                 <span class="gu-input-label">${t('name')}</span>
                 <input type="text" id="gu-prompt-name" class="gu-tag-input" value="${existingPrompt ? existingPrompt.name : ''}" autofocus>
-                <span class="gu-input-label" style="margin-top:15px;">${t('prompt_content')}</span>
-                <textarea id="gu-prompt-content" class="gu-tag-input gu-input-textarea" placeholder="Ex: Explain {{topic}} like I am 5...">${existingPrompt ? existingPrompt.content : ''}</textarea>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                    <span class="gu-input-label" style="margin-bottom:0;">${t('prompt_content')}</span>
+                    <button id="gu-add-var-btn" class="gu-var-btn" style="cursor:pointer; background:#333; border:1px solid #555; color:#a8c7fa; padding:2px 8px; border-radius:4px; font-size:11px;">+ Variable</button>
+                </div>
+
+                <textarea id="gu-prompt-content" class="gu-tag-input gu-input-textarea" placeholder="Ex: Explain {{topic}} like I am 5..." style="margin-top:5px;">${existingPrompt ? existingPrompt.content : ''}</textarea>
                 <button id="gu-save-prompt" class="gu-btn-action">${t('save_prompt')}</button>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
+
+    // Logique Add Variable
+    modal.querySelector('#gu-add-var-btn').onclick = () => {
+        const varName = prompt("Nom de la variable (ex: Sujet, Ton) ?");
+        if(varName) {
+            const textarea = modal.querySelector('#gu-prompt-content');
+            const textToInsert = `{{${varName}}}`;
+            // Insertion curseur
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            textarea.value = text.substring(0, start) + textToInsert + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + textToInsert.length;
+        }
+    };
+
     modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
     modal.querySelector('#gu-save-prompt').onclick = () => {
         const name = modal.querySelector('#gu-prompt-name').value.trim();
@@ -861,17 +883,22 @@ export function showSettingsModal() {
     modal.className = 'gu-modal-overlay';
     const user = Storage.getCurrentUser();
 
+    // Options de langue
     const languageOptions = Object.keys(i18n).map(lang =>
         `<option value="${lang}">${i18n[lang].lang_name}</option>`
     ).join('');
+
+    // Récupérer l'état du toggle "Tchats Cachés"
+    const showHidden = localStorage.getItem('gu_show_archived') === 'true';
 
     modal.innerHTML = `
         <div class="gu-modal-content">
             <div class="gu-modal-header"><span>${t('settings')}</span><span class="gu-menu-close">×</span></div>
             <div class="gu-modal-body" style="text-align:center;">
-<p style="color:#a8c7fa; font-size:12px; margin-bottom:15px;">
-    ${t('current_account')}: <b class="gu-settings-email">${user}</b>
-</p>
+
+                <p style="color:#a8c7fa; font-size:12px; margin-bottom:15px;">
+                    ${t('current_account')}: <b class="gu-settings-email">${user}</b>
+                </p>
 
                 <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px; padding: 0 10px;">
                     <span class="gu-input-label" style="text-align:left; margin-bottom: 0;">${t('language')}</span>
@@ -879,19 +906,37 @@ export function showSettingsModal() {
                         ${languageOptions}
                     </select>
                 </div>
+
+                <div style="background:#252627; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:13px; color:#ccc;">${t('show-archived-chats')}</span>
+                    <input type="checkbox" id="gu-toggle-hidden" ${showHidden ? 'checked' : ''} style="accent-color:#0b57d0; transform:scale(1.2); cursor:pointer;">
+                </div>
+
                 <button id="gu-save-settings" class="gu-btn-action">${t('save')}</button>
 
-                <button id="gu-export" class="gu-btn-action" style="background:#333; margin-top:20px;">${t('export_data')}</button>
-                <button id="gu-import" class="gu-btn-action" style="background:#333;">${t('import_data')}</button>
+                <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+
+                <span class="gu-input-label" style="text-align:left;">Sauvegardes & Restauration</span>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button id="gu-export" class="gu-btn-action" style="background:#333; margin:0;">${t('export_data')}</button>
+                    <button id="gu-import" class="gu-btn-action" style="background:#333; margin:0;">${t('import_data')}</button>
+                </div>
                 <input type="file" id="gu-import-file" style="display:none" accept=".json">
-                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v16.0</p>
+
+                <div id="gu-backup-list" style="margin-top:15px; background:#111; border-radius:8px; text-align:left; max-height:150px; overflow-y:auto;">
+                    <div style="padding:10px; color:#666; text-align:center;">Chargement...</div>
+                </div>
+
+                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v2.2</p>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
 
-    const langSelect = document.getElementById('gu-language-select');
+    // --- LOGIQUE DES SETTINGS ---
 
+    // 1. Langue
+    const langSelect = document.getElementById('gu-language-select');
     chrome.storage.local.get([LANG_STORAGE_KEY], (res) => {
         langSelect.value = res[LANG_STORAGE_KEY] || 'en';
     });
@@ -906,6 +951,86 @@ export function showSettingsModal() {
         });
     };
 
+    // 2. Toggle Hidden Chats
+    const toggleHidden = document.getElementById('gu-toggle-hidden');
+    toggleHidden.onchange = () => {
+        if(toggleHidden.checked) document.body.classList.add('gu-show-archived');
+        else document.body.classList.remove('gu-show-archived');
+        localStorage.setItem('gu_show_archived', toggleHidden.checked);
+    };
+
+    // 3. Gestion des Backups
+const backupList = document.getElementById('gu-backup-list');
+    Storage.getBackups(backups => {
+        let html = '';
+
+        // Helper pour le bouton download
+        const downloadBtn = (type, idx) =>
+            `<button class="gu-backup-btn dl-btn" data-type="${type}" data-idx="${idx}" style="background:#444; margin-right:5px;" title="Download JSON">⬇</button>`;
+
+        if(backups.safety) {
+            html += `<div class="gu-backup-row" style="border-left:3px solid orange; background:#2a2b2e;">
+                <span>⚠️ Auto-Save <br><small style="color:#888">${backups.safety.displayDate || backups.safety.date}</small></span>
+                <div>
+                    ${downloadBtn('safety', 0)}
+                    <button class="gu-backup-btn restore-btn" data-type="safety">${t('restore')}</button>
+                </div>
+            </div>`;
+        }
+        if(backups.regular && backups.regular.length > 0) {
+            backups.regular.forEach((bk, i) => {
+                html += `<div class="gu-backup-row">
+                    <span>Backup ${i+1} <br><small style="color:#888">${bk.displayDate || bk.date}</small></span>
+                    <div>
+                        ${downloadBtn('regular', i)}
+                        <button class="gu-backup-btn restore-btn" data-idx="${i}">${t('restore')}</button>
+                    </div>
+                </div>`;
+            });
+        } else if (!backups.safety) {
+                html = `<div style="padding:10px; color:#666; text-align:center;">${t('empty-backup-list')}</div>`;
+        }
+
+        backupList.innerHTML = html;
+
+        // Logique Bouton DOWNLOAD
+        backupList.querySelectorAll('.dl-btn').forEach(btn => {
+            btn.onclick = () => {
+                const type = btn.getAttribute('data-type');
+                const idx = btn.getAttribute('data-idx');
+                const backupItem = type === 'safety' ? backups.safety : backups.regular[idx];
+
+                if(backupItem && backupItem.data) {
+                    const blob = new Blob([JSON.stringify(backupItem.data, null, 2)], {type:'application/json'});
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `gemini_backup_${type}_${idx}.json`;
+                    a.click();
+                }
+            };
+        });
+
+        // Clics Restauration
+        backupList.querySelectorAll('.restore-btn').forEach(btn => {
+            btn.onclick = () => {
+                if(confirm(t('confirm-backup-restore'))) {
+                    const type = btn.getAttribute('data-type');
+                    const idx = btn.getAttribute('data-idx');
+                    const dataToRestore = type === 'safety' ? backups.safety : backups.regular[idx];
+
+                    if(dataToRestore) {
+                        Storage.restoreBackup(dataToRestore, () => {
+                            refreshUI();
+                            alert("Restauration réussie !");
+                            modal.remove();
+                        });
+                    }
+                }
+            };
+        });
+    });
+
+    // 4. Import/Export
     modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
     document.getElementById('gu-export').onclick = () => {
         Storage.getData(d => {
@@ -913,13 +1038,19 @@ export function showSettingsModal() {
             const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `gemini_backup_${user}.json`; a.click();
         });
     };
+
     document.getElementById('gu-import').onclick = () => document.getElementById('gu-import-file').click();
     document.getElementById('gu-import-file').onchange = (e) => {
         const r = new FileReader();
         r.onload = ev => {
             try {
                 const d = JSON.parse(ev.target.result);
-                if(confirm(t('overwrite_confirm'))) Storage.saveData(d, refreshUI);
+                if(confirm(t('overwrite_confirm'))) {
+                    // CRÉATION BACKUP SÉCURITÉ AVANT IMPORT
+                    Storage.createBackup('safety'); // Assurez-vous que Storage.createBackup existe
+                    Storage.saveData(d, refreshUI);
+                    modal.remove();
+                }
             } catch(err) { alert(t('invalid_json_alert')); }
         };
         r.readAsText(e.target.files[0]);
@@ -1065,41 +1196,41 @@ export function injectButtonsInNativeList(folders) {
         // Extraction ID via jslog
         const jslog = item.getAttribute('jslog');
         if (jslog) {
-            // On capture l'ID (ex: "c_12345")
             const match = jslog.match(/"(c_[^"]+)"/);
             if (match) {
-                // CORRECTION IMPORTANTE : On retire le préfixe "c_" ici !
+                // Nettoyage de l'ID (retrait du préfixe c_)
                 chatId = match[1].replace(/^c_/, '');
             }
         }
 
-        // Fallback lien (au cas où)
+        // Fallback lien
         if (!chatId) {
             const link = item.closest('a');
             if (link && link.href.includes('/app/')) {
-                // On s'assure aussi de nettoyer l'ID ici
                 chatId = link.href.split('/').pop().replace(/^c_/, '');
             }
         }
 
         if (!chatId) return;
 
-        // On construit l'URL PROPRE (sans c_)
         const fullUrl = `https://gemini.google.com/app/${chatId}`;
-
-        // ... (Le reste de la fonction reste identique pour l'affichage/archivage)
-
         let title = "Conversation";
         const titleEl = item.querySelector('.conversation-title');
         if (titleEl) title = titleEl.innerText.trim();
 
-        if (archivedSet.has(fullUrl)) {
-            item.style.display = 'none';
+// GESTION ARCHIVAGE
+        const isArchived = archivedSet.has(fullUrl);
+        if (isArchived) {
+            item.classList.add('gu-archived-item');
+            // Si archivé, on ne met PAS le bouton d'ajout pour éviter les doublons
+            // On peut optionnellement mettre une icône "Check" pour montrer que c'est fait
+            if (item.querySelector('.gu-float-add')) item.querySelector('.gu-float-add').remove();
             return;
         } else {
-            item.style.display = '';
+            item.classList.remove('gu-archived-item');
         }
 
+        // INJECTION DU BOUTON "+" (Seulement si NON archivé)
         let addButton = item.querySelector('.gu-float-add');
         if (!addButton) {
             if (getComputedStyle(item).position === 'static') item.style.position = 'relative';
@@ -1120,7 +1251,6 @@ export function injectButtonsInNativeList(folders) {
                         alert(t('no_folder_alert'));
                         return;
                     }
-                    // On sauvegarde avec l'URL propre !
                     showFolderMenu(e, currentFolders, title, fullUrl);
                 });
             });
@@ -1240,6 +1370,223 @@ export function switchTab(tabName) {
             renderPromptsUI(promptFolders);
         });
     }
+}
+
+// --- SLASH COMMANDS ---
+export function handleSlashCommand(inputElement) {
+    let menu = document.getElementById('gu-slash-menu');
+    if (!menu) {
+        menu = document.createElement('div');
+        menu.id = 'gu-slash-menu';
+        document.body.appendChild(menu);
+    }
+
+    // 1. Récupération du texte actuel
+    const rawVal = inputElement.tagName === 'TEXTAREA' ? inputElement.value : inputElement.innerText;
+    // On ignore les retours à la ligne, et on ne prend que la dernière ligne si c'est un chatbox
+    const lines = rawVal.split('\n');
+    const lastLine = lines[lines.length - 1];
+    const val = lastLine.trim();
+
+    // On cache si le champ est vide après suppression du '/'
+    if (!val) {
+        menu.style.display = 'none';
+        return;
+    }
+
+    // Condition A: Doit commencer par "/" et ne doit PAS contenir d'espace après le "/"
+    if (val.startsWith('/') && !val.substring(1).includes(' ')) {
+        const query = val.substring(1).toLowerCase();
+
+        // Récupérer les prompts pour la recherche
+        Storage.getPromptFolders(promptFolders => {
+            let matches = [];
+
+            // Commandes fixes (avec le mot-clé comme label pour la recherche)
+            if ('save'.includes(query)) matches.push({ type: 'cmd', label: 'save', desc: 'Save Chat' });
+            if ('folder'.includes(query)) matches.push({ type: 'cmd', label: 'folder', desc: 'New Folder' });
+            if ('prompt'.includes(query)) matches.push({ type: 'cmd', label: 'prompt', desc: 'Create Prompt' });
+
+            // Recherche dans les Prompts Utilisateur
+            promptFolders.forEach(folder => {
+                folder.prompts.forEach(p => {
+                    // Recherche par nom de prompt
+                    if (p.name.toLowerCase().includes(query)) {
+                        matches.push({ type: 'user_prompt', label: p.name, content: p.content, desc: 'User Prompt' });
+                    }
+                });
+            });
+
+            if (matches.length === 0) {
+                menu.style.display = 'none';
+                return;
+            }
+
+            // Construction HTML
+            const rect = inputElement.getBoundingClientRect();
+            menu.style.display = 'flex';
+            menu.style.left = `${rect.left + 20}px`;
+
+            // Positionnement (Éviter de cacher la barre d'input si possible)
+            if (window.innerHeight - rect.bottom > 200) {
+                menu.style.top = `${rect.bottom + 10}px`;
+                menu.style.bottom = 'auto';
+            } else {
+                menu.style.bottom = `${window.innerHeight - rect.top + 10}px`;
+                menu.style.top = 'auto';
+            }
+
+            menu.innerHTML = matches.map((m, i) => `
+                <div class="gu-slash-item" data-idx="${i}">
+                    <div><span class="gu-slash-cmd">/${m.label}</span> <small style="color:#888; margin-left:10px;">${m.desc}</small></div>
+                </div>
+            `).join('');
+
+            // Initialisation de la sélection pour la navigation clavier
+            menu.querySelector('.gu-slash-item').classList.add('selected');
+
+            // Clic sur une option
+            menu.querySelectorAll('.gu-slash-item').forEach((item, i) => {
+                item.onclick = () => {
+                    const match = matches[i];
+                    executeCommand(match, inputElement);
+                };
+                item.onmouseenter = () => { // Sélectionne au survol
+                    menu.querySelector('.gu-slash-item.selected')?.classList.remove('selected');
+                    item.classList.add('selected');
+                };
+            });
+        });
+
+    } else {
+        // Condition B: Si ce n'est plus un / ou si il y a un espace -> cacher
+        menu.style.display = 'none';
+    }
+
+    function executeCommand(match, input) {
+        // Nettoyer l'input et exécuter la commande
+        if (input.tagName === 'TEXTAREA') input.value = '';
+        else input.innerText = '';
+        input.dispatchEvent(new Event('input', { bubbles: true })); // Déclenche l'événement pour mettre à jour l'UI Gemini
+
+        if (match.type === 'cmd') {
+            if (match.label === 'save') {
+                const currentUrl = window.location.href;
+                const title = document.title.replace('Gemini', '').trim() || "Chat";
+                Storage.getData(folders => {
+                    const fakeEvent = { clientX: window.innerWidth/2, clientY: window.innerHeight/2 };
+                    showFolderMenu(fakeEvent, folders, title, currentUrl);
+                });
+            } else if (match.label === 'folder') {
+                showCreateFolderModal();
+            } else if (match.label === 'prompt') {
+                showCreatePromptModal();
+            }
+        } else if (match.type === 'user_prompt') {
+            if (match.content.includes('{{')) {
+                handlePromptClick(match.content);
+            } else {
+                injectPromptToGemini(match.content);
+            }
+        }
+
+        menu.style.display = 'none';
+    }
+}
+
+// --- TTS (TEXT TO SPEECH) ---
+export function injectTTS() {
+    // 1. On s'assure que les voix sont chargées (Chrome bug parfois là-dessus)
+    let voices = window.speechSynthesis.getVoices();
+    if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            voices = window.speechSynthesis.getVoices();
+        };
+    }
+
+    // 2. On cible toutes les réponses de l'IA
+    const responses = document.querySelectorAll('model-response');
+
+    responses.forEach(resp => {
+        // Vérifie si déjà injecté pour ne pas avoir de doublons
+        if(resp.querySelector('.gu-tts-btn')) return;
+
+        // 3. RECHERCHE INTELLIGENTE DU FOOTER (La barre avec Like/Dislike/Copy)
+        // On cherche le conteneur qui contient les icônes de feedback
+        // Souvent c'est le dernier élément div direct ou un conteneur spécifique
+        let footer = resp.querySelector('.buttons-container') ||
+                     resp.querySelector('.response-actions-container') ||
+                     resp.querySelector('div[data-test-id="response-feedback-buttons"]')?.parentNode;
+
+        // Si on ne trouve pas par classe, on cherche le conteneur qui a le bouton "Copier" ou "Like"
+        if (!footer) {
+            const copyBtn = resp.querySelector('button[data-test-id="copy-response-button"]') ||
+                            resp.querySelector('button[aria-label*="Copier"]') ||
+                            resp.querySelector('mat-icon[data-mat-icon-name="thumb_up"]')?.closest('button')?.parentNode;
+
+            if (copyBtn) footer = copyBtn.parentNode; // On se met à côté du frère
+        }
+
+        // Si toujours rien (cas rare), on prend le dernier élément du message
+        if (!footer) footer = resp.lastElementChild;
+
+        if(footer) {
+            const btn = document.createElement('div');
+            btn.className = 'gu-tts-btn';
+            // Icône Haut-parleur
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-322q47 22 73.5 66t26.5 96q0 51-26.5 94.5T560-320Z"/></svg>`;
+            btn.title = "Lire le message";
+            btn.style.marginLeft = "8px";
+            btn.style.cursor = "pointer";
+            btn.style.display = "flex";
+            btn.style.alignItems = "center";
+
+            btn.onclick = () => {
+                // Si ça parle déjà, on arrête
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                    // Si c'était ce bouton qui parlait, on arrête tout simplement
+                    if (btn.classList.contains('speaking')) {
+                        btn.classList.remove('speaking');
+                        return;
+                    }
+                    // Sinon (on a cliqué sur un autre), on continue pour lancer le nouveau
+                    document.querySelectorAll('.gu-tts-btn').forEach(b => b.classList.remove('speaking'));
+                }
+
+                // 4. RÉCUPÉRATION DU TEXTE (Plus précise)
+                const contentEl = resp.querySelector('.markdown') || resp;
+                const text = contentEl.innerText || "";
+
+                if (!text.trim()) return;
+
+                const utterance = new SpeechSynthesisUtterance(text);
+
+                // 5. CHOIX DE LA MEILLEURE VOIX
+                // On essaie de trouver une voix Google Française, sinon la première FR dispo
+                const frVoice = voices.find(v => v.name.includes("Google") && v.lang.includes("fr")) ||
+                                voices.find(v => v.lang.includes("fr"));
+
+                if (frVoice) utterance.voice = frVoice;
+                utterance.lang = 'fr-FR';
+                utterance.rate = 1.0;
+
+                // Gestion de l'état visuel (animation)
+                btn.classList.add('speaking');
+                utterance.onend = () => btn.classList.remove('speaking');
+                utterance.onerror = (e) => {
+                    console.error("Erreur TTS:", e);
+                    btn.classList.remove('speaking');
+                };
+
+                window.speechSynthesis.speak(utterance);
+            };
+
+            // Injection : On l'ajoute au début de la barre d'outils pour qu'il soit bien visible
+            // "prepend" le met tout à gauche, "appendChild" tout à droite
+            footer.prepend(btn);
+        }
+    });
 }
 
 function showReorganizeModal(type = 'chat') {
@@ -1438,14 +1785,14 @@ export function initPanel() {
             </div>
 
             <div id="gu-content-wrapper">
-<div class="gu-search-row">
-    <div style="display:flex; gap:8px; align-items:center;">
-        <input type="text" id="gu-search-input" class="gu-search-box" placeholder="${t('search_folders_placeholder')}">
-<button id="gu-add-folder-btn" class="gu-btn-ctrl" style="width:90px; background:#0b57d0; border:none; border-radius: 8px;">
-            <span>+</span> ${t('newFolder')}
-        </button>
-    </div>
-</div>
+                <div class="gu-search-row">
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" id="gu-search-input" class="gu-search-box" placeholder="${t('search_folders_placeholder')}">
+                        <button id="gu-add-folder-btn" class="gu-btn-ctrl" style="width:90px; background:#0b57d0; border:none; border-radius: 8px;">
+                            <span>+</span> ${t('newFolder')}
+                        </button>
+                    </div>
+                </div>
 
                 <div id="gu-content-area" class="gu-panel-view active"></div>
 
@@ -1464,6 +1811,7 @@ export function initPanel() {
         // Dragging Logic
         const header = panel.querySelector('#gu-header-drag');
         let isDragging = false, startX, startY, initialLeft, initialTop;
+
         header.onmousedown = (e) => {
             if(e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.tagName === 'INPUT') return;
             isDragging = true; startX = e.clientX; startY = e.clientY;
@@ -1471,16 +1819,33 @@ export function initPanel() {
             initialLeft = rect.left; initialTop = rect.top;
             header.style.cursor = 'grabbing';
         };
+
+        // --- GESTION DU BOUTON STREAMER (PC + MOBILE) ---
         const btnStreamer = panel.querySelector('#gu-btn-streamer');
+        let longPressTimer;
 
-                // Clic Gauche : ON/OFF
-                btnStreamer.onclick = toggleStreamerMode;
+        // Clic Gauche / Tap court : ON/OFF
+        btnStreamer.onclick = toggleStreamerMode;
 
-                // Clic Droit : CONFIGURATION
-                btnStreamer.oncontextmenu = (e) => {
-                    e.preventDefault(); // Empêche le menu contextuel natif du navigateur
-                    showStreamerMenu(e);
-                };
+        // Clic Droit (PC) : CONFIGURATION
+        btnStreamer.oncontextmenu = (e) => {
+            e.preventDefault();
+            showStreamerMenu(e);
+        };
+
+        // Appui Long (Mobile) : CONFIGURATION
+        btnStreamer.ontouchstart = (e) => {
+            longPressTimer = setTimeout(() => {
+                e.preventDefault();
+                showStreamerMenu(e.touches[0]); // On passe l'event touch pour avoir les coordonnées
+            }, 600); // Déclenchement après 600ms
+        };
+
+        btnStreamer.ontouchend = () => {
+            clearTimeout(longPressTimer); // Annule si on relâche avant 600ms
+        };
+        // ------------------------------------------------
+
         document.onmousemove = (e) => {
             if (!isDragging) return;
             panel.style.left = `${initialLeft + e.clientX - startX}px`;
@@ -1511,8 +1876,38 @@ export function initPanel() {
             }
         };
 
+        // --- GESTION TACTILE (MOBILE) POUR LE DRAG ---
+        header.ontouchstart = (e) => {
+            // Empêche le scroll de la page quand on drag le header
+            if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+            isDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            const rect = panel.getBoundingClientRect();
+            initialLeft = rect.left;
+            initialTop = rect.top;
+        };
+
+        document.ontouchmove = (e) => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            const dx = touch.clientX - startX;
+            const dy = touch.clientY - startY;
+
+            panel.style.left = `${initialLeft + dx}px`;
+            panel.style.top = `${initialTop + dy}px`;
+            panel.style.right = 'auto';
+
+            if (e.cancelable) e.preventDefault();
+        };
+
+        document.ontouchend = () => {
+            isDragging = false;
+        };
+
         panel.querySelector('#gu-btn-export-md').onclick = exportChatToMarkdown;
-        panel.querySelector('#gu-btn-streamer').onclick = toggleStreamerMode;
+        // Note: Le bouton streamer est géré plus haut avec le long press
         panel.querySelector('#gu-btn-wide').onclick = toggleWideMode;
 
         panel.querySelector('#gu-tab-folders').onclick = () => switchTab('folders');
@@ -1523,18 +1918,3 @@ export function initPanel() {
         refreshMainButtons();
     });
 }
-// --- AUTO-START (Anti-Flash) ---
-// Ce code s'exécute immédiatement pour cacher les éléments AVANT que le panneau n'apparaisse
-(function fastStart() {
-    // 1. Injecter le CSS immédiatement s'il n'existe pas
-    if (!document.getElementById('gu-global-styles')) {
-        const style = document.createElement('style');
-        style.id = 'gu-global-styles';
-        style.textContent = CSS_STYLES;
-        document.head.appendChild(style);
-    }
-
-    // 2. Appliquer le mode Streamer immédiatement (lecture du localStorage)
-    // Cela ajoute les classes 'gu-hide-loc', etc. instantanément
-    initStreamerMode();
-})();

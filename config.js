@@ -421,6 +421,77 @@ export const CSS_STYLES = `
         filter: none;
     }
 
+    /* --- MOBILE ADAPTATIONS --- */
+        @media (max-width: 600px) {
+            /* Panneau en plein écran ou presque */
+            #gu-floating-panel {
+                width: 90% !important;
+                right: 5% !important;
+                left: 5% !important;
+                top: 60px !important; /* Pour ne pas cacher la barre d'URL en haut */
+                max-height: 80vh !important;
+            }
+
+            /* Les boutons d'actions toujours visibles (pas de hover) */
+            .gu-chat-actions {
+                opacity: 1 !important;
+                transform: translateX(0) !important;
+                background: rgba(30, 31, 32, 1); /* Fond solide */
+            }
+
+            /* Bouton Add Folder plus petit */
+            .gu-btn-create-folder {
+                padding: 0 10px;
+                font-size: 11px;
+            }
+
+            /* Masquer le texte "New Folder" pour gagner de la place */
+            .gu-btn-create-folder span:not(:first-child) {
+                display: none;
+            }
+        }
+
+        /* --- SLASH COMMANDS --- */
+            #gu-slash-menu {
+                position: absolute; bottom: 80px; left: 20px; z-index: 10000;
+                background: #1e1f20; border: 1px solid #444; border-radius: 8px;
+                width: 200px; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+                display: none; flex-direction: column; overflow: hidden;
+            }
+            .gu-slash-item { padding: 10px 15px; cursor: pointer; color: #e3e3e3; font-size: 13px; display: flex; justify-content: space-between; }
+            .gu-slash-item:hover { background: #0b57d0; }
+            .gu-slash-cmd { font-family: monospace; color: #a8c7fa; }
+            /* Style pour la sélection clavier */
+                .gu-slash-item.selected {
+                    background: #0b57d0 !important; /* Mettre en surbrillance en bleu */
+                    color: white !important;
+                }
+
+            /* --- TTS (Synthèse Vocale) --- */
+            .gu-tts-btn {
+                margin-left: 8px; padding: 4px; border-radius: 50%; cursor: pointer;
+                color: #9aa0a6; display: flex; align-items: center; justify-content: center;
+                transition: 0.2s; border: 1px solid transparent;
+            }
+            .gu-tts-btn:hover { background: rgba(255,255,255,0.1); color: #e3e3e3; }
+            .gu-tts-btn.speaking { color: #a8c7fa; animation: gu-pulse 1.5s infinite; border-color: rgba(168, 199, 250, 0.3); }
+            @keyframes gu-pulse { 0% { box-shadow: 0 0 0 0 rgba(168, 199, 250, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(168, 199, 250, 0); } 100% { box-shadow: 0 0 0 0 rgba(168, 199, 250, 0); } }
+
+            /* --- SHOW HIDDEN CHATS --- */
+            /* Par défaut, on cache les éléments marqués comme archivés */
+            body:not(.gu-show-archived) .gu-archived-item { display: none !important; }
+            /* Si l'option est activée, on les montre mais en grisé */
+            body.gu-show-archived .gu-archived-item {
+                display: flex !important; opacity: 0.5; filter: grayscale(1);
+                border-left: 2px solid #555;
+            }
+
+            /* --- BACKUPS & VARS --- */
+            .gu-backup-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #333; font-size: 12px; color: #ccc; }
+            .gu-backup-btn { padding: 2px 8px; background: #254d29; border-radius: 4px; border: none; color: white; cursor: pointer; font-size: 11px; }
+            .gu-var-btn { background: #333; border: 1px solid #555; color: #a8c7fa; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-left: 10px; }
+            .gu-var-btn:hover { border-color: #a8c7fa; }
+
     /* --- ANIMATIONS --- */
     @keyframes gu-fadein { to { opacity: 1; } }
     @keyframes gu-scaleup { to { transform: scale(1); } }

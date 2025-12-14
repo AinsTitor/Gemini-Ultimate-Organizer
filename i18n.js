@@ -59,7 +59,11 @@ export const i18n = {
         'mail': '📧 Email/Badge',
         'chat': '💬 Chats',
         'folder': '📁 Folders',
-        'prompt': '📝 Prompts'
+        'prompt': '📝 Prompts',
+        'restore': 'Restore',
+        'empty-backup-list': 'No backup copies found.',
+        'confirm-backup-restore': 'Are you sure you want to restore this backup',
+        'show-archived-chats': 'Show Archived Chats (Hidden)'
     },
     'fr': {
         'lang_name': 'Français',
@@ -120,7 +124,11 @@ export const i18n = {
         'mail': '📧 Email/Badge',
         'chat': '💬 Chats',
         'folder': '📁 Dossiers',
-        'prompt': '📝 Prompts'
+        'prompt': '📝 Prompts',
+        'restore': 'Restaurer',
+        'empty-backup-list': 'Aucune copie de sauvegarde trouvée.',
+        'confirm-backup-restore': 'Êtes-vous sûr de vouloir restaurer cette copie de sauvegarde',
+        'show-archived-chats': 'Afficher les discussions archivées (masquées)'
     },
     'es': {
         'lang_name': 'Español',
@@ -181,7 +189,11 @@ export const i18n = {
         'mail': '📧 Correo/Insignia',
         'chat': '💬 Chats',
         'folder': '📁 Carpetas',
-        'prompt': '📝 Prompts'
+        'prompt': '📝 Prompts',
+        'restore': 'Restaurar',
+        'empty-backup-list': 'No se encontraron copias de seguridad.',
+        'confirm-backup-restore': '¿Estás seguro de que quieres restaurar esta copia de seguridad',
+        'show-archived-chats': 'Mostrar chats archivados (ocultos)'
     },
     'de': {
         'lang_name': 'Deutsch',
@@ -242,7 +254,11 @@ export const i18n = {
         'mail': '📧 E-Mail/Abzeichen',
         'chat': '💬 Chats',
         'folder': '📁 Ordner',
-        'prompt': '📝 Prompts'
+        'prompt': '📝 Prompts',
+        'restore': 'Wiederherstellen',
+        'empty-backup-list': 'Keine Kopien der Sicherheit gefunden.',
+        'confirm-backup-restore': 'Sind Sie sicher, dass Sie diese Sicherheitkopie wiederherstellen möchten',
+        'show-archived-chats': 'Zeige archivierte Chats (versteckt)'
     },
     'it': {
         'lang_name': 'Italiano',
@@ -303,7 +319,11 @@ export const i18n = {
         'mail': '📧 Email/Badge',
         'chat': '💬 Chat',
         'folder': '📁 Cartelle',
-        'prompt': '📝 Prompt'
+        'prompt': '📝 Prompt',
+        'restore': 'Ripristina',
+        'empty-backup-list': 'Nessuna copia di backup trovata.',
+        'confirm-backup-restore': 'Sei sicuro di voler ripristinare questa copia di backup',
+        'show-archived-chats': 'Mostra chat archiviate (mascherate)'
     },
     'pt': {
         'lang_name': 'Português',
@@ -364,7 +384,11 @@ export const i18n = {
         'mail': '📧 Email/Crachá',
         'chat': '💬 Bate-papos',
         'folder': '📁 Pastas',
-        'prompt': '📝 Prompts'
+        'prompt': '📝 Prompts',
+        'restore': 'Restaurar',
+        'empty-backup-list': 'Nenhuma cópia de segurança encontrada.',
+        'confirm-backup-restore': 'Tem certeza de que deseja restaurar esta cópia de segurança',
+        'show-archived-chats': 'Mostrar chats arquivados (escondidos)'
     },
     'ru': {
         'lang_name': 'Русский',
@@ -425,7 +449,11 @@ export const i18n = {
         'mail': '📧 Эл. почта/Значок',
         'chat': '💬 Чаты',
         'folder': '📁 Папки',
-        'prompt': '📝 Подсказки'
+        'prompt': '📝 Подсказки',
+        'restore': 'Восстановить',
+        'empty-backup-list': 'Нет скопированных бэкапов.',
+        'confirm-backup-restore': 'Вы уверены, что хотите восстановить эту копию бэкапа',
+        'show-archived-chats': 'Показать архивные чаты (скрытые)'
     },
     'zh': {
         'lang_name': '中文',
@@ -486,7 +514,11 @@ export const i18n = {
         'mail': '📧 电子邮件/徽章',
         'chat': '💬 聊天',
         'folder': '📁 文件夹',
-        'prompt': '📝 提示'
+        'prompt': '📝 提示',
+        'restore': '恢复',
+        'empty-backup-list': '没有备份副本。',
+        'confirm-backup-restore': '您确定要恢复这份备份吗',
+        'show-archived-chats': '显示归档的聊天 (隐藏)'
     },
     'ja': {
         'lang_name': '日本語',
@@ -547,7 +579,11 @@ export const i18n = {
         'mail': '📧 メール/バッジ',
         'chat': '💬 チャット',
         'folder': '📁 フォルダー',
-        'prompt': '📝 プロンプト'
+        'prompt': '📝 プロンプト',
+        'restore': '復元',
+        'empty-backup-list': 'バックアップのコピーはありません。',
+        'confirm-backup-restore': 'このバックアップを復元しますか？',
+        'show-archived-chats': 'アーカイブされたチャットを表示する (非表示)'
     },
     'ko': {
         'lang_name': '한국어',
@@ -608,7 +644,11 @@ export const i18n = {
         'mail': '📧 이메일/배지',
         'chat': '💬 채팅',
         'folder': '📁 폴더',
-        'prompt': '📝 프롬프트'
+        'prompt': '📝 프롬프트',
+        'restore': '복원',
+        'empty-backup-list': '백업 복사가 없습니다.',
+        'confirm-backup-restore': '이 백업을 복원하시겠습니까?',
+        'show-archived-chats': '아카이브된 채팅 표시 (숨김)'
     }
 };
 

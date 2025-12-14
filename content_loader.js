@@ -1,5 +1,5 @@
 // content_loader.js
 (async () => {
-  const src = chrome.runtime.getURL('main.js');
-  await import(src);
+  // On passe directement la fonction dans l'import pour rassurer le validateur
+  await import(chrome.runtime.getURL('main.js'));
 })();

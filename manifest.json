@@ -1,14 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Gemini Ultimate Organizer",
-  "version": "2.0",
-  "description": "Gemini Ultimate Organizer is a Chrome extension specializing in file organization, prompt folder, streamer mode, wide mode etc. offering several interesting features.",
+  "name": "Gemini Ultimate Organizer - Folders/Prompts",
+  "version": "2.2",
+  "description": "Folders for Chats & Prompts, Export, Bulk Manager, Streamer Mode & Themes for Gemini. Ultimate Organizer.",
   "default_locale": "en",
   "action": {
     "default_popup": "popup.html"
   },
   "permissions": [
     "storage"
+  ],
+  "host_permissions": [
+    "https://gemini.google.com/*"
   ],
   "content_scripts": [
     {
@@ -19,8 +22,24 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["config.js", "storage.js", "ui.js", "main.js", "i18n.js"],
+      "resources": [
+        "config.js",
+        "storage.js",
+        "i18n.js",
+        "ui.js",
+        "main.js"
+      ],
       "matches": ["https://gemini.google.com/*"]
     }
-  ]
+  ],
+"browser_specific_settings": {
+    "gecko": {
+      "id": "gemini-organizer@ainstitor.com",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": []
+      }
+    }
+  }
 }
