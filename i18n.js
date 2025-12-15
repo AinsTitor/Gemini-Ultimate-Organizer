@@ -63,7 +63,37 @@ export const i18n = {
         'restore': 'Restore',
         'empty-backup-list': 'No backup copies found.',
         'confirm-backup-restore': 'Are you sure you want to restore this backup',
-        'show-archived-chats': 'Show Archived Chats (Hidden)'
+        'show-archived-chats': 'Show Archived Chats (Hidden)',
+        'streamer_focus': 'Focus Mode (Hide UI)',
+        'export_menu_title': 'Export Chat',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Print / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Export Pack (.guop)',
+        'import_pack': 'Import Pack',
+        'import_success': 'Pack imported successfully!',
+        'import_error': 'Invalid Pack file.',
+        'notes_tab': 'Notes',
+        'note_placeholder': 'Add a comment...',
+        'delete_note_confirm': 'Delete this highlight?',
+        'filter_all': 'All',
+        'no_notes': 'No highlights for this chat yet.',
+        'highlight_tooltip': 'Highlight text',
+        'read_more': 'Show more',
+        'read_less': 'Show less',
+        'zoom_text': 'Zoom Chat (Text)',
+        'zoom_ui': 'Zoom Extension (UI)',
+        'prompt_help_content': `
+                    <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                        Customize your prompt<br><br>
+                        <b>1. Simple Text:</b><br>
+                        Use double curly braces to create a text field.<br>
+                        <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Act as a {{Job}} expert.</code><br><br>
+                        <b>2. Dropdown List (New!):</b><br>
+                        Separate name and options with a colon and commas.<br>
+                        <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Tone: {{Tone:Formal,Cool,Humorous}}</code><br>
+                        This will show a dropdown menu when used.
+                    </p>`
     },
     'fr': {
         'lang_name': 'Français',
@@ -128,7 +158,37 @@ export const i18n = {
         'restore': 'Restaurer',
         'empty-backup-list': 'Aucune copie de sauvegarde trouvée.',
         'confirm-backup-restore': 'Êtes-vous sûr de vouloir restaurer cette copie de sauvegarde',
-        'show-archived-chats': 'Afficher les discussions archivées (masquées)'
+        'show-archived-chats': 'Afficher les discussions archivées (masquées)',
+        'streamer_focus': 'Mode Focus (Masquer l\'interface)',
+        'export_menu_title': 'Exporter le Chat',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Imprimer / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Exporter Pack (.guop)',
+        'import_pack': 'Importer Pack',
+        'import_success': 'Pack importé avec succès!',
+        'import_error': 'Fichier Pack invalide.',
+        'notes_tab': 'Notes',
+        'note_placeholder': 'Ajouter un commentaire...',
+        'delete_note_confirm': 'Supprimer cet avertissement?',
+        'filter_all': 'Tous',
+        'no_notes': 'Aucune note pour ce chat.',
+        'highlight_tooltip': 'Surligner le texte',
+        'read_more': 'Afficher plus',
+        'read_less': 'Afficher moins',
+        'zoom_text': 'Zoom Chat (Texte)',
+        'zoom_ui': 'Zoom Extension (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                Personnalisez votre prompt<br><br>
+                <b>1. Texte Simple :</b><br>
+                Utilisez des doubles accolades pour créer un champ texte.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Agis comme un expert {{Métier}}.</code><br><br>
+                <b>2. Liste de Choix (Nouveau !) :</b><br>
+                Séparez le nom et les options par deux-points et des virgules.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Ton: {{Ton:Formel,Cool,Humour}}</code><br>
+                Cela affichera un menu déroulant lors de l'utilisation.
+            </p>`,
     },
     'es': {
         'lang_name': 'Español',
@@ -193,7 +253,37 @@ export const i18n = {
         'restore': 'Restaurar',
         'empty-backup-list': 'No se encontraron copias de seguridad.',
         'confirm-backup-restore': '¿Estás seguro de que quieres restaurar esta copia de seguridad',
-        'show-archived-chats': 'Mostrar chats archivados (ocultos)'
+        'show-archived-chats': 'Mostrar chats archivados (ocultos)',
+        'streamer_focus': 'Focus Mode (Hide UI)',
+        'export_menu_title': 'Exportar Chat',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Print / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Export Pack (.guop)',
+        'import_pack': 'Import Pack',
+        'import_success': 'Pack imported successfully!',
+        'import_error': 'Invalid Pack file.',
+        'notes_tab': 'Notas',
+        'note_placeholder': 'Agregar un comentario...',
+        'delete_note_confirm': 'Eliminar esta nota?',
+        'filter_all': 'Todos',
+        'no_notes': 'No hay notas para este chat.',
+        'highlight_tooltip': 'Resaltar texto',
+        'read_more': 'Mostrar más',
+        'read_less': 'Mostrar menos',
+        'zoom_text': 'Zoom Chat (Texto)',
+        'zoom_ui': 'Zoom Extension (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                Personaliza tu prompt<br><br>
+                <b>1. Texto Simple:</b><br>
+                Usa llaves dobles para crear un campo de texto.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Actúa como experto en {{Profesión}}.</code><br><br>
+                <b>2. Lista Desplegable (¡Nuevo!):</b><br>
+                Separa el nombre y las opciones con dos puntos y comas.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Tono: {{Tono:Formal,Guay,Humor}}</code><br>
+                Esto mostrará un menú desplegable al usarlo.
+            </p>`,
     },
     'de': {
         'lang_name': 'Deutsch',
@@ -256,9 +346,39 @@ export const i18n = {
         'folder': '📁 Ordner',
         'prompt': '📝 Prompts',
         'restore': 'Wiederherstellen',
-        'empty-backup-list': 'Keine Kopien der Sicherheit gefunden.',
-        'confirm-backup-restore': 'Sind Sie sicher, dass Sie diese Sicherheitkopie wiederherstellen möchten',
-        'show-archived-chats': 'Zeige archivierte Chats (versteckt)'
+        'empty-backup-list': 'Keine Sicherungskopien gefunden.',
+        'confirm-backup-restore': 'Sind Sie sicher, dass Sie diese Sicherungskopie wiederherstellen möchten?',
+        'show-archived-chats': 'Archivierte Chats anzeigen (versteckt)',
+        'streamer_focus': 'Fokus-Modus (UI ausblenden)',
+        'export_menu_title': 'Chat exportieren',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Drucken / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Paket exportieren (.guop)',
+        'import_pack': 'Paket importieren',
+        'import_success': 'Paket erfolgreich importiert!',
+        'import_error': 'Ungültige Paketdatei.',
+        'notes_tab': 'Notizen',
+        'note_placeholder': 'Einen Kommentar hinzufügen...',
+        'delete_note_confirm': 'Diese Markierung löschen?',
+        'filter_all': 'Alle',
+        'no_notes': 'Noch keine Markierungen für diesen Chat.',
+        'highlight_tooltip': 'Text markieren',
+        'read_more': 'Mehr anzeigen',
+        'read_less': 'Weniger anzeigen',
+        'zoom_text': 'Chat zoomen (Text)',
+        'zoom_ui': 'Erweiterung zoomen (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                Passen Sie Ihren Prompt an<br><br>
+                <b>1. Einfacher Text:</b><br>
+                Verwenden Sie doppelte geschweifte Klammern, um ein Textfeld zu erstellen.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Handeln Sie als {{Beruf}} Experte.</code><br><br>
+                <b>2. Dropdown-Liste (Neu!):</b><br>
+                Trennen Sie Name und Optionen durch einen Doppelpunkt und Kommas.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Ton: {{Ton:Formell,Cool,Humorvoll}}</code><br>
+                Dies zeigt bei Verwendung ein Dropdown-Menü an.
+            </p>`,
     },
     'it': {
         'lang_name': 'Italiano',
@@ -323,7 +443,37 @@ export const i18n = {
         'restore': 'Ripristina',
         'empty-backup-list': 'Nessuna copia di backup trovata.',
         'confirm-backup-restore': 'Sei sicuro di voler ripristinare questa copia di backup',
-        'show-archived-chats': 'Mostra chat archiviate (mascherate)'
+        'show-archived-chats': 'Mostra chat archiviate (mascherate)',
+        'streamer_focus': 'Modalità Focus (Nascondi UI)',
+        'export_menu_title': 'Esporta Chat',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Stampa / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Esporta Pacchetto (.guop)',
+        'import_pack': 'Importa Pacchetto',
+        'import_success': 'Pacchetto importato con successo!',
+        'import_error': 'File del pacchetto non valido.',
+        'notes_tab': 'Note',
+        'note_placeholder': 'Aggiungi un commento...',
+        'delete_note_confirm': 'Eliminare questa evidenziazione?',
+        'filter_all': 'Tutti',
+        'no_notes': 'Nessuna evidenziazione per questa chat.',
+        'highlight_tooltip': 'Evidenzia testo',
+        'read_more': 'Mostra di più',
+        'read_less': 'Mostra di meno',
+        'zoom_text': 'Zoom Chat (Testo)',
+        'zoom_ui': 'Zoom Estensione (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                Personalizza il tuo prompt<br><br>
+                <b>1. Testo Semplice:</b><br>
+                Usa le doppie parentesi graffe per creare un campo di testo.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Agisci come un esperto {{Lavoro}}.</code><br><br>
+                <b>2. Elenco a Discesa (Nuovo!):</b><br>
+                Separa nome e opzioni con due punti e virgole.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Tono: {{Tono:Formale,Fico,Umorismo}}</code><br>
+                Questo mostrerà un menu a discesa durante l'uso.
+            </p>`,
     },
     'pt': {
         'lang_name': 'Português',
@@ -388,7 +538,37 @@ export const i18n = {
         'restore': 'Restaurar',
         'empty-backup-list': 'Nenhuma cópia de segurança encontrada.',
         'confirm-backup-restore': 'Tem certeza de que deseja restaurar esta cópia de segurança',
-        'show-archived-chats': 'Mostrar chats arquivados (escondidos)'
+        'show-archived-chats': 'Mostrar chats arquivados (escondidos)',
+        'streamer_focus': 'Modo Foco (Ocultar UI)',
+        'export_menu_title': 'Exportar Chat',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Imprimir / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Exportar Pacote (.guop)',
+        'import_pack': 'Importar Pacote',
+        'import_success': 'Pacote importado com sucesso!',
+        'import_error': 'Arquivo de pacote inválido.',
+        'notes_tab': 'Notas',
+        'note_placeholder': 'Adicionar um comentário...',
+        'delete_note_confirm': 'Excluir este destaque?',
+        'filter_all': 'Todos',
+        'no_notes': 'Nenhum destaque para este chat.',
+        'highlight_tooltip': 'Destacar texto',
+        'read_more': 'Mostrar mais',
+        'read_less': 'Mostrar menos',
+        'zoom_text': 'Zoom do Chat (Texto)',
+        'zoom_ui': 'Zoom da Extensão (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                Personalize seu prompt<br><br>
+                <b>1. Texto Simples:</b><br>
+                Use chaves duplas para criar um campo de texto.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Aja como um especialista em {{Profissão}}.</code><br><br>
+                <b>2. Lista Suspensa (Novo!):</b><br>
+                Separe o nome e as opções com dois pontos e vírgulas.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Tom: {{Tom:Formal,Legal,Humor}}</code><br>
+                Isso mostrará um menu suspenso ao usar.
+            </p>`,
     },
     'ru': {
         'lang_name': 'Русский',
@@ -451,9 +631,39 @@ export const i18n = {
         'folder': '📁 Папки',
         'prompt': '📝 Подсказки',
         'restore': 'Восстановить',
-        'empty-backup-list': 'Нет скопированных бэкапов.',
-        'confirm-backup-restore': 'Вы уверены, что хотите восстановить эту копию бэкапа',
-        'show-archived-chats': 'Показать архивные чаты (скрытые)'
+        'empty-backup-list': 'Резервных копий не найдено.',
+        'confirm-backup-restore': 'Вы уверены, что хотите восстановить эту резервную копию?',
+        'show-archived-chats': 'Показать заархивированные чаты (скрытые)',
+        'streamer_focus': 'Режим фокусировки (скрыть интерфейс)',
+        'export_menu_title': 'Экспорт чата',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Печать / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Экспорт пакета (.guop)',
+        'import_pack': 'Импорт пакета',
+        'import_success': 'Пакет успешно импортирован!',
+        'import_error': 'Неверный файл пакета.',
+        'notes_tab': 'Заметки',
+        'note_placeholder': 'Добавить комментарий...',
+        'delete_note_confirm': 'Удалить эту заметку?',
+        'filter_all': 'Все',
+        'no_notes': 'Для этого чата пока нет заметок.',
+        'highlight_tooltip': 'Выделить текст',
+        'read_more': 'Показать больше',
+        'read_less': 'Показать меньше',
+        'zoom_text': 'Масштаб чата (текст)',
+        'zoom_ui': 'Масштаб расширения (интерфейс)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                Настройте свою подсказку<br><br>
+                <b>1. Простой текст:</b><br>
+                Используйте двойные фигурные скобки для текстового поля.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Действуй как эксперт в {{Профессия}}.</code><br><br>
+                <b>2. Выпадающий список (Новое!):</b><br>
+                Разделите имя и варианты двоеточием и запятыми.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Тон: {{Тон:Формальный,Крутой,Юмор}}</code><br>
+                При использовании появится выпадающее меню.
+            </p>`,
     },
     'zh': {
         'lang_name': '中文',
@@ -518,7 +728,37 @@ export const i18n = {
         'restore': '恢复',
         'empty-backup-list': '没有备份副本。',
         'confirm-backup-restore': '您确定要恢复这份备份吗',
-        'show-archived-chats': '显示归档的聊天 (隐藏)'
+        'show-archived-chats': '显示归档的聊天 (隐藏)',
+        'streamer_focus': '专注模式 (隐藏用户界面)',
+        'export_menu_title': '导出聊天',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': '打印 / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': '导出包 (.guop)',
+        'import_pack': '导入包',
+        'import_success': '包已成功导入！',
+        'import_error': '无效的包文件。',
+        'notes_tab': '笔记',
+        'note_placeholder': '添加评论...',
+        'delete_note_confirm': '删除此高亮显示？',
+        'filter_all': '全部',
+        'no_notes': '此聊天尚无高亮显示。',
+        'highlight_tooltip': '高亮显示文本',
+        'read_more': '显示更多',
+        'read_less': '显示更少',
+        'zoom_text': '缩放聊天 (文本)',
+        'zoom_ui': '缩放扩展 (用户界面)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                自定义您的提示<br><br>
+                <b>1. 简单文本：</b><br>
+                使用双大括号创建文本字段。<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">充当 {{职业}} 专家。</code><br><br>
+                <b>2. 下拉列表（新！）：</b><br>
+                用冒号和逗号分隔名称和选项。<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">语气: {{语气:正式,酷,幽默}}</code><br>
+                使用时将显示下拉菜单。
+            </p>`,
     },
     'ja': {
         'lang_name': '日本語',
@@ -583,7 +823,37 @@ export const i18n = {
         'restore': '復元',
         'empty-backup-list': 'バックアップのコピーはありません。',
         'confirm-backup-restore': 'このバックアップを復元しますか？',
-        'show-archived-chats': 'アーカイブされたチャットを表示する (非表示)'
+        'show-archived-chats': 'アーカイブされたチャットを表示する (非表示)',
+        'streamer_focus': 'フォーカスモード (UIを非表示)',
+        'export_menu_title': 'チャットをエクスポート',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': '印刷 / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'パックをエクスポート (.guop)',
+        'import_pack': 'パックをインポート',
+        'import_success': 'パックが正常にインポートされました！',
+        'import_error': '無効なパックファイルです。',
+        'notes_tab': 'メモ',
+        'note_placeholder': 'コメントを追加...',
+        'delete_note_confirm': 'このハイライトを削除しますか？',
+        'filter_all': 'すべて',
+        'no_notes': 'このチャットにはまだハイライトがありません。',
+        'highlight_tooltip': 'テキストをハイライト',
+        'read_more': 'もっと見る',
+        'read_less': '少なく表示',
+        'zoom_text': 'チャットをズーム (テキスト)',
+        'zoom_ui': '拡張機能をズーム (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                プロンプトをカスタマイズ<br><br>
+                <b>1. シンプルなテキスト:</b><br>
+                二重中括弧を使用してテキストフィールドを作成します。<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">{{職業}} のエキスパートとして振る舞う。</code><br><br>
+                <b>2. ドロップダウンリスト (新機能!):</b><br>
+                名前とオプションをコロンとカンマで区切ります。<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">トーン: {{トーン:フォーマル,クール,ユーモア}}</code><br>
+                使用時にドロップダウンメニューが表示されます。
+            </p>`,
     },
     'ko': {
         'lang_name': '한국어',
@@ -648,7 +918,227 @@ export const i18n = {
         'restore': '복원',
         'empty-backup-list': '백업 복사가 없습니다.',
         'confirm-backup-restore': '이 백업을 복원하시겠습니까?',
-        'show-archived-chats': '아카이브된 채팅 표시 (숨김)'
+        'show-archived-chats': '아카이브된 채팅 표시 (숨김)',
+        'streamer_focus': '포커스 모드 (UI 숨기기)',
+        'export_menu_title': '채팅 내보내기',
+        'export_md': '마크다운 (.md)',
+        'export_pdf': '인쇄 / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': '팩 내보내기 (.guop)',
+        'import_pack': '팩 가져오기',
+        'import_success': '팩을 성공적으로 가져왔습니다!',
+        'import_error': '잘못된 팩 파일입니다.',
+        'notes_tab': '메모',
+        'note_placeholder': '댓글 추가...',
+        'delete_note_confirm': '이 하이라이트를 삭제하시겠습니까?',
+        'filter_all': '모두',
+        'no_notes': '이 채팅에 대한 하이라이트가 아직 없습니다.',
+        'highlight_tooltip': '텍스트 하이라이트',
+        'read_more': '더 보기',
+        'read_less': '간략히',
+        'zoom_text': '채팅 확대 (텍스트)',
+        'zoom_ui': '확장 프로그램 확대 (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                프롬프트 사용자 정의<br><br>
+                <b>1. 간단한 텍스트:</b><br>
+                이중 중괄호를 사용하여 텍스트 필드를 만듭니다.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">{{직업}} 전문가처럼 행동하세요.</code><br><br>
+                <b>2. 드롭다운 목록 (새로운 기능!):</b><br>
+                이름과 옵션을 콜론과 쉼표로 구분합니다.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">톤: {{톤:공식적,쿨함,유머}}</code><br>
+                사용 시 드롭다운 메뉴가 표시됩니다.
+            </p>`,
+    },
+'nl': {
+        'lang_name': 'Nederlands',
+        'newChat': 'Nieuwe Chat',
+        'settings': 'Instellingen',
+        'customPrompts': 'Aangepaste Prompts',
+        'newFolder': 'Nieuwe Map',
+        'rename': 'Hernoemen',
+        'delete': 'Verwijderen',
+        'save': 'Opslaan',
+        'exportChat': 'Chat Exporteren',
+        'cancel': 'Annuleren',
+        'folderName': 'Mapnaam',
+        'promptName': 'Prompt Naam',
+        'promptContent': 'Prompt Inhoud',
+        'search': 'Zoeken',
+        'theme': 'Thema',
+        'light': 'Licht',
+        'dark': 'Donker',
+        'language': 'Taal',
+        'english': 'Engels',
+        'french': 'Frans',
+        'spanish': 'Spaans',
+        'german': 'Duits',
+        'italian': 'Italiaans',
+        'portuguese': 'Portugees',
+        'russian': 'Russisch',
+        'chinese': 'Chinees',
+        'japanese': 'Japans',
+        'korean': 'Koreaans',
+        'folders_tab': 'Mappen',
+        'prompts_tab': 'Prompts',
+        'customize_prompt': 'Pas je prompt aan:',
+        'tutorial_button': 'Laten we gaan!',
+        'search_folders_placeholder': 'Zoek mappen & chats...',
+        'search_prompts_placeholder': 'Zoek prompts...',
+        'new_prompt_btn': '+ Nieuwe Prompt',
+        'bulk_organize_title': 'Massa Organisatie',
+        'select_folder_placeholder': 'Selecteer een map...',
+        'move_selected': 'Selectie Verplaatsen',
+        'filter_chats_placeholder': 'Chats filteren...',
+        'edit_folder': 'Map Bewerken',
+        'manage_tags_title': 'Tags Beheren',
+        'active_tags_label': 'Actieve Tags',
+        'add_new_tag': 'Nieuwe Tag Toevoegen',
+        'add_tag': 'Tag Toevoegen',
+        'library_label': 'Bibliotheek',
+        'tag_name_placeholder': 'Tag naam...',
+        'prompt_empty_message': 'Geen prompts gevonden.',
+        'folder_empty_message': 'Geen mappen gevonden.',
+        'no_folder_alert': 'Maak eerst een map aan.',
+        'export_data': 'Gegevens Exporteren (JSON)',
+        'import_data': 'Gegevens Importeren (JSON)',
+        'no_tags_yet': 'Nog geen tags.',
+        'current_account': 'Huidig Account',
+        'loc': '📍 Locatie',
+        'content': '🖼️ Mijn Inhoud',
+        'mail': '📧 E-mail/Badge',
+        'chat': '💬 Chats',
+        'folder': '📁 Mappen',
+        'prompt': '📝 Prompts',
+        'restore': 'Herstellen',
+        'empty-backup-list': 'Geen back-up kopieën gevonden.',
+        'confirm-backup-restore': 'Weet je zeker dat je deze back-up wilt herstellen',
+        'show-archived-chats': 'Gearchiveerde chats tonen (Verborgen)',
+        'streamer_focus': 'Focus Modus (Verberg UI)',
+        'export_menu_title': 'Chat Exporteren',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Afdrukken / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Pakket Exporteren (.guop)',
+        'import_pack': 'Pakket Importeren',
+        'import_success': 'Pakket succesvol geïmporteerd!',
+        'import_error': 'Ongeldig pakketbestand.',
+        'notes_tab': 'Notities',
+        'note_placeholder': 'Voeg een opmerking toe...',
+        'delete_note_confirm': 'Deze markering verwijderen?',
+        'filter_all': 'Alles',
+        'no_notes': 'Nog geen markeringen voor deze chat.',
+        'highlight_tooltip': 'Tekst markeren',
+        'read_more': 'Toon meer',
+        'read_less': 'Toon minder',
+        'zoom_text': 'Zoom Chat (Tekst)',
+        'zoom_ui': 'Zoom Extensie (UI)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                Pas je prompt aan<br><br>
+                <b>1. Simpele Tekst:</b><br>
+                Gebruik dubbele accolades om een tekstveld te maken.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Ageer als een {{Beroep}} expert.</code><br><br>
+                <b>2. Keuzelijst (Nieuw!):</b><br>
+                Scheid naam en opties met een dubbele punt en komma's.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Toon: {{Toon:Formeel,Cool,Humor}}</code><br>
+                Dit toont een dropdown-menu bij gebruik.
+            </p>`
+    },
+    'tr': {
+        'lang_name': 'Türkçe',
+        'newChat': 'Yeni Sohbet',
+        'settings': 'Ayarlar',
+        'customPrompts': 'Özel İstemler',
+        'newFolder': 'Yeni Klasör',
+        'rename': 'Yeniden Adlandır',
+        'delete': 'Sil',
+        'save': 'Kaydet',
+        'exportChat': 'Sohbeti Dışa Aktar',
+        'cancel': 'İptal',
+        'folderName': 'Klasör Adı',
+        'promptName': 'İstem Adı',
+        'promptContent': 'İstem İçeriği',
+        'search': 'Ara',
+        'theme': 'Tema',
+        'light': 'Açık',
+        'dark': 'Koyu',
+        'language': 'Dil',
+        'english': 'İngilizce',
+        'french': 'Fransızca',
+        'spanish': 'İspanyolca',
+        'german': 'Almanca',
+        'italian': 'İtalyanca',
+        'portuguese': 'Portekizce',
+        'russian': 'Rusça',
+        'chinese': 'Çince',
+        'japanese': 'Japonca',
+        'korean': 'Korece',
+        'folders_tab': 'Klasörler',
+        'prompts_tab': 'İstemler',
+        'customize_prompt': 'İstemini özelleştir:',
+        'tutorial_button': 'Hadi Başlayalım!',
+        'search_folders_placeholder': 'Klasörleri ve sohbetleri ara...',
+        'search_prompts_placeholder': 'İstemleri ara...',
+        'new_prompt_btn': '+ Yeni İstem',
+        'bulk_organize_title': 'Toplu Düzenleme',
+        'select_folder_placeholder': 'Bir klasör seç...',
+        'move_selected': 'Seçilenleri Taşı',
+        'filter_chats_placeholder': 'Sohbetleri filtrele...',
+        'edit_folder': 'Klasörü Düzenle',
+        'manage_tags_title': 'Etiketleri Yönet',
+        'active_tags_label': 'Aktif Etiketler',
+        'add_new_tag': 'Yeni Etiket Ekle',
+        'add_tag': 'Etiket Ekle',
+        'library_label': 'Kütüphane',
+        'tag_name_placeholder': 'Etiket adı...',
+        'prompt_empty_message': 'İstem bulunamadı.',
+        'folder_empty_message': 'Klasör bulunamadı.',
+        'no_folder_alert': 'Lütfen önce bir klasör oluşturun.',
+        'export_data': 'Verileri Dışa Aktar (JSON)',
+        'import_data': 'Verileri İçe Aktar (JSON)',
+        'no_tags_yet': 'Henüz etiket yok.',
+        'current_account': 'Mevcut Hesap',
+        'loc': '📍 Konum',
+        'content': '🖼️ İçeriğim',
+        'mail': '📧 E-posta/Rozet',
+        'chat': '💬 Sohbetler',
+        'folder': '📁 Klasörler',
+        'prompt': '📝 İstemler',
+        'restore': 'Geri Yükle',
+        'empty-backup-list': 'Yedek kopyası bulunamadı.',
+        'confirm-backup-restore': 'Bu yedeği geri yüklemek istediğinizden emin misiniz',
+        'show-archived-chats': 'Arşivlenmiş Sohbetleri Göster (Gizli)',
+        'streamer_focus': 'Odak Modu (Arayüzü Gizle)',
+        'export_menu_title': 'Sohbeti Dışa Aktar',
+        'export_md': 'Markdown (.md)',
+        'export_pdf': 'Yazdır / PDF',
+        'export_json': 'JSON (.json)',
+        'export_pack': 'Paketi Dışa Aktar (.guop)',
+        'import_pack': 'Paketi İçe Aktar',
+        'import_success': 'Paket başarıyla içe aktarıldı!',
+        'import_error': 'Geçersiz paket dosyası.',
+        'notes_tab': 'Notlar',
+        'note_placeholder': 'Bir yorum ekle...',
+        'delete_note_confirm': 'Bu vurgulamayı silmek istiyor musunuz?',
+        'filter_all': 'Tümü',
+        'no_notes': 'Bu sohbet için henüz vurgulama yok.',
+        'highlight_tooltip': 'Metni vurgula',
+        'read_more': 'Daha fazla göster',
+        'read_less': 'Daha az göster',
+        'zoom_text': 'Sohbeti Yakınlaştır (Metin)',
+        'zoom_ui': 'Uzantıyı Yakınlaştır (Arayüz)',
+        'prompt_help_content': `
+            <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
+                İstemini özelleştir<br><br>
+                <b>1. Basit Metin:</b><br>
+                Bir metin alanı oluşturmak için çift süslü parantez kullanın.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Bir {{Meslek}} uzmanı gibi davran.</code><br><br>
+                <b>2. Açılır Liste (Yeni!):</b><br>
+                Adı ve seçenekleri iki nokta üst üste ve virgülle ayırın.<br>
+                <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Ton: {{Ton:Resmi,Havalı,Mizahi}}</code><br>
+                Bu, kullanıldığında bir açılır menü gösterecektir.
+            </p>`
     }
 };
 

@@ -51,7 +51,8 @@ function applyStreamerFilters(config) {
         'mail': 'gu-hide-mail',
         'chat': 'gu-hide-chat',
         'folder': 'gu-hide-folder',
-        'prompt': 'gu-hide-prompt'
+        'prompt': 'gu-hide-prompt',
+        'ui': 'gu-hide-ui' // <--- NOUVEAU : Mode Focus
     };
 
     // On applique ou on retire chaque classe
@@ -216,7 +217,17 @@ function renderPanelContent(folders) {
         header.querySelector('.gu-color-wrapper').addEventListener('click', e => e.stopPropagation());
         header.querySelector('.edit').onclick = (e) => { e.stopPropagation(); showCreateFolderModal(folder); };
         header.querySelector('.delete').onclick = (e) => { e.stopPropagation(); if(confirm(t('delete_folder_confirm'))) { folders.splice(idx, 1); Storage.saveData(folders, refreshUI); } };
-        header.onclick = () => { folder.isOpen = !folder.isOpen; Storage.saveData(folders, refreshUI); };
+        header.onclick = () => {
+                    // 1. Mise à jour immédiate des données locales
+                    folder.isOpen = !folder.isOpen;
+
+                    // 2. Re-rendu INSTANTANÉ de l'interface (sans attendre le stockage)
+                    renderPanelContent(folders);
+                    injectButtonsInNativeList(folders); // Pour garder les boutons '+' synchronisés
+
+                    // 3. Sauvegarde silencieuse en arrière-plan (Debounce)
+                    saveFoldersDebounced(folders);
+                };
 
         div.appendChild(header);
 
@@ -285,26 +296,36 @@ function showStreamerMenu(e) {
     menu.style.right = `20px`;
     menu.style.zIndex = '2000005';
 
-    // Récupérer la config
-    const config = JSON.parse(localStorage.getItem('gu_streamer_config') || '{"loc":true, "content":true, "chat":true, "folder":true, "prompt":true, "mail":true}');
+    // Récupérer la config (avec valeur par défaut pour 'ui' à false si inexistante)
+    const config = JSON.parse(localStorage.getItem('gu_streamer_config') || '{"loc":true, "content":true, "chat":true, "folder":true, "prompt":true, "mail":true, "ui":false}');
 
-const options = [
-        { key: 'loc', label: t('loc') },         // Cherche 'loc' dans i18n.js
-        { key: 'content', label: t('content') }, // Cherche 'content'
-        { key: 'mail', label: t('mail') },       // etc.
+    // Liste des options classiques (Flou)
+    const options = [
+        { key: 'loc', label: t('loc') },
+        { key: 'content', label: t('content') },
+        { key: 'mail', label: t('mail') },
         { key: 'chat', label: t('chat') },
         { key: 'folder', label: t('folder') },
         { key: 'prompt', label: t('prompt') }
     ];
 
-    // En-tête avec bouton de fermeture (Croix)
+    // État du Focus Mode
+    const isFocusChecked = config['ui'] ? 'checked' : '';
+
+    // En-tête + Option Focus Mode séparée
     let html = `
         <div class="gu-context-header" style="background:#0b57d0; color:white; display:flex; justify-content:space-between; align-items:center;">
             <span>Streamer Config</span>
             <span id="gu-close-streamer-menu" style="cursor:pointer; font-weight:bold; font-size:16px; padding:0 4px;">×</span>
         </div>
+
+        <label class="gu-context-item" style="justify-content: space-between; padding:10px 16px; cursor:pointer; background:rgba(255,255,255,0.05); border-bottom:1px solid #444;">
+            <span style="font-size:13px; color:#a8c7fa; font-weight:bold;">${t('streamer_focus')}</span>
+            <input type="checkbox" data-key="ui" ${isFocusChecked} style="accent-color:#a8c7fa; cursor:pointer; transform:scale(1.1);">
+        </label>
     `;
 
+    // Boucle pour les options de flou classiques
     options.forEach(opt => {
         const isChecked = config[opt.key] ? 'checked' : '';
         html += `
@@ -318,47 +339,50 @@ const options = [
     menu.innerHTML = html;
     document.body.appendChild(menu);
 
-    // --- LOGIQUE DE FERMETURE ---
+    // --- LOGIQUE ---
+
     const closeMenu = () => {
         if(menu.parentNode) menu.remove();
         document.removeEventListener('click', outsideClickListener);
     };
 
-    // 1. Fermer via la Croix
     menu.querySelector('#gu-close-streamer-menu').onclick = (ev) => {
         ev.stopPropagation();
         closeMenu();
     };
 
-    // 2. Fermer quand la souris quitte le menu (Mouse Leave)
-    menu.onmouseleave = () => closeMenu();
-
-    // 3. Gestion des Checkboxes
+    // Gestion unique pour TOUTES les checkboxes (Focus + Autres)
     menu.querySelectorAll('input').forEach(input => {
         input.onchange = () => {
-            config[input.getAttribute('data-key')] = input.checked;
+            const key = input.getAttribute('data-key');
+            config[key] = input.checked;
+
+            // Sauvegarde
             localStorage.setItem('gu_streamer_config', JSON.stringify(config));
 
+            // Application immédiate si le mode Streamer est actif
             if (document.body.classList.contains('gu-streamer-active')) {
                 applyStreamerFilters(config);
             }
         };
     });
 
-    // 4. Fermer au clic ailleurs (Logique corrigée)
+    // Fermeture souris
+    menu.onmouseleave = () => closeMenu();
+
     const outsideClickListener = (ev) => {
         if (!menu.contains(ev.target)) {
             closeMenu();
         }
     };
 
-    // On attache l'écouteur global avec un léger délai pour éviter le clic initial
     setTimeout(() => {
         document.addEventListener('click', outsideClickListener);
     }, 100);
 }
 
 
+// ui.js - Mise à jour de renderPromptsUI
 
 function renderPromptsUI(promptFolders) {
     const container = document.getElementById('gu-prompts-list');
@@ -374,14 +398,15 @@ function renderPromptsUI(promptFolders) {
     }
 
     promptFolders.forEach((folder, folderIdx) => {
+        // ... (Logique de recherche existante inchangée) ...
         const folderMatches = folder.name.toLowerCase().includes(searchText);
         const matchingPrompts = folder.prompts.filter(prompt => {
             const nameMatch = prompt.name.toLowerCase().includes(searchText);
             const contentMatch = prompt.content.toLowerCase().includes(searchText);
             return nameMatch || contentMatch;
         });
-
         if (searchText && !folderMatches && matchingPrompts.length === 0) return;
+        // ...
 
         const div = document.createElement('div');
         const header = document.createElement('div');
@@ -391,15 +416,18 @@ function renderPromptsUI(promptFolders) {
         const isOpen = folder.isOpen || (searchText.length > 0);
         const emoji = folder.emoji || '📁';
 
+        // --- MODIFICATION ICI : Ajout du bouton EXPORT ---
         header.innerHTML = `
             <div class="gu-folder-left">
                 <span style="font-size:10px; color:${folder.color}; width: 12px;">${isOpen ? '▼' : '▶'}</span>
                 <span class="gu-folder-emoji">${emoji}</span>
-                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; font-weight:500;">${folder.name}</span>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:110px; font-weight:500;">${folder.name}</span>
             </div>
             <div style="display:flex; align-items:center;">
                 <span class="gu-count">${folder.prompts.length}</span>
                 <div class="gu-folder-actions">
+                    <span class="gu-icon-btn export-pack" title="${t('export_pack')}">📤</span>
+
                     <div class="gu-color-wrapper">
                         <div class="gu-color-dot" style="background-color:${folder.color};"></div>
                         <input type="color" class="gu-color-input" value="${folder.color}">
@@ -410,15 +438,33 @@ function renderPromptsUI(promptFolders) {
             </div>
         `;
 
+        // --- EVENTS ---
         const colorInput = header.querySelector('.gu-color-input');
         colorInput.addEventListener('input', (e) => {
             header.style.borderLeftColor = e.target.value;
             header.querySelector('.gu-color-dot').style.backgroundColor = e.target.value;
         });
         colorInput.addEventListener('change', (e) => { folder.color = e.target.value; Storage.savePromptFolders(promptFolders, refreshUI); });
+        header.querySelector('.gu-color-wrapper').addEventListener('click', e => e.stopPropagation());
+
+        // Clic Export
+        header.querySelector('.export-pack').onclick = (e) => {
+            e.stopPropagation();
+            exportPromptFolder(folder);
+        };
+
         header.querySelector('.edit').onclick = (e) => { e.stopPropagation(); showCreatePromptFolderModal(folder); };
         header.querySelector('.delete').onclick = (e) => { e.stopPropagation(); if(confirm(t('delete_folder_confirm'))) { promptFolders.splice(folderIdx, 1); Storage.savePromptFolders(promptFolders, refreshUI); } };
-        header.onclick = () => { folder.isOpen = !folder.isOpen; Storage.savePromptFolders(promptFolders, refreshUI); };
+        header.onclick = () => {
+                    // 1. Mise à jour immédiate
+                    folder.isOpen = !folder.isOpen;
+
+                    // 2. Re-rendu INSTANTANÉ
+                    renderPromptsUI(promptFolders);
+
+                    // 3. Sauvegarde silencieuse en arrière-plan
+                    savePromptsDebounced(promptFolders);
+                };
 
         div.appendChild(header);
 
@@ -426,23 +472,39 @@ function renderPromptsUI(promptFolders) {
             const content = document.createElement('div');
             content.className = 'gu-folder-content open';
 
+            // ... (Reste de la logique d'affichage des prompts inchangée) ...
             let promptsDisplay = searchText ? matchingPrompts : [...folder.prompts];
+
+            // Tri PIN
+            if (!searchText) {
+                promptsDisplay.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+            }
 
             promptsDisplay.forEach((prompt) => {
                 const promptIdx = folder.prompts.indexOf(prompt);
                 const item = document.createElement('div');
-                item.className = 'gu-prompt-item';
+                item.className = `gu-prompt-item ${prompt.isPinned ? 'pinned' : ''}`;
+
                 item.innerHTML = `
                     <div class="gu-prompt-meta">
                         <span class="gu-prompt-name">${prompt.name}</span>
                         <div class="gu-prompt-actions">
+                            <span class="gu-icon-btn pin-p ${prompt.isPinned ? 'active' : ''}" title="Pin to top">📌</span>
                             <span class="gu-icon-btn edit-p">✎</span>
                             <span class="gu-icon-btn delete-p">×</span>
                         </div>
                     </div>
                     <div class="gu-prompt-text">${prompt.content}</div>
                 `;
-                item.onclick = () => handlePromptClick(prompt.content);
+
+                item.onclick = () => handlePromptClick(prompt.content, folderIdx, promptIdx);
+
+                item.querySelector('.pin-p').onclick = (e) => {
+                    e.stopPropagation();
+                    prompt.isPinned = !prompt.isPinned;
+                    Storage.savePromptFolders(promptFolders, () => { renderPromptsUI(promptFolders); });
+                };
+
                 item.querySelector('.edit-p').onclick = (e) => { e.stopPropagation(); showCreatePromptModal(prompt, folderIdx, promptIdx); };
                 item.querySelector('.delete-p').onclick = (e) => {
                     e.stopPropagation();
@@ -459,13 +521,91 @@ function renderPromptsUI(promptFolders) {
     });
 }
 
+// --- IMPORT / EXPORT PACKS ---
+
+function exportPromptFolder(folder) {
+    const exportData = {
+        type: 'guop_pack',
+        version: '1.0',
+        folder: folder
+    };
+
+    // Modification ici : extension .guop
+    const fileName = `${folder.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.guop`;
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importPromptPack(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+
+            // Validation basique : est-ce que ça ressemble à un dossier de prompts ?
+            let folderToAdd = null;
+
+            // Cas 1 : C'est un format GUOP (notre format exporté)
+            if (data.type === 'guop_pack' && data.folder) {
+                folderToAdd = data.folder;
+            }
+            // Cas 2 : C'est peut-être juste un objet dossier brut (vieux format ou manuel)
+            else if (data.name && Array.isArray(data.prompts)) {
+                folderToAdd = data;
+            }
+
+            if (folderToAdd) {
+                // On récupère la liste actuelle et on AJOUTE (push)
+                Storage.getPromptFolders(currentFolders => {
+                    // Optionnel : Renommer si doublon pour éviter confusion
+                    const isDuplicate = currentFolders.some(f => f.name === folderToAdd.name);
+                    if (isDuplicate) {
+                        folderToAdd.name = `${folderToAdd.name} (Imported)`;
+                    }
+
+                    // On s'assure que isOpen est false pour ne pas encombrer l'interface
+                    folderToAdd.isOpen = false;
+
+                    currentFolders.push(folderToAdd);
+
+                    Storage.savePromptFolders(currentFolders, () => {
+                        refreshUI(); // Ou renderPromptsUI
+                        alert(t('import_success'));
+                    });
+                });
+            } else {
+                alert(t('import_error'));
+            }
+        } catch (err) {
+            console.error(err);
+            alert(t('import_error'));
+        }
+        // Reset de l'input pour pouvoir réimporter le même fichier si besoin
+        event.target.value = '';
+    };
+    reader.readAsText(file);
+}
+
 // --- PROMPT INJECTION LOGIC ---
-function handlePromptClick(content) {
+function handlePromptClick(content, folderIdx = null, promptIdx = null) {
     const regex = /{{(.*?)}}/g;
     const matches = [...content.matchAll(regex)];
     if (matches.length > 0) {
         const vars = [...new Set(matches.map(m => m[1]))];
-        showPromptVariableModal(content, vars);
+        // On transmet les IDs à la modale pour qu'elle puisse sauvegarder/supprimer
+        showPromptVariableModal(content, vars, folderIdx, promptIdx);
     } else {
         injectPromptToGemini(content);
     }
@@ -489,13 +629,57 @@ function injectPromptToGemini(text) {
 }
 
 // --- MODALS ---
-export function showPromptVariableModal(content, variables) {
+// ui.js - Remplacement de showPromptVariableModal (Version avec option "Other")
+
+export function showPromptVariableModal(content, variables, folderIdx = null, promptIdx = null) {
     const modal = document.createElement('div');
     modal.className = 'gu-modal-overlay';
-    let inputsHtml = variables.map(v => `
-        <span class="gu-input-label" style="margin-top:10px; color:#a8c7fa;">${v.toUpperCase()}</span>
-        <input type="text" data-var="${v}" class="gu-tag-input gu-var-input" placeholder="Value for ${v}..." autofocus>
-    `).join('');
+
+    // On garde une copie locale du contenu pour pouvoir le modifier (Ajout/Suppression d'options)
+    let currentContent = content;
+
+    let inputsHtml = variables.map(v => {
+        // --- CAS LISTE DÉROULANTE (DROPDOWN) ---
+        if (v.includes(':')) {
+            const parts = v.split(':');
+            const label = parts[0].trim();
+            const options = parts[1].split(',').map(o => o.trim());
+
+            let optionsHtml = options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+            optionsHtml += `<option value="__custom__" style="font-style:italic; color:#a8c7fa;">Other...</option>`;
+
+            // Bouton Delete (X) - Seulement si on a les droits d'écriture (folderIdx != null)
+            const deleteBtnHtml = (folderIdx !== null)
+                ? `<button class="gu-btn-del-opt" title="Delete selected option from list" style="background:#5c2b29; color:white; border:none; width:30px; border-radius:4px; cursor:pointer; font-weight:bold;">×</button>`
+                : '';
+
+            return `
+                <div class="gu-var-group" data-original-var="${v.replace(/"/g, '&quot;')}">
+                    <span class="gu-input-label" style="margin-top:10px; color:#a8c7fa;">${label.toUpperCase()}</span>
+
+                    <div style="display:flex; gap:6px;">
+                        <select class="gu-tag-input gu-var-input gu-var-select" style="cursor:pointer; flex:1;">
+                            ${optionsHtml}
+                        </select>
+                        ${deleteBtnHtml}
+                    </div>
+
+                    <div class="gu-custom-row" style="display:none; margin-top:5px; gap:6px;">
+                        <input type="text" class="gu-tag-input gu-custom-input" style="flex:1; border-color:#a8c7fa;" placeholder="New value...">
+                        <button class="gu-btn-add-custom" style="background:#254d29; border:1px solid #254d29; color:white; border-radius:8px; cursor:pointer; width:40px; font-weight:bold; display:none; align-items:center; justify-content:center;" title="Add to list permanent">+</button>
+                    </div>
+                </div>
+            `;
+        }
+        // --- CAS TEXTE SIMPLE ---
+        else {
+            return `
+                <span class="gu-input-label" style="margin-top:10px; color:#a8c7fa;">${v.toUpperCase()}</span>
+                <input type="text" data-original-var="${v.replace(/"/g, '&quot;')}" class="gu-tag-input gu-var-input" placeholder="Value for ${v}..." autofocus>
+            `;
+        }
+    }).join('');
+
     modal.innerHTML = `
         <div class="gu-modal-content">
             <div class="gu-modal-header"><span>${t('fill_vars_title')}</span><span class="gu-menu-close">×</span></div>
@@ -506,22 +690,154 @@ export function showPromptVariableModal(content, variables) {
             </div>
         </div>
     `;
+
     document.body.appendChild(modal);
-    modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
-    setTimeout(() => { const i = modal.querySelector('input'); if(i) i.focus(); }, 100);
+
+    // Focus initial
+    setTimeout(() => { const i = modal.querySelector('input, select'); if(i) i.focus(); }, 100);
+
+    const close = () => modal.remove();
+    modal.querySelector('.gu-menu-close').onclick = close;
+
+    // --- FONCTION DE MISE À JOUR DU PROMPT (PERSISTANCE) ---
+    const updateVariableDefinition = (group, oldDef, newDef) => {
+        // 1. Mise à jour de la mémoire locale du prompt
+        currentContent = currentContent.split(`{{${oldDef}}}`).join(`{{${newDef}}}`);
+
+        // 2. Sauvegarde dans le stockage Chrome (si possible)
+        updatePromptContentInStorage(folderIdx, promptIdx, currentContent);
+
+        // 3. Mise à jour du DOM pour que les futurs clics utilisent la nouvelle déf
+        group.setAttribute('data-original-var', newDef);
+    };
+
+    // --- LOGIQUE INTERACTIVE ---
+    modal.querySelectorAll('.gu-var-group').forEach(group => {
+        const select = group.querySelector('.gu-var-select');
+        const customRow = group.querySelector('.gu-custom-row');
+        const deleteBtn = group.querySelector('.gu-btn-del-opt');
+
+        if (!select) return; // Pas un dropdown
+
+        const customInput = customRow.querySelector('.gu-custom-input');
+        const addBtn = customRow.querySelector('.gu-btn-add-custom');
+
+        // 1. Afficher/Masquer "Other" + Gestion Delete Button
+        const updateUIState = () => {
+            const isCustom = select.value === '__custom__';
+            customRow.style.display = isCustom ? 'flex' : 'none';
+            if(isCustom) {
+                customInput.focus();
+                if(deleteBtn) deleteBtn.style.display = 'none'; // Pas de suppression sur "Other"
+            } else {
+                addBtn.style.display = 'none';
+                customInput.value = '';
+                if(deleteBtn) deleteBtn.style.display = 'block'; // Réafficher bouton suppression
+            }
+        };
+        select.onchange = updateUIState;
+
+        // 2. Afficher bouton "+" quand on tape
+        customInput.oninput = () => {
+            addBtn.style.display = customInput.value.trim().length > 0 ? 'flex' : 'none';
+        };
+
+        // 3. AJOUTER (Persistant)
+        addBtn.onclick = (e) => {
+            e.preventDefault();
+            const newVal = customInput.value.trim();
+            if (!newVal) return;
+
+            // Calcul de la nouvelle définition
+            const oldDef = group.getAttribute('data-original-var'); // ex: Ton:A,B
+            const newDef = `${oldDef},${newVal}`; // ex: Ton:A,B,C
+
+            // Mise à jour DOM Select
+            const newOption = document.createElement('option');
+            newOption.value = newVal;
+            newOption.innerText = newVal;
+            const otherOption = select.querySelector('option[value="__custom__"]');
+            select.insertBefore(newOption, otherOption);
+            select.value = newVal;
+
+            // Sauvegarde
+            updateVariableDefinition(group, oldDef, newDef);
+            updateUIState(); // Reset UI
+        };
+
+        // 4. SUPPRIMER (Persistant)
+        if (deleteBtn) {
+            deleteBtn.onclick = (e) => {
+                e.preventDefault();
+                const valToDelete = select.value;
+                if (valToDelete === '__custom__' || !valToDelete) return;
+
+                if (confirm(`Remove "${valToDelete}" from this list permanently?`)) {
+                    // Calcul de la nouvelle définition
+                    const oldDef = group.getAttribute('data-original-var'); // ex: Ton:A,B,C
+                    const parts = oldDef.split(':');
+                    const label = parts[0];
+                    let opts = parts[1].split(',');
+
+                    // Filtrer la valeur supprimée
+                    opts = opts.filter(o => o.trim() !== valToDelete);
+
+                    const newDef = `${label}:${opts.join(',')}`; // ex: Ton:A,C
+
+                    // Mise à jour DOM
+                    select.querySelector(`option[value="${valToDelete}"]`).remove();
+                    // Sélectionner le premier élément restant ou Other
+                    select.selectedIndex = 0;
+
+                    // Sauvegarde
+                    updateVariableDefinition(group, oldDef, newDef);
+                    updateUIState();
+                }
+            };
+        }
+    });
+
+    // --- SOUMISSION ---
     const submit = () => {
-        let finalContent = content;
-        modal.querySelectorAll('.gu-var-input').forEach(input => {
-            const v = input.getAttribute('data-var');
-            const val = input.value || `{{${v}}}`;
+        let finalContent = currentContent; // On part de la version à jour (potentiellement modifiée)
+
+        // On doit re-scanner les valeurs car le DOM a pu changer (data-original-var a changé)
+        // Mais plus simple : on remplace les variables une par une
+
+        const allGroups = modal.querySelectorAll('.gu-var-group, input[data-original-var]');
+
+        allGroups.forEach(el => {
+            // Récupérer la définition actuelle (peut avoir été mise à jour par Add/Del)
+            const v = el.getAttribute('data-original-var');
+            let val = "";
+
+            if (el.classList.contains('gu-var-group')) {
+                // C'est un Dropdown
+                const select = el.querySelector('select');
+                val = select.value;
+                if (val === '__custom__') {
+                    val = el.querySelector('.gu-custom-input').value || "";
+                }
+            } else {
+                // C'est un Input simple
+                val = el.value;
+            }
+
+            // Remplacement dans le texte final
             finalContent = finalContent.split(`{{${v}}}`).join(val);
         });
+
         injectPromptToGemini(finalContent);
-        modal.remove();
+        close();
     };
+
     modal.querySelector('#gu-submit-vars').onclick = submit;
-    modal.querySelectorAll('input').forEach(inp => { inp.onkeydown = (e) => { if(e.key === 'Enter') submit(); }; });
-    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+
+    modal.querySelectorAll('input, select').forEach(inp => {
+        inp.onkeydown = (e) => { if(e.key === 'Enter') submit(); };
+    });
+
+    modal.onclick = (e) => { if(e.target === modal) close(); };
 }
 
 export function showCreateFolderModal(existingFolder = null) {
@@ -699,27 +1015,244 @@ export function showCreatePromptModal(existingPrompt = null, folderIdx = null, p
 export function showPromptHelpModal() {
     const modal = document.createElement('div');
     modal.className = 'gu-modal-overlay';
-    modal.innerHTML = `
-        <div class="gu-modal-content">
-            <div class="gu-modal-header"><span>${t('prompt_help_title')}</span><span class="gu-menu-close">×</span></div>
-            <div class="gu-modal-body">
-                <p style="font-size:13px; line-height:1.5; color:#e3e3e3;">
-                    ${t('customize_prompt').replace(':', '')}
-                    You can create dynamic templates using <b>Variables</b>.<br><br>
-                    Simply wrap a word in double curly braces like this:
-                    <br><br>
-                    <code style="background:#333; padding:4px 8px; border-radius:4px; color:#a8c7fa;">Act as a {{Job}} expert.</code>
-                    <br><br>
-                    When you click the prompt, Gemini Organizer will ask you to fill in "Job" before inserting the text.
-                </p>
-                <button class="gu-btn-action" id="gu-close-help">${t('tutorial_button')}</button>
-            </div>
-        </div>
-    `;
+ modal.innerHTML = `
+         <div class="gu-modal-content">
+             <div class="gu-modal-header"><span>${t('prompt_help_title')}</span><span class="gu-menu-close">×</span></div>
+             <div class="gu-modal-body">
+                 ${t('prompt_help_content')}
+                 <button class="gu-btn-action" id="gu-close-help">${t('tutorial_button')}</button>
+             </div>
+         </div>
+     `;
     document.body.appendChild(modal);
     modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
     modal.querySelector('#gu-close-help').onclick = () => modal.remove();
     modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
+
+// --- EXPORT FUNCTIONS ---
+
+function getChatMessages() {
+    const chatContainer = document.querySelector('main');
+    if (!chatContainer) return [];
+
+    // On récupère les blocs de questions et réponses
+    const elements = chatContainer.querySelectorAll('user-query, model-response');
+    const messages = [];
+
+    elements.forEach(el => {
+        const isUser = el.tagName.toLowerCase() === 'user-query';
+        // On essaie de récupérer le contenu brut ou le HTML pour le PDF
+        const text = el.innerText || el.textContent;
+        const html = el.innerHTML; // Utile pour le PDF pour garder un peu de formatage
+
+        messages.push({
+            role: isUser ? 'User' : 'Gemini',
+            text: text.trim(),
+            html: html
+        });
+    });
+    return messages;
+}
+
+function exportChatToJSON() {
+    const messages = getChatMessages().map(m => ({ role: m.role, content: m.text }));
+    if (messages.length === 0) return alert("No chat content found.");
+
+    const blob = new Blob([JSON.stringify(messages, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gemini_chat_${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function updatePromptContentInStorage(folderIdx, promptIdx, newContent) {
+    if (folderIdx === null || promptIdx === null) return;
+    Storage.getPromptFolders(folders => {
+        if (folders[folderIdx] && folders[folderIdx].prompts[promptIdx]) {
+            folders[folderIdx].prompts[promptIdx].content = newContent;
+            Storage.savePromptFolders(folders, () => {
+                console.log("Prompt updated automatically.");
+            });
+        }
+    });
+}
+
+function exportChatToPDF() {
+    const messages = getChatMessages();
+    if (messages.length === 0) return alert(t('prompt_empty_message') || "No content found");
+
+    // 1. Ouvrir la fenêtre
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return alert("Pop-up blocked. Please allow pop-ups for this export.");
+
+    const dateStr = new Date().toLocaleDateString();
+    const title = `Gemini Chat - ${dateStr}`;
+
+    // 2. Construire le HTML (SANS AUCUN SCRIPT NI ONCLICK)
+    let htmlContent = `
+    <html>
+    <head>
+        <title>${title}</title>
+        <style>
+            body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; color: #333; line-height: 1.6; }
+            h1 { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 20px; color: #444; }
+
+            .message { margin-bottom: 30px; page-break-inside: avoid; }
+            .role { font-weight: bold; font-size: 13px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+            .User .role { color: #0b57d0; }
+            .Gemini .role { color: #8e44ad; }
+            .content { font-size: 15px; white-space: pre-wrap; text-align: justify; }
+
+            pre { background: #f8f9fa; border: 1px solid #ddd; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
+            code { font-family: 'Consolas', 'Monaco', monospace; color: #d63384; }
+
+            /* Header pour le bouton (caché à l'impression) */
+            #print-header {
+                position: fixed; top: 0; left: 0; width: 100%; background: #333; color: white;
+                padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 9999;
+                display: flex; justify-content: center; align-items: center; gap: 20px;
+            }
+            .btn-print {
+                background: #0b57d0; color: white; border: none; padding: 10px 20px; border-radius: 4px;
+                font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            }
+            .btn-print:hover { background: #0842a0; }
+            .info-text { font-size: 13px; color: #ccc; }
+
+            @media print {
+                #print-header { display: none !important; }
+                body { padding-top: 0; }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="print-header">
+            <button id="btn-print-action" class="btn-print">
+                🖨️ Enregistrer en PDF
+            </button>
+            <span class="info-text">Destination: "Enregistrer au format PDF"</span>
+        </div>
+
+        <div style="margin-top: 60px;">
+            <h1>${title}</h1>
+    `;
+
+    messages.forEach(msg => {
+        htmlContent += `
+            <div class="message ${msg.role}">
+                <div class="role">${msg.role}</div>
+                <div class="content">${msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+            </div>
+        `;
+    });
+
+    htmlContent += `</div></body></html>`;
+
+    // 3. Écrire le contenu statique
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+
+    // 4. INJECTION DE LA LOGIQUE (La partie magique)
+    // On attend que la fenêtre soit prête, puis on attache le clic DEPUIS l'extension
+    setTimeout(() => {
+        if (!printWindow || printWindow.closed) return;
+
+        // On récupère le bouton dans la NOUVELLE fenêtre
+        const btn = printWindow.document.getElementById('btn-print-action');
+
+        if (btn) {
+            // On lui greffe l'action ici (autorisé par Chrome)
+            btn.onclick = () => {
+                printWindow.document.title = title; // Force le titre pour le nom de fichier
+                printWindow.print();
+            };
+        }
+
+        // Lancement automatique
+        printWindow.document.title = title;
+        printWindow.print();
+    }, 500); // Petit délai pour s'assurer que le DOM est chargé
+}
+
+function showExportMenu(e) {
+    const existing = document.getElementById('gu-export-menu');
+    if (existing) existing.remove();
+
+    const menu = document.createElement('div');
+    menu.id = 'gu-export-menu';
+    menu.className = 'gu-context-menu';
+    menu.style.top = `${e.clientY + 25}px`;
+
+    // Positionnement intelligent
+    if (window.innerWidth - e.clientX < 200) {
+        menu.style.right = '20px';
+        menu.style.left = 'auto';
+    } else {
+        menu.style.left = `${e.clientX - 100}px`;
+    }
+
+    const options = [
+        { label: t('export_md'), icon: '📝', action: exportChatToMarkdown },
+        { label: t('export_pdf'), icon: '🖨️', action: exportChatToPDF },
+        { label: t('export_json'), icon: '📦', action: exportChatToJSON }
+    ];
+
+    // En-tête avec bouton de fermeture (Croix) ajouté
+    let html = `
+        <div class="gu-context-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>${t('export_menu_title')}</span>
+            <span id="gu-close-export-menu" style="cursor:pointer; font-weight:bold; font-size:16px; padding:0 4px;">×</span>
+        </div>
+    `;
+
+    options.forEach((opt, idx) => {
+        html += `
+            <div class="gu-context-item" data-idx="${idx}">
+                <span style="margin-right:10px;">${opt.icon}</span> ${opt.label}
+            </div>
+        `;
+    });
+
+    menu.innerHTML = html;
+    document.body.appendChild(menu);
+
+    // --- LOGIQUE DE FERMETURE ---
+
+    const closeMenu = () => {
+        if (menu.parentNode) menu.remove();
+        document.removeEventListener('click', outsideClickListener);
+    };
+
+    // 1. Fermer via la Croix
+    menu.querySelector('#gu-close-export-menu').onclick = (ev) => {
+        ev.stopPropagation();
+        closeMenu();
+    };
+
+    // 2. Fermer quand la souris quitte le menu (Mouse Leave)
+    menu.onmouseleave = () => closeMenu();
+
+    // 3. Clic sur une option
+    menu.querySelectorAll('.gu-context-item').forEach(item => {
+        item.onclick = () => {
+            const idx = item.getAttribute('data-idx');
+            options[idx].action();
+            closeMenu();
+        };
+    });
+
+    // 4. Clic à l'extérieur
+    const outsideClickListener = (ev) => {
+        if (!menu.contains(ev.target) && ev.target !== e.target) {
+            closeMenu();
+        }
+    };
+    setTimeout(() => document.addEventListener('click', outsideClickListener), 100);
 }
 
 export function showBulkManager(folders) {
@@ -883,13 +1416,15 @@ export function showSettingsModal() {
     modal.className = 'gu-modal-overlay';
     const user = Storage.getCurrentUser();
 
-    // Options de langue
     const languageOptions = Object.keys(i18n).map(lang =>
         `<option value="${lang}">${i18n[lang].lang_name}</option>`
     ).join('');
 
-    // Récupérer l'état du toggle "Tchats Cachés"
     const showHidden = localStorage.getItem('gu_show_archived') === 'true';
+
+    // Récupération des deux zooms
+    const zoomText = localStorage.getItem('gu_zoom_text_level') || '100';
+    const zoomUI = localStorage.getItem('gu_zoom_ui_level') || '100';
 
     modal.innerHTML = `
         <div class="gu-modal-content">
@@ -905,6 +1440,22 @@ export function showSettingsModal() {
                     <select id="gu-language-select" class="gu-tag-input" style="margin-top:0;">
                         ${languageOptions}
                     </select>
+                </div>
+
+                <div style="background:#252627; padding:10px; border-radius:8px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span class="gu-input-label" style="margin:0;">${t('zoom_text')}</span>
+                        <span id="gu-zoom-text-val" style="color:#a8c7fa; font-weight:bold;">${zoomText}%</span>
+                    </div>
+                    <input type="range" id="gu-zoom-text-slider" min="80" max="150" step="5" value="${zoomText}" style="width:100%; accent-color:#0b57d0; cursor:pointer;">
+                </div>
+
+                <div style="background:#252627; padding:10px; border-radius:8px; margin-bottom:15px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span class="gu-input-label" style="margin:0;">${t('zoom_ui')}</span>
+                        <span id="gu-zoom-ui-val" style="color:#a8c7fa; font-weight:bold;">${zoomUI}%</span>
+                    </div>
+                    <input type="range" id="gu-zoom-ui-slider" min="80" max="120" step="5" value="${zoomUI}" style="width:100%; accent-color:#254d29; cursor:pointer;">
                 </div>
 
                 <div style="background:#252627; padding:10px; border-radius:8px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
@@ -927,15 +1478,33 @@ export function showSettingsModal() {
                     <div style="padding:10px; color:#666; text-align:center;">Chargement...</div>
                 </div>
 
-                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v2.2</p>
+                <p style="color:#666; font-size:12px; margin-top:20px;">Gemini Organizer v2.3</p>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
 
-    // --- LOGIQUE DES SETTINGS ---
+    // --- LOGIQUE ZOOM 1 : TEXTE ---
+    const sliderText = document.getElementById('gu-zoom-text-slider');
+    const valText = document.getElementById('gu-zoom-text-val');
+    sliderText.oninput = () => {
+        const val = sliderText.value;
+        valText.innerText = `${val}%`;
+        document.documentElement.style.setProperty('--gu-zoom-text', val / 100);
+        localStorage.setItem('gu_zoom_text_level', val);
+    };
 
-    // 1. Langue
+    // --- LOGIQUE ZOOM 2 : UI ---
+    const sliderUI = document.getElementById('gu-zoom-ui-slider');
+    const valUI = document.getElementById('gu-zoom-ui-val');
+    sliderUI.oninput = () => {
+        const val = sliderUI.value;
+        valUI.innerText = `${val}%`;
+        document.documentElement.style.setProperty('--gu-zoom-ui', val / 100);
+        localStorage.setItem('gu_zoom_ui_level', val);
+    };
+
+    // --- LOGIQUE EXISTANTE ---
     const langSelect = document.getElementById('gu-language-select');
     chrome.storage.local.get([LANG_STORAGE_KEY], (res) => {
         langSelect.value = res[LANG_STORAGE_KEY] || 'en';
@@ -951,7 +1520,6 @@ export function showSettingsModal() {
         });
     };
 
-    // 2. Toggle Hidden Chats
     const toggleHidden = document.getElementById('gu-toggle-hidden');
     toggleHidden.onchange = () => {
         if(toggleHidden.checked) document.body.classList.add('gu-show-archived');
@@ -959,78 +1527,56 @@ export function showSettingsModal() {
         localStorage.setItem('gu_show_archived', toggleHidden.checked);
     };
 
-    // 3. Gestion des Backups
-const backupList = document.getElementById('gu-backup-list');
+    const backupList = document.getElementById('gu-backup-list');
     Storage.getBackups(backups => {
         let html = '';
-
-        // Helper pour le bouton download
         const downloadBtn = (type, idx) =>
             `<button class="gu-backup-btn dl-btn" data-type="${type}" data-idx="${idx}" style="background:#444; margin-right:5px;" title="Download JSON">⬇</button>`;
 
         if(backups.safety) {
             html += `<div class="gu-backup-row" style="border-left:3px solid orange; background:#2a2b2e;">
                 <span>⚠️ Auto-Save <br><small style="color:#888">${backups.safety.displayDate || backups.safety.date}</small></span>
-                <div>
-                    ${downloadBtn('safety', 0)}
-                    <button class="gu-backup-btn restore-btn" data-type="safety">${t('restore')}</button>
-                </div>
+                <div>${downloadBtn('safety', 0)}<button class="gu-backup-btn restore-btn" data-type="safety">${t('restore')}</button></div>
             </div>`;
         }
         if(backups.regular && backups.regular.length > 0) {
             backups.regular.forEach((bk, i) => {
                 html += `<div class="gu-backup-row">
                     <span>Backup ${i+1} <br><small style="color:#888">${bk.displayDate || bk.date}</small></span>
-                    <div>
-                        ${downloadBtn('regular', i)}
-                        <button class="gu-backup-btn restore-btn" data-idx="${i}">${t('restore')}</button>
-                    </div>
+                    <div>${downloadBtn('regular', i)}<button class="gu-backup-btn restore-btn" data-idx="${i}">${t('restore')}</button></div>
                 </div>`;
             });
         } else if (!backups.safety) {
                 html = `<div style="padding:10px; color:#666; text-align:center;">${t('empty-backup-list')}</div>`;
         }
-
         backupList.innerHTML = html;
 
-        // Logique Bouton DOWNLOAD
         backupList.querySelectorAll('.dl-btn').forEach(btn => {
             btn.onclick = () => {
                 const type = btn.getAttribute('data-type');
                 const idx = btn.getAttribute('data-idx');
                 const backupItem = type === 'safety' ? backups.safety : backups.regular[idx];
-
                 if(backupItem && backupItem.data) {
                     const blob = new Blob([JSON.stringify(backupItem.data, null, 2)], {type:'application/json'});
-                    const a = document.createElement('a');
-                    a.href = URL.createObjectURL(blob);
-                    a.download = `gemini_backup_${type}_${idx}.json`;
-                    a.click();
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `gemini_backup_${type}_${idx}.json`; a.click();
                 }
             };
         });
 
-        // Clics Restauration
         backupList.querySelectorAll('.restore-btn').forEach(btn => {
             btn.onclick = () => {
                 if(confirm(t('confirm-backup-restore'))) {
                     const type = btn.getAttribute('data-type');
                     const idx = btn.getAttribute('data-idx');
                     const dataToRestore = type === 'safety' ? backups.safety : backups.regular[idx];
-
                     if(dataToRestore) {
-                        Storage.restoreBackup(dataToRestore, () => {
-                            refreshUI();
-                            alert("Restauration réussie !");
-                            modal.remove();
-                        });
+                        Storage.restoreBackup(dataToRestore, () => { refreshUI(); alert("Restauration réussie !"); modal.remove(); });
                     }
                 }
             };
         });
     });
 
-    // 4. Import/Export
     modal.querySelector('.gu-menu-close').onclick = () => modal.remove();
     document.getElementById('gu-export').onclick = () => {
         Storage.getData(d => {
@@ -1038,20 +1584,18 @@ const backupList = document.getElementById('gu-backup-list');
             const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `gemini_backup_${user}.json`; a.click();
         });
     };
-
     document.getElementById('gu-import').onclick = () => document.getElementById('gu-import-file').click();
     document.getElementById('gu-import-file').onchange = (e) => {
         const r = new FileReader();
         r.onload = ev => {
             try {
                 const d = JSON.parse(ev.target.result);
-                if(confirm(t('overwrite_confirm'))) {
-                    // CRÉATION BACKUP SÉCURITÉ AVANT IMPORT
-                    Storage.createBackup('safety'); // Assurez-vous que Storage.createBackup existe
+                if(confirm(t('overwrite_confirm') || "Overwrite data?")) {
+                    Storage.createBackup('safety');
                     Storage.saveData(d, refreshUI);
                     modal.remove();
                 }
-            } catch(err) { alert(t('invalid_json_alert')); }
+            } catch(err) { alert(t('invalid_json_alert') || "Invalid JSON"); }
         };
         r.readAsText(e.target.files[0]);
     };
@@ -1317,6 +1861,18 @@ function showFolderMenu(e, folders, title, url) {
     setTimeout(() => document.addEventListener('click', closeMenu, {once:true}), 100);
 }
 
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Sauvegarde différée (attend 1s après le dernier clic pour écrire sur le disque)
+const saveFoldersDebounced = debounce((data) => Storage.saveData(data), 1000);
+const savePromptsDebounced = debounce((data) => Storage.savePromptFolders(data), 1000);
+
 // --- TUTORIAL ---
 export function showTutorialModal(onClose) {
     const modal = document.createElement('div');
@@ -1342,77 +1898,179 @@ export function showTutorialModal(onClose) {
     };
 }
 
+export function injectCodeButtons() {
+    // On cible les boutons "Copier" existants dans les blocs de code
+    // Gemini utilise souvent aria-label="Copier le code" ou "Copy code"
+    const copyButtons = document.querySelectorAll('button[aria-label*="Copier"], button[aria-label*="Copy"]');
+
+    copyButtons.forEach(copyBtn => {
+        // On remonte au conteneur parent (la barre d'outils du bloc de code)
+        const toolbar = copyBtn.parentNode;
+
+        // Vérification anti-doublon
+        if (!toolbar || toolbar.querySelector('.gu-code-dl-btn')) return;
+
+        // On vérifie qu'on est bien dans un "code-block" (et pas juste un bouton copier isolé)
+        const codeBlock = copyBtn.closest('code-block') || copyBtn.closest('.code-block');
+        if (!codeBlock) return;
+
+        // Création du bouton Télécharger
+        const btn = document.createElement('button');
+        // On copie les classes du bouton "Copier" pour avoir le même style natif (rond, hover, etc.)
+        btn.className = copyBtn.className + ' gu-code-dl-btn';
+        btn.style.marginLeft = "4px"; // Petit espace
+        btn.title = "Télécharger le fichier";
+
+        // Icône de téléchargement (SVG propre)
+        btn.innerHTML = `<span class="mat-mdc-button-touch-target"></span><svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`;
+
+        // Action au clic
+        btn.onclick = () => {
+            // 1. Récupérer le contenu du code
+            // Gemini met le code dans une balise <code> ou <pre> à l'intérieur du bloc
+            const codeElement = codeBlock.querySelector('code') || codeBlock.querySelector('pre');
+            const codeContent = codeElement ? codeElement.innerText : "";
+
+            if (!codeContent) return;
+
+            // 2. Détecter l'extension du fichier via le header du bloc
+            // Le header contient souvent le nom du langage (ex: "JSON", "Python")
+            let ext = "txt";
+            const header = codeBlock.innerText.split('\n')[0].toLowerCase(); // On prend la première ligne visible
+
+            if (header.includes('json')) ext = 'json';
+            else if (header.includes('javascript') || header.includes('js')) ext = 'js';
+            else if (header.includes('python') || header.includes('py')) ext = 'py';
+            else if (header.includes('html')) ext = 'html';
+            else if (header.includes('css')) ext = 'css';
+            else if (header.includes('java') && !header.includes('script')) ext = 'java';
+            else if (header.includes('c++') || header.includes('cpp')) ext = 'cpp';
+            else if (header.includes('c#')) ext = 'cs';
+            else if (header.includes('php')) ext = 'php';
+            else if (header.includes('sql')) ext = 'sql';
+            else if (header.includes('bash') || header.includes('sh')) ext = 'sh';
+            else if (header.includes('markdown') || header.includes('md')) ext = 'md';
+
+            // 3. Lancer le téléchargement
+            const blob = new Blob([codeContent], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gemini_code.${ext}`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // Injection : On place le bouton juste avant le bouton Copier
+        toolbar.insertBefore(btn, copyBtn);
+    });
+}
+
 export function switchTab(tabName) {
     const panel = document.getElementById('gu-floating-panel');
     if (!panel) return;
 
+    // 1. Reset des états actifs
     panel.querySelectorAll('.gu-tab-btn').forEach(b => b.classList.remove('active'));
     panel.querySelectorAll('.gu-panel-view').forEach(p => p.classList.remove('active'));
 
+    // Sélecteur pour la barre de recherche (pour pouvoir la cacher/montrer)
+    const searchRow = panel.querySelector('#gu-content-wrapper .gu-search-row');
+
     if (tabName === 'folders') {
+        // --- ONGLET DOSSIERS ---
         panel.querySelector('#gu-tab-folders').classList.add('active');
-        panel.querySelector('#gu-content-wrapper .gu-search-row').style.display = 'block';
         panel.querySelector('#gu-content-area').classList.add('active');
-        panel.querySelector('#gu-prompts-panel').classList.remove('active');
+
+        if(searchRow) searchRow.style.display = 'block';
+
         panel.querySelector('#gu-add-folder-btn').style.display = 'flex';
         panel.querySelector('#gu-btn-bulk').style.display = 'flex';
         panel.querySelector('#gu-btn-reorganize').style.display = 'flex';
         panel.querySelector('#gu-search-input').placeholder = t('search_folders_placeholder');
-    } else {
+
+    } else if (tabName === 'prompts') {
+        // --- ONGLET PROMPTS ---
         panel.querySelector('#gu-tab-prompts').classList.add('active');
         panel.querySelector('#gu-prompts-panel').classList.add('active');
-        panel.querySelector('#gu-content-area').classList.remove('active');
+
+        if(searchRow) searchRow.style.display = 'block';
+
         panel.querySelector('#gu-add-folder-btn').style.display = 'none';
         panel.querySelector('#gu-btn-bulk').style.display = 'none';
         panel.querySelector('#gu-btn-reorganize').style.display = 'flex';
         panel.querySelector('#gu-search-input').placeholder = t('search_prompts_placeholder');
+
         Storage.getPromptFolders(promptFolders => {
             renderPromptsUI(promptFolders);
         });
+
+    } else if (tabName === 'notes') {
+        // --- ONGLET NOTES (NOUVEAU) ---
+        panel.querySelector('#gu-tab-notes').classList.add('active');
+        panel.querySelector('#gu-notes-panel').classList.add('active');
+
+        // On cache la barre de recherche pour les notes
+        if(searchRow) searchRow.style.display = 'none';
+
+        // On cache les boutons inutiles
+        panel.querySelector('#gu-add-folder-btn').style.display = 'none';
+        panel.querySelector('#gu-btn-bulk').style.display = 'none';
+        panel.querySelector('#gu-btn-reorganize').style.display = 'none';
+
+        renderNotesUI();
     }
 }
 
 // --- SLASH COMMANDS ---
+// --- SLASH COMMANDS ---
 export function handleSlashCommand(inputElement) {
-    let menu = document.getElementById('gu-slash-menu');
-    if (!menu) {
-        menu = document.createElement('div');
-        menu.id = 'gu-slash-menu';
-        document.body.appendChild(menu);
-    }
+    try {
+        let menu = document.getElementById('gu-slash-menu');
+        if (!menu) {
+            menu = document.createElement('div');
+            menu.id = 'gu-slash-menu';
+            document.body.appendChild(menu);
+        }
 
-    // 1. Récupération du texte actuel
-    const rawVal = inputElement.tagName === 'TEXTAREA' ? inputElement.value : inputElement.innerText;
-    // On ignore les retours à la ligne, et on ne prend que la dernière ligne si c'est un chatbox
-    const lines = rawVal.split('\n');
-    const lastLine = lines[lines.length - 1];
-    const val = lastLine.trim();
+        if (!inputElement) return;
 
-    // On cache si le champ est vide après suppression du '/'
-    if (!val) {
-        menu.style.display = 'none';
-        return;
-    }
+        const rawVal = inputElement.tagName === 'TEXTAREA' ? inputElement.value : (inputElement.innerText || "");
+        const lines = rawVal.split('\n');
+        const lastLine = lines[lines.length - 1];
+        const val = lastLine ? lastLine.trim() : "";
 
-    // Condition A: Doit commencer par "/" et ne doit PAS contenir d'espace après le "/"
-    if (val.startsWith('/') && !val.substring(1).includes(' ')) {
+        if (!val || !val.startsWith('/') || val.substring(1).includes(' ')) {
+            menu.style.display = 'none';
+            return;
+        }
+
         const query = val.substring(1).toLowerCase();
 
-        // Récupérer les prompts pour la recherche
         Storage.getPromptFolders(promptFolders => {
+            if (!Array.isArray(promptFolders)) {
+                menu.style.display = 'none';
+                return;
+            }
+
             let matches = [];
 
-            // Commandes fixes (avec le mot-clé comme label pour la recherche)
             if ('save'.includes(query)) matches.push({ type: 'cmd', label: 'save', desc: 'Save Chat' });
             if ('folder'.includes(query)) matches.push({ type: 'cmd', label: 'folder', desc: 'New Folder' });
             if ('prompt'.includes(query)) matches.push({ type: 'cmd', label: 'prompt', desc: 'Create Prompt' });
 
-            // Recherche dans les Prompts Utilisateur
-            promptFolders.forEach(folder => {
-                folder.prompts.forEach(p => {
-                    // Recherche par nom de prompt
-                    if (p.name.toLowerCase().includes(query)) {
-                        matches.push({ type: 'user_prompt', label: p.name, content: p.content, desc: 'User Prompt' });
+            promptFolders.forEach((folder, fIdx) => {
+                if (!folder || !Array.isArray(folder.prompts)) return;
+                folder.prompts.forEach((p, pIdx) => {
+                    if (p && p.name && p.name.toLowerCase().includes(query)) {
+                        matches.push({
+                            type: 'user_prompt',
+                            label: p.name,
+                            content: p.content || '',
+                            desc: 'User Prompt',
+                            fIdx: fIdx,
+                            pIdx: pIdx
+                        });
                     }
                 });
             });
@@ -1422,12 +2080,10 @@ export function handleSlashCommand(inputElement) {
                 return;
             }
 
-            // Construction HTML
             const rect = inputElement.getBoundingClientRect();
             menu.style.display = 'flex';
             menu.style.left = `${rect.left + 20}px`;
 
-            // Positionnement (Éviter de cacher la barre d'input si possible)
             if (window.innerHeight - rect.bottom > 200) {
                 menu.style.top = `${rect.bottom + 10}px`;
                 menu.style.bottom = 'auto';
@@ -1442,151 +2098,238 @@ export function handleSlashCommand(inputElement) {
                 </div>
             `).join('');
 
-            // Initialisation de la sélection pour la navigation clavier
-            menu.querySelector('.gu-slash-item').classList.add('selected');
+            const firstItem = menu.querySelector('.gu-slash-item');
+            if (firstItem) firstItem.classList.add('selected');
 
-            // Clic sur une option
             menu.querySelectorAll('.gu-slash-item').forEach((item, i) => {
                 item.onclick = () => {
-                    const match = matches[i];
-                    executeCommand(match, inputElement);
+                    executeCommand(matches[i], inputElement);
                 };
-                item.onmouseenter = () => { // Sélectionne au survol
-                    menu.querySelector('.gu-slash-item.selected')?.classList.remove('selected');
+                item.onmouseenter = () => {
+                    const selected = menu.querySelector('.gu-slash-item.selected');
+                    if (selected) selected.classList.remove('selected');
                     item.classList.add('selected');
                 };
             });
         });
 
-    } else {
-        // Condition B: Si ce n'est plus un / ou si il y a un espace -> cacher
-        menu.style.display = 'none';
+    } catch (err) {
+        console.error("Gemini Organizer Slash Command Error:", err);
+        const menu = document.getElementById('gu-slash-menu');
+        if (menu) menu.style.display = 'none';
     }
 
+    // Fonction interne pour exécuter la commande
     function executeCommand(match, input) {
-        // Nettoyer l'input et exécuter la commande
-        if (input.tagName === 'TEXTAREA') input.value = '';
-        else input.innerText = '';
-        input.dispatchEvent(new Event('input', { bubbles: true })); // Déclenche l'événement pour mettre à jour l'UI Gemini
+        try {
+            if (input.tagName === 'TEXTAREA') input.value = '';
+            else input.innerText = '';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
 
-        if (match.type === 'cmd') {
-            if (match.label === 'save') {
-                const currentUrl = window.location.href;
-                const title = document.title.replace('Gemini', '').trim() || "Chat";
-                Storage.getData(folders => {
-                    const fakeEvent = { clientX: window.innerWidth/2, clientY: window.innerHeight/2 };
-                    showFolderMenu(fakeEvent, folders, title, currentUrl);
-                });
-            } else if (match.label === 'folder') {
-                showCreateFolderModal();
-            } else if (match.label === 'prompt') {
-                showCreatePromptModal();
+            if (match.type === 'cmd') {
+                if (match.label === 'save') {
+                    const currentUrl = window.location.href;
+                    const title = document.title.replace('Gemini', '').trim() || "Chat";
+                    Storage.getData(folders => {
+                        const fakeEvent = { clientX: window.innerWidth/2, clientY: window.innerHeight/2 };
+                        showFolderMenu(fakeEvent, folders, title, currentUrl);
+                    });
+                } else if (match.label === 'folder') {
+                    showCreateFolderModal();
+                } else if (match.label === 'prompt') {
+                    showCreatePromptModal();
+                }
+            } else if (match.type === 'user_prompt') {
+                if (match.content && match.content.includes('{{')) {
+                    handlePromptClick(match.content, match.fIdx, match.pIdx);
+                } else {
+                    injectPromptToGemini(match.content || '');
+                }
             }
-        } else if (match.type === 'user_prompt') {
-            if (match.content.includes('{{')) {
-                handlePromptClick(match.content);
-            } else {
-                injectPromptToGemini(match.content);
-            }
+        } catch (e) {
+            console.error("Error executing command:", e);
         }
 
-        menu.style.display = 'none';
+        const menu = document.getElementById('gu-slash-menu');
+        if (menu) menu.style.display = 'none';
     }
 }
 
-// --- TTS (TEXT TO SPEECH) ---
-export function injectTTS() {
-    // 1. On s'assure que les voix sont chargées (Chrome bug parfois là-dessus)
-    let voices = window.speechSynthesis.getVoices();
-    if (voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = () => {
-            voices = window.speechSynthesis.getVoices();
-        };
+// --- SELECTION & NOTES (SURLIGNAGE) ---
+
+export function initSelectionListener() {
+    if (!document.getElementById('gu-highlight-menu')) {
+        const menu = document.createElement('div');
+        menu.id = 'gu-highlight-menu';
+        menu.innerHTML = `
+            <div class="gu-hl-btn gu-bg-red" data-color="red" title="Red"></div>
+            <div class="gu-hl-btn gu-bg-blue" data-color="blue" title="Blue"></div>
+            <div class="gu-hl-btn gu-bg-green" data-color="green" title="Green"></div>
+            <div class="gu-hl-btn gu-bg-yellow" data-color="yellow" title="Yellow"></div>
+        `;
+        document.body.appendChild(menu);
+
+        menu.querySelectorAll('.gu-hl-btn').forEach(btn => {
+            btn.onmousedown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const color = btn.getAttribute('data-color');
+                saveSelection(color);
+                menu.style.display = 'none';
+            };
+        });
     }
 
-    // 2. On cible toutes les réponses de l'IA
-    const responses = document.querySelectorAll('model-response');
+    document.addEventListener('mouseup', (e) => {
+        const menu = document.getElementById('gu-highlight-menu');
+        const selection = window.getSelection();
+        const selectedText = selection.toString().trim();
 
-    responses.forEach(resp => {
-        // Vérifie si déjà injecté pour ne pas avoir de doublons
-        if(resp.querySelector('.gu-tts-btn')) return;
-
-        // 3. RECHERCHE INTELLIGENTE DU FOOTER (La barre avec Like/Dislike/Copy)
-        // On cherche le conteneur qui contient les icônes de feedback
-        // Souvent c'est le dernier élément div direct ou un conteneur spécifique
-        let footer = resp.querySelector('.buttons-container') ||
-                     resp.querySelector('.response-actions-container') ||
-                     resp.querySelector('div[data-test-id="response-feedback-buttons"]')?.parentNode;
-
-        // Si on ne trouve pas par classe, on cherche le conteneur qui a le bouton "Copier" ou "Like"
-        if (!footer) {
-            const copyBtn = resp.querySelector('button[data-test-id="copy-response-button"]') ||
-                            resp.querySelector('button[aria-label*="Copier"]') ||
-                            resp.querySelector('mat-icon[data-mat-icon-name="thumb_up"]')?.closest('button')?.parentNode;
-
-            if (copyBtn) footer = copyBtn.parentNode; // On se met à côté du frère
+        if (!selectedText || e.target.closest('#gu-floating-panel') || e.target.closest('#gu-highlight-menu')) {
+            menu.style.display = 'none';
+            return;
         }
 
-        // Si toujours rien (cas rare), on prend le dernier élément du message
-        if (!footer) footer = resp.lastElementChild;
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
 
-        if(footer) {
-            const btn = document.createElement('div');
-            btn.className = 'gu-tts-btn';
-            // Icône Haut-parleur
-            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="currentColor"><path d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-322q47 22 73.5 66t26.5 96q0 51-26.5 94.5T560-320Z"/></svg>`;
-            btn.title = "Lire le message";
-            btn.style.marginLeft = "8px";
-            btn.style.cursor = "pointer";
-            btn.style.display = "flex";
-            btn.style.alignItems = "center";
+        menu.style.display = 'flex';
+        menu.style.top = `${rect.top + window.scrollY - 40}px`;
+        menu.style.left = `${rect.left + (rect.width / 2) - 60}px`;
+    });
+}
 
-            btn.onclick = () => {
-                // Si ça parle déjà, on arrête
-                if (window.speechSynthesis.speaking) {
-                    window.speechSynthesis.cancel();
-                    // Si c'était ce bouton qui parlait, on arrête tout simplement
-                    if (btn.classList.contains('speaking')) {
-                        btn.classList.remove('speaking');
-                        return;
+function saveSelection(color) {
+    const selection = window.getSelection();
+    const text = selection.toString().trim();
+    if (!text) return;
+
+    try {
+        const range = selection.getRangeAt(0);
+        const span = document.createElement('span');
+        span.className = `gu-bg-${color}`;
+        span.style.borderRadius = '4px';
+        span.style.padding = '0 2px';
+        range.surroundContents(span);
+    } catch(e) { console.log("Complex highlight skipped"); }
+
+    const chatId = window.location.href.split('/app/')[1]?.split('?')[0] || 'unknown_chat';
+    const note = {
+        id: Date.now().toString(),
+        text: text,
+        color: color,
+        comment: "",
+        date: new Date().toLocaleDateString()
+    };
+
+    Storage.saveHighlight(chatId, note, () => {
+        const panel = document.getElementById('gu-notes-panel');
+        if (panel && panel.classList.contains('active')) {
+            renderNotesUI();
+        }
+        showToast("Saved to Notes", "🖍️");
+        window.getSelection().removeAllRanges();
+    });
+}
+
+export function renderNotesUI(filterColor = 'all') {
+    const container = document.getElementById('gu-notes-list');
+    if (!container) return;
+
+    const chatId = window.location.href.split('/app/')[1]?.split('?')[0];
+    if (!chatId) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">Open a chat to see notes.</div>`;
+        return;
+    }
+
+    Storage.getHighlights(chatId, (notes) => {
+        container.innerHTML = '';
+
+        const filtered = filterColor === 'all' ? notes : notes.filter(n => n.color === filterColor);
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:20px; color:#666;">${t('no_notes')}</div>`;
+            return;
+        }
+
+        // Tri du plus récent au plus ancien
+        filtered.reverse().forEach(note => {
+            const card = document.createElement('div');
+            card.className = 'gu-note-card';
+
+            // Couleur de bordure
+            let borderColor = '#666';
+            if(note.color === 'red') borderColor = '#ffadad';
+            if(note.color === 'blue') borderColor = '#a0c4ff';
+            if(note.color === 'green') borderColor = '#caffbf';
+            if(note.color === 'yellow') borderColor = '#fdffb6';
+            card.style.borderLeftColor = borderColor;
+
+            // --- LOGIQUE "AFFICHER PLUS" ---
+            const isLongText = note.text.length > 150; // Seuil de caractères (environ 3 lignes)
+            const readMoreBtnHtml = isLongText
+                ? `<button class="gu-read-more-btn">${t('read_more')}</button>`
+                : '';
+            // -------------------------------
+
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span style="font-size:10px; color:#888;">${note.date}</span>
+                    <span class="gu-icon-btn del-note" style="width:16px; height:16px; font-size:12px; color:#ff8989;">×</span>
+                </div>
+
+                <div class="gu-note-text" title="Click expand to see full text">"${note.text.replace(/"/g, '&quot;')}"</div>
+                ${readMoreBtnHtml}
+
+                <textarea class="gu-note-comment" placeholder="${t('note_placeholder')}">${note.comment || ''}</textarea>
+            `;
+
+            // --- EVENTS ---
+
+            // 1. Bouton "Afficher plus"
+            if (isLongText) {
+                const btn = card.querySelector('.gu-read-more-btn');
+                const txtDiv = card.querySelector('.gu-note-text');
+
+                btn.onclick = () => {
+                    txtDiv.classList.toggle('expanded');
+                    // Change le texte du bouton selon l'état
+                    if (txtDiv.classList.contains('expanded')) {
+                        btn.innerText = t('read_less');
+                    } else {
+                        btn.innerText = t('read_more');
                     }
-                    // Sinon (on a cliqué sur un autre), on continue pour lancer le nouveau
-                    document.querySelectorAll('.gu-tts-btn').forEach(b => b.classList.remove('speaking'));
-                }
-
-                // 4. RÉCUPÉRATION DU TEXTE (Plus précise)
-                const contentEl = resp.querySelector('.markdown') || resp;
-                const text = contentEl.innerText || "";
-
-                if (!text.trim()) return;
-
-                const utterance = new SpeechSynthesisUtterance(text);
-
-                // 5. CHOIX DE LA MEILLEURE VOIX
-                // On essaie de trouver une voix Google Française, sinon la première FR dispo
-                const frVoice = voices.find(v => v.name.includes("Google") && v.lang.includes("fr")) ||
-                                voices.find(v => v.lang.includes("fr"));
-
-                if (frVoice) utterance.voice = frVoice;
-                utterance.lang = 'fr-FR';
-                utterance.rate = 1.0;
-
-                // Gestion de l'état visuel (animation)
-                btn.classList.add('speaking');
-                utterance.onend = () => btn.classList.remove('speaking');
-                utterance.onerror = (e) => {
-                    console.error("Erreur TTS:", e);
-                    btn.classList.remove('speaking');
                 };
+            }
 
-                window.speechSynthesis.speak(utterance);
+            // 2. Auto-save du commentaire
+            const area = card.querySelector('textarea');
+            area.addEventListener('input', () => {
+                Storage.updateHighlightComment(chatId, note.id, area.value);
+            });
+
+            // 3. Suppression
+            card.querySelector('.del-note').onclick = () => {
+                if(confirm(t('delete_note_confirm'))) {
+                    Storage.deleteHighlight(chatId, note.id, () => renderNotesUI(filterColor));
+                }
             };
 
-            // Injection : On l'ajoute au début de la barre d'outils pour qu'il soit bien visible
-            // "prepend" le met tout à gauche, "appendChild" tout à droite
-            footer.prepend(btn);
-        }
+            container.appendChild(card);
+        });
     });
+}
+
+export function initZoom() {
+    const savedText = localStorage.getItem('gu_zoom_text_level');
+    const savedUI = localStorage.getItem('gu_zoom_ui_level');
+
+    if (savedText) {
+        document.documentElement.style.setProperty('--gu-zoom-text', savedText / 100);
+    }
+    if (savedUI) {
+        document.documentElement.style.setProperty('--gu-zoom-ui', savedUI / 100);
+    }
 }
 
 function showReorganizeModal(type = 'chat') {
@@ -1746,22 +2489,48 @@ function exportChatToMarkdown() {
 }
 
 // --- INIT PANEL ---
+// ui.js - initPanel mis à jour
+
 export function initPanel() {
     if (document.getElementById('gu-floating-panel')) return;
 
-    // On vérifie si le style existe déjà (créé par le fastStart)
     if (!document.getElementById('gu-global-styles')) {
         const style = document.createElement('style');
-        style.id = 'gu-global-styles'; // On lui donne un ID pour le reconnaître
-        style.textContent = CSS_STYLES;
+        style.id = 'gu-global-styles';
+
+        // --- CSS AVEC DEUX VARIABLES DISTINCTES ---
+        style.textContent = CSS_STYLES + `
+            :root {
+                --gu-zoom-text: 1;
+                --gu-zoom-ui: 1;
+            }
+
+            /* 1. Variable TEXTE : Pour le chat et les questions */
+            message-content .markdown-main-panel,
+            user-query {
+                zoom: var(--gu-zoom-text);
+            }
+
+            /* 2. Variable UI : Pour l'extension uniquement */
+            #gu-floating-panel,
+            .gu-modal-overlay,
+            .gu-context-menu {
+                zoom: var(--gu-zoom-ui);
+            }
+        `;
         document.head.appendChild(style);
     }
+
+    // Appel du zoom au démarrage
+    initZoom();
 
     chrome.storage.local.get([LANG_STORAGE_KEY], (res) => {
         if(res[LANG_STORAGE_KEY]) currentLanguage = res[LANG_STORAGE_KEY];
 
         const panel = document.createElement('div');
         panel.id = 'gu-floating-panel';
+
+        // Le HTML reste inchangé
         panel.innerHTML = `
             <div class="gu-header" id="gu-header-drag">
                 <div class="gu-header-group">
@@ -1773,8 +2542,8 @@ export function initPanel() {
                     <button id="gu-btn-wide" class="gu-btn-icon-head" title="Wide Mode (Alt+W)">↔️</button>
                     <button id="gu-btn-streamer" class="gu-btn-icon-head" title="Streamer Mode (Alt+S)">👁️</button>
                     <div style="width:1px; height:16px; background:#333; margin:0 4px;"></div>
-                    <button id="gu-btn-export-md" class="gu-btn-icon-head" title="Export Markdown">⬇</button>
-                    <button id="gu-btn-reorganize" class="gu-btn-icon-head" title="Reorganize / Move">⇄</button>
+                    <button id="gu-btn-export" class="gu-btn-icon-head" title="Export Options">📥</button>
+                    <button id="gu-btn-reorganize" class="gu-btn-icon-head" title="Reorganize / Move">🔁</button>
                     <button id="gu-btn-bulk" class="gu-btn-icon-head" title="${t('bulk_organize_title')}">✅</button>
                 </div>
             </div>
@@ -1782,6 +2551,7 @@ export function initPanel() {
             <div class="gu-tabs-header">
                 <button id="gu-tab-folders" class="gu-tab-btn active">${t('folders_tab')}</button>
                 <button id="gu-tab-prompts" class="gu-tab-btn">${t('prompts_tab')}</button>
+                <button id="gu-tab-notes" class="gu-tab-btn">${t('notes_tab')}</button>
             </div>
 
             <div id="gu-content-wrapper">
@@ -1797,18 +2567,31 @@ export function initPanel() {
                 <div id="gu-content-area" class="gu-panel-view active"></div>
 
                 <div id="gu-prompts-panel" class="gu-panel-view">
-                    <div style="padding:10px; border-bottom:1px solid #333; display:flex; gap:6px;">
-                        <button id="gu-add-prompt-folder-btn" class="gu-btn-action" style="background:#333; font-size:11px; margin:0;">+ Folder</button>
-                        <button id="gu-add-prompt-btn" class="gu-btn-action" style="margin:0; flex:1; background:#254d29;">${t('new_prompt_btn')}</button>
-                        <button id="gu-help-prompt-btn" class="gu-btn-icon-head" title="${t('prompt_help_title')}">?</button>
+                    <div style="padding:10px; border-bottom:1px solid #333; display:flex; gap:6px; flex-wrap:wrap;">
+                        <button id="gu-add-prompt-folder-btn" class="gu-btn-action" style="background:#333; font-size:11px; margin:0; flex:1;">+ Folder</button>
+                        <button id="gu-import-pack-btn" class="gu-btn-action" style="background:#2c3c63; font-size:11px; margin:0; flex:1;" title="${t('import_pack')}">📥 Import</button>
+                        <button id="gu-add-prompt-btn" class="gu-btn-action" style="margin:0; flex:2; background:#254d29;">${t('new_prompt_btn')}</button>
+                        <button id="gu-help-prompt-btn" class="gu-btn-icon-head" title="${t('prompt_help_title')}">❓</button>
                     </div>
                     <div id="gu-prompts-list"></div>
+                    <input type="file" id="gu-import-pack-input" accept=".guop,.json" style="display:none">
+                </div>
+
+                <div id="gu-notes-panel" class="gu-panel-view">
+                    <div class="gu-filter-bar">
+                        <div class="gu-filter-btn all active" data-filter="all">${t('filter_all')}</div>
+                        <div class="gu-filter-btn" style="background:#5c2b29" data-filter="red"></div>
+                        <div class="gu-filter-btn" style="background:#2c3c63" data-filter="blue"></div>
+                        <div class="gu-filter-btn" style="background:#254d29" data-filter="green"></div>
+                        <div class="gu-filter-btn" style="background:#5c4615" data-filter="yellow"></div>
+                    </div>
+                    <div id="gu-notes-list" style="padding:10px; overflow-y:auto; flex:1;"></div>
                 </div>
             </div>
         `;
         document.body.appendChild(panel);
 
-        // Dragging Logic
+        // --- EVENTS ---
         const header = panel.querySelector('#gu-header-drag');
         let isDragging = false, startX, startY, initialLeft, initialTop;
 
@@ -1820,31 +2603,14 @@ export function initPanel() {
             header.style.cursor = 'grabbing';
         };
 
-        // --- GESTION DU BOUTON STREAMER (PC + MOBILE) ---
         const btnStreamer = panel.querySelector('#gu-btn-streamer');
         let longPressTimer;
-
-        // Clic Gauche / Tap court : ON/OFF
         btnStreamer.onclick = toggleStreamerMode;
-
-        // Clic Droit (PC) : CONFIGURATION
-        btnStreamer.oncontextmenu = (e) => {
-            e.preventDefault();
-            showStreamerMenu(e);
-        };
-
-        // Appui Long (Mobile) : CONFIGURATION
+        btnStreamer.oncontextmenu = (e) => { e.preventDefault(); showStreamerMenu(e); };
         btnStreamer.ontouchstart = (e) => {
-            longPressTimer = setTimeout(() => {
-                e.preventDefault();
-                showStreamerMenu(e.touches[0]); // On passe l'event touch pour avoir les coordonnées
-            }, 600); // Déclenchement après 600ms
+            longPressTimer = setTimeout(() => { e.preventDefault(); showStreamerMenu(e.touches[0]); }, 600);
         };
-
-        btnStreamer.ontouchend = () => {
-            clearTimeout(longPressTimer); // Annule si on relâche avant 600ms
-        };
-        // ------------------------------------------------
+        btnStreamer.ontouchend = () => { clearTimeout(longPressTimer); };
 
         document.onmousemove = (e) => {
             if (!isDragging) return;
@@ -1854,66 +2620,55 @@ export function initPanel() {
         };
         document.onmouseup = () => { isDragging = false; header.style.cursor = 'move'; };
 
-        // Attach Events
+        const filterBtns = panel.querySelectorAll('.gu-filter-btn');
+        filterBtns.forEach(btn => {
+            btn.onclick = () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderNotesUI(btn.getAttribute('data-filter'));
+            };
+        });
+
         panel.querySelector('#gu-btn-min').onclick = () => panel.classList.toggle('minimized');
         panel.querySelector('#gu-add-folder-btn').onclick = () => showCreateFolderModal();
         panel.querySelector('#gu-add-prompt-folder-btn').onclick = () => showCreatePromptFolderModal();
-
         panel.querySelector('#gu-search-input').addEventListener('input', () => {
             if(panel.querySelector('#gu-tab-folders').classList.contains('active')) refreshUI();
             else Storage.getPromptFolders(renderPromptsUI);
         });
-
         panel.querySelector('#gu-btn-settings').onclick = showSettingsModal;
         panel.querySelector('#gu-btn-bulk').onclick = () => Storage.getData(folders => showBulkManager(folders));
-
-        // REORGANIZE FIX
+        panel.querySelector('#gu-import-pack-btn').onclick = () => document.getElementById('gu-import-pack-input').click();
+        document.getElementById('gu-import-pack-input').onchange = importPromptPack;
         panel.querySelector('#gu-btn-reorganize').onclick = () => {
-            if (panel.querySelector('#gu-tab-folders').classList.contains('active')) {
-                showReorganizeModal('chat');
-            } else {
-                showReorganizeModal('prompt');
-            }
+            if (panel.querySelector('#gu-tab-folders').classList.contains('active')) showReorganizeModal('chat');
+            else showReorganizeModal('prompt');
         };
+        panel.querySelector('#gu-btn-export').onclick = (e) => showExportMenu(e);
+        panel.querySelector('#gu-btn-wide').onclick = toggleWideMode;
+        panel.querySelector('#gu-tab-folders').onclick = () => switchTab('folders');
+        panel.querySelector('#gu-tab-prompts').onclick = () => switchTab('prompts');
+        panel.querySelector('#gu-tab-notes').onclick = () => switchTab('notes');
+        panel.querySelector('#gu-add-prompt-btn').onclick = () => showCreatePromptModal();
+        panel.querySelector('#gu-help-prompt-btn').onclick = showPromptHelpModal;
 
-        // --- GESTION TACTILE (MOBILE) POUR LE DRAG ---
         header.ontouchstart = (e) => {
-            // Empêche le scroll de la page quand on drag le header
             if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
             isDragging = true;
             const touch = e.touches[0];
-            startX = touch.clientX;
-            startY = touch.clientY;
+            startX = touch.clientX; startY = touch.clientY;
             const rect = panel.getBoundingClientRect();
-            initialLeft = rect.left;
-            initialTop = rect.top;
+            initialLeft = rect.left; initialTop = rect.top;
         };
-
         document.ontouchmove = (e) => {
             if (!isDragging) return;
             const touch = e.touches[0];
-            const dx = touch.clientX - startX;
-            const dy = touch.clientY - startY;
-
-            panel.style.left = `${initialLeft + dx}px`;
-            panel.style.top = `${initialTop + dy}px`;
+            panel.style.left = `${initialLeft + touch.clientX - startX}px`;
+            panel.style.top = `${initialTop + touch.clientY - startY}px`;
             panel.style.right = 'auto';
-
             if (e.cancelable) e.preventDefault();
         };
-
-        document.ontouchend = () => {
-            isDragging = false;
-        };
-
-        panel.querySelector('#gu-btn-export-md').onclick = exportChatToMarkdown;
-        // Note: Le bouton streamer est géré plus haut avec le long press
-        panel.querySelector('#gu-btn-wide').onclick = toggleWideMode;
-
-        panel.querySelector('#gu-tab-folders').onclick = () => switchTab('folders');
-        panel.querySelector('#gu-tab-prompts').onclick = () => switchTab('prompts');
-        panel.querySelector('#gu-add-prompt-btn').onclick = () => showCreatePromptModal();
-        panel.querySelector('#gu-help-prompt-btn').onclick = showPromptHelpModal;
+        document.ontouchend = () => { isDragging = false; };
 
         refreshMainButtons();
     });

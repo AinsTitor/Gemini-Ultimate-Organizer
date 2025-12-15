@@ -113,6 +113,23 @@ export const CSS_STYLES = `
     .gu-prompt-name { font-weight: 600; font-size: 13px; color: #e3e3e3; }
     .gu-prompt-actions { opacity: 0; transition: 0.2s; display: flex; gap: 4px; }
     .gu-prompt-item:hover .gu-prompt-actions { opacity: 1; }
+    /* STYLES POUR LES PROMPTS ÉPINGLÉS */
+        .gu-prompt-item.pinned {
+            border-left: 2px solid #a8c7fa; /* Bordure bleue à gauche */
+            background: #1f221e; /* Fond légèrement différent (teinté vert sombre/gris) */
+        }
+
+        /* Bouton Pin actif */
+        .gu-icon-btn.pin-p.active {
+            color: #a8c7fa;
+            opacity: 1;
+        }
+
+        /* Hover sur le bouton Pin */
+        .gu-icon-btn.pin-p:hover {
+            color: white;
+            transform: scale(1.1);
+        }
 
     /* FOLDERS (Chats & Prompts) */
 .gu-folder-row {
@@ -467,15 +484,30 @@ export const CSS_STYLES = `
                     color: white !important;
                 }
 
-            /* --- TTS (Synthèse Vocale) --- */
-            .gu-tts-btn {
-                margin-left: 8px; padding: 4px; border-radius: 50%; cursor: pointer;
-                color: #9aa0a6; display: flex; align-items: center; justify-content: center;
-                transition: 0.2s; border: 1px solid transparent;
-            }
-            .gu-tts-btn:hover { background: rgba(255,255,255,0.1); color: #e3e3e3; }
-            .gu-tts-btn.speaking { color: #a8c7fa; animation: gu-pulse 1.5s infinite; border-color: rgba(168, 199, 250, 0.3); }
-            @keyframes gu-pulse { 0% { box-shadow: 0 0 0 0 rgba(168, 199, 250, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(168, 199, 250, 0); } 100% { box-shadow: 0 0 0 0 rgba(168, 199, 250, 0); } }
+            /* 7. FOCUS MODE (Interface Cachée - Intégré au Streamer) */
+
+                /* Éléments à masquer : Sidebar, Header, Footer, Disclaimer */
+                body.gu-hide-ui bard-sidenav,                /* <--- Sidebar */
+                body.gu-hide-ui hallucination-disclaimer,    /* <--- Disclaimer du bas */
+                body.gu-hide-ui conversation-history-sidebar,
+                body.gu-hide-ui .chat-header,
+                body.gu-hide-ui chat-header,
+                body.gu-hide-ui .chat-footer,
+                body.gu-hide-ui footer,
+                body.gu-hide-ui page-footer {
+                    display: none !important;
+                }
+
+                /* Centrer et élargir le chat pour remplir l'écran */
+                body.gu-hide-ui .page-wrapper,
+                body.gu-hide-ui .chat-page-component,
+                body.gu-hide-ui .conversation-container {
+                    width: 100% !important;
+                    max-width: none !important;
+                    padding-top: 0 !important;
+                    margin: 0 !important;
+                }
+
 
             /* --- SHOW HIDDEN CHATS --- */
             /* Par défaut, on cache les éléments marqués comme archivés */
@@ -501,4 +533,75 @@ export const CSS_STYLES = `
             color: #72e0d3; /* Cyan clair */
             background: rgba(114, 224, 211, 0.2);
         }
-`;
+    /* --- HIGHLIGHT MENU (Menu flottant) --- */
+        #gu-highlight-menu {
+            position: absolute; z-index: 999999;
+            background: #1e1f20; border: 1px solid #444; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); padding: 6px;
+            display: none; gap: 6px; align-items: center;
+            animation: gu-fadein 0.2s;
+        }
+        .gu-hl-btn {
+            width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+            border: 2px solid transparent; transition: transform 0.2s;
+        }
+        .gu-hl-btn:hover { transform: scale(1.2); border-color: white; }
+
+        /* Couleurs de surlignement */
+        .gu-bg-red { background-color: #5c2b29 !important; color: #ffadad !important; }
+        .gu-bg-blue { background-color: #2c3c63 !important; color: #a0c4ff !important; }
+        .gu-bg-green { background-color: #254d29 !important; color: #caffbf !important; }
+        .gu-bg-yellow { background-color: #5c4615 !important; color: #fdffb6 !important; }
+
+        /* --- NOTEPAD TAB --- */
+        .gu-note-card {
+            background: #282a2c; border: 1px solid #444; border-radius: 8px;
+            margin-bottom: 10px; padding: 10px; position: relative;
+            border-left: 4px solid transparent; /* Couleur définie dynamiquement */
+        }
+        .gu-note-text {
+            font-size: 13px; color: #e3e3e3; font-style: italic; margin-bottom: 8px;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+            border-left: 2px solid #444; padding-left: 8px;
+        }
+        .gu-note-comment {
+            background: #18191a; border: 1px solid #333; border-radius: 4px;
+            padding: 6px; font-size: 12px; color: #ccc; width: 100%; box-sizing: border-box;
+            resize: vertical; min-height: 40px; outline: none;
+        }
+        .gu-note-comment:focus { border-color: #0b57d0; }
+
+        .gu-filter-bar {
+            display: flex; gap: 5px; padding: 10px; border-bottom: 1px solid #333;
+            justify-content: center; background: #1e1f20;
+        }
+        .gu-filter-btn {
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; opacity: 0.5;
+        }
+        .gu-filter-btn.active { opacity: 1; border-color: white; transform: scale(1.1); }
+        .gu-filter-btn.all { background: #666; border-radius: 4px; width: auto; padding: 0 8px; font-size: 10px; color: white; display: flex; align-items: center; }
+        .gu-note-text {
+                font-size: 13px; color: #e3e3e3; font-style: italic; margin-bottom: 4px;
+                /* Par défaut : coupé à 3 lignes */
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                white-space: pre-wrap; /* Garde les retours à la ligne */
+            }
+
+            /* Quand on clique sur afficher plus */
+            .gu-note-text.expanded {
+                -webkit-line-clamp: unset;
+                overflow: visible;
+            }
+
+            /* Style du bouton "Afficher plus" */
+            .gu-read-more-btn {
+                background: none; border: none; padding: 0;
+                color: #a8c7fa; cursor: pointer; font-size: 11px;
+                margin-bottom: 8px; text-decoration: underline;
+                display: inline-block;
+            }
+            .gu-read-more-btn:hover { color: white; }
+        `;

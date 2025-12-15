@@ -1,13 +1,21 @@
 // storage.js
 import { SETTINGS } from './config.js';
 
+let cachedUser = null;
+
 export function getCurrentUser() {
+    // Si on l'a déjà trouvé, on le retourne directement (0 accès DOM)
+    if (cachedUser) return cachedUser;
+
     const accBtn = document.querySelector('a[href^="https://accounts.google.com"]');
     if (accBtn) {
         const label = accBtn.getAttribute('aria-label');
         if (label) {
             const emailMatch = label.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
-            if (emailMatch) return emailMatch[0];
+            if (emailMatch) {
+                cachedUser = emailMatch[0]; // On le stocke
+                return cachedUser;
+            }
         }
     }
     return 'default_user';
@@ -161,5 +169,37 @@ export function restoreBackup(backupData, cb) {
 
     chrome.storage.sync.set(dataToRestore, () => {
         if(cb) cb();
+    });
+}
+
+export function getHighlights(chatId, cb) {
+    const key = `gu_notes_${chatId}`;
+    chrome.storage.local.get([key], r => cb(r[key] || []));
+}
+
+export function saveHighlight(chatId, note, cb) {
+    const key = `gu_notes_${chatId}`;
+    getHighlights(chatId, (notes) => {
+        notes.push(note);
+        chrome.storage.local.set({ [key]: notes }, cb);
+    });
+}
+
+export function updateHighlightComment(chatId, noteId, comment) {
+    const key = `gu_notes_${chatId}`;
+    getHighlights(chatId, (notes) => {
+        const target = notes.find(n => n.id === noteId);
+        if (target) {
+            target.comment = comment;
+            chrome.storage.local.set({ [key]: notes });
+        }
+    });
+}
+
+export function deleteHighlight(chatId, noteId, cb) {
+    const key = `gu_notes_${chatId}`;
+    getHighlights(chatId, (notes) => {
+        const newNotes = notes.filter(n => n.id !== noteId);
+        chrome.storage.local.set({ [key]: newNotes }, cb);
     });
 }

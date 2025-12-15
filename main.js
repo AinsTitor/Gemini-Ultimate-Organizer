@@ -19,6 +19,7 @@ function init() {
     UI.initStreamerMode();
     UI.initWideMode();
     UI.refreshUI();
+    UI.initSelectionListener();
 
     // --- 1. Gestion des Chats Cachés (Init) ---
     if(localStorage.getItem('gu_show_archived') === 'true') {
@@ -101,17 +102,19 @@ function init() {
 
     checkAndShowTutorial();
 
-    // --- 4. Boucle de Refresh & TTS ---
+    // --- 4. Boucle de Refresh ---
     setInterval(() => {
-        const panel = document.getElementById('gu-floating-panel');
+            // On garde uniquement l'injection des boutons de code (utile et léger)
+            // On a SUPPRIMÉ UI.injectTTS() car vous n'en voulez pas.
+            if (typeof UI.injectCodeButtons === 'function') {
+                UI.injectCodeButtons();
+            }
 
-        // Injection permanente du TTS sur les nouveaux messages
-        UI.injectTTS();
-
-        // Refresh conditionnel
-        if (panel && panel.matches(':hover')) return;
-        UI.refreshUI();
-    }, 2000);
+            // --- OPTIMISATION MAJEURE ---
+            // On a SUPPRIMÉ UI.refreshUI() de cette boucle.
+            // Cela empêche l'interface de se reconstruire toutes les 2 secondes.
+            // Plus de clignotement ni de latence sur les clics.
+        }, 2000);
 
     // --- 5. Auto-Backup au démarrage (Après 5s) ---
     // Nécessite que Storage.createBackup soit défini dans storage.js
@@ -139,3 +142,16 @@ const startLoop = setInterval(() => {
         setInterval(() => { if(!document.getElementById('gu-floating-panel')) init(); }, 3000);
     }
 }, 1000);
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'sync') {
+        // Si les dossiers ou les prompts ont changé, on rafraîchit l'UI
+        // On vérifie les clés pour ne pas rafraîchir pour rien
+        const keys = Object.keys(changes);
+        const shouldRefresh = keys.some(k => k.includes('gemini_organizer_data') || k.includes('gemini_organizer_prompts'));
+
+        if (shouldRefresh) {
+            UI.refreshUI();
+        }
+    }
+});
