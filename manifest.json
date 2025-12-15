@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Gemini Ultimate Organizer - Folders/Prompts",
-  "version": "2.2",
+  "version": "2.4",
   "description": "Folders for Chats & Prompts, Export, Bulk Manager, Streamer Mode & Themes for Gemini. Ultimate Organizer.",
   "default_locale": "en",
   "action": {

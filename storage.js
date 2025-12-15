@@ -1,23 +1,39 @@
 // storage.js
 import { SETTINGS } from './config.js';
 
-let cachedUser = null;
-
 export function getCurrentUser() {
-    // Si on l'a déjà trouvé, on le retourne directement (0 accès DOM)
-    if (cachedUser) return cachedUser;
+    // 1. D'ABORD : On regarde si on a déjà mémorisé l'email (Cache)
+    // C'est ce qui sauve la mise sur mobile quand l'interface est cachée
+    const cachedEmail = localStorage.getItem('gu_cached_email');
 
+    // 2. ENSUITE : On essaie de le détecter dans la page pour mettre à jour le cache
     const accBtn = document.querySelector('a[href^="https://accounts.google.com"]');
+
     if (accBtn) {
         const label = accBtn.getAttribute('aria-label');
         if (label) {
             const emailMatch = label.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
             if (emailMatch) {
-                cachedUser = emailMatch[0]; // On le stocke
-                return cachedUser;
+                const liveEmail = emailMatch[0];
+                // Si l'email trouvé est différent du cache (changement de compte), on met à jour
+                if (liveEmail !== cachedEmail) {
+                    localStorage.setItem('gu_cached_email', liveEmail);
+                    // Petit hack : on recharge la page si le compte a changé pour être sûr de charger les bonnes données
+                    if (cachedEmail && cachedEmail !== 'default_user') {
+                        console.log("Account switch detected, refreshing data...");
+                    }
+                }
+                return liveEmail;
             }
         }
     }
+
+    // 3. SI RIEN DANS LA PAGE : On retourne le cache s'il existe
+    if (cachedEmail) {
+        return cachedEmail;
+    }
+
+    // 4. SI VRAIMENT RIEN (Première installation) : Utilisateur par défaut
     return 'default_user';
 }
 
@@ -84,45 +100,34 @@ export function savePromptFolders(d, cb) {
     chrome.storage.sync.set({ [k.promptFolders]: d }, () => { if(cb) cb(); });
 }
 
-// --- NOUVEAU SYSTÈME DE BACKUP (COMPLET) ---
-
-// Crée une sauvegarde complète (Dossiers + Prompts)
-// Crée une sauvegarde (auto 24h ou sécurité)
+// --- SYSTÈME DE BACKUP ---
 export function createBackup(type = 'auto') {
     const k = getKeys();
+    // On ne fait pas de backup automatique si on est sur l'utilisateur par défaut (sauf si forcé)
+    if (type === 'auto' && k.user === 'default_user') return;
 
-    // 1. Récupération des données existantes (Backups)
     chrome.storage.local.get(['gu_backups'], (res) => {
         let backups = res.gu_backups || [];
 
-        // 2. Vérification 24h pour 'auto'
         if (type === 'auto' && backups.length > 0) {
-            const lastBackup = backups[0]; // Le plus récent est au début
+            const lastBackup = backups[0];
             if (lastBackup && lastBackup.date) {
                 const lastDate = new Date(lastBackup.date);
                 const now = new Date();
-                const diffHours = Math.abs(now - lastDate) / 36e5; // Différence en heures
-
-                // Si moins de 24h, on annule la sauvegarde auto
-                if (diffHours < 24) {
-                    console.log(`Gemini Organizer: Backup skipped (Last backup was ${diffHours.toFixed(1)}h ago).`);
-                    return;
-                }
+                const diffHours = Math.abs(now - lastDate) / 36e5;
+                if (diffHours < 24) return;
             }
         }
 
-        // 3. Si on est ici, on fait la sauvegarde
         chrome.storage.sync.get([k.folders, k.promptFolders], (result) => {
             const fullData = {
                 folders: result[k.folders] || [],
                 promptFolders: result[k.promptFolders] || []
             };
-
-            // On utilise ISO string pour la comparaison de date facile, mais on affichera en locale
             const now = new Date();
             const backupObject = {
-                date: now.toString(), // Format complet pour relecture
-                displayDate: now.toLocaleString(), // Format joli pour l'UI
+                date: now.toString(),
+                displayDate: now.toLocaleString(),
                 data: fullData,
                 type: type
             };
@@ -134,12 +139,10 @@ export function createBackup(type = 'auto') {
                 if (backups.length > 3) backups.pop();
                 chrome.storage.local.set({ 'gu_backups': backups });
             }
-            console.log("Gemini Organizer: Backup created!");
         });
     });
 }
 
-// Récupère la liste des sauvegardes
 export function getBackups(cb) {
     chrome.storage.local.get(['gu_backups', 'gu_backup_safety'], (res) => {
         cb({
@@ -149,29 +152,18 @@ export function getBackups(cb) {
     });
 }
 
-// Restaure une sauvegarde (compatible nouveau format complet)
 export function restoreBackup(backupData, cb) {
     const k = getKeys();
     const data = backupData.data;
-
-    // On prépare l'objet de restauration
     const dataToRestore = {};
-    
-    // On vérifie si la sauvegarde contient les clés, sinon on ignore
     if(data.folders) dataToRestore[k.folders] = data.folders;
     if(data.promptFolders) dataToRestore[k.promptFolders] = data.promptFolders;
+    if (Array.isArray(data)) dataToRestore[k.folders] = data;
 
-    // Si c'est une vieille sauvegarde (format liste simple), on essaie de deviner
-    if (Array.isArray(data)) {
-        // C'est probablement juste des dossiers (vieux format)
-        dataToRestore[k.folders] = data;
-    }
-
-    chrome.storage.sync.set(dataToRestore, () => {
-        if(cb) cb();
-    });
+    chrome.storage.sync.set(dataToRestore, () => { if(cb) cb(); });
 }
 
+// --- NOTES / HIGHLIGHTS ---
 export function getHighlights(chatId, cb) {
     const key = `gu_notes_${chatId}`;
     chrome.storage.local.get([key], r => cb(r[key] || []));

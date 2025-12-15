@@ -1401,6 +1401,9 @@ function refreshMainButtons() {
     const tabPrompts = panel.querySelector('#gu-tab-prompts');
     if(tabPrompts) tabPrompts.innerText = t('prompts_tab');
 
+    const tabNotes = panel.querySelector('#gu-tab-notes');
+        if(tabNotes) tabNotes.innerText = t('notes_tab');
+
     const searchInput = panel.querySelector('#gu-search-input');
     if (searchInput) {
         if (tabFolders && tabFolders.classList.contains('active')) {
@@ -2157,46 +2160,136 @@ export function handleSlashCommand(inputElement) {
 
 // --- SELECTION & NOTES (SURLIGNAGE) ---
 
+let selectionTimer = null;
+
 export function initSelectionListener() {
+    // 1. Création du menu s'il n'existe pas
     if (!document.getElementById('gu-highlight-menu')) {
         const menu = document.createElement('div');
         menu.id = 'gu-highlight-menu';
+
+        // CSS injecté dynamiquement pour le style mobile/desktop
+        const style = document.createElement('style');
+        style.textContent = `
+            #gu-highlight-menu {
+                position: fixed; z-index: 999999;
+                background: #1e1f20; border: 1px solid #444; border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.5); padding: 8px;
+                display: none; gap: 10px; align-items: center;
+                animation: gu-fadein 0.2s;
+                /* Comportement par défaut (Desktop) */
+                transform: translate(-50%, -120%); /* Centré au-dessus */
+            }
+
+            /* Boutons de couleur */
+            .gu-hl-btn {
+                width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+                border: 2px solid transparent; transition: transform 0.2s;
+                flex-shrink: 0;
+            }
+            .gu-hl-btn:hover { transform: scale(1.2); border-color: white; }
+
+            /* --- STYLE MOBILE SPÉCIFIQUE --- */
+            @media (max-width: 768px) {
+                #gu-highlight-menu {
+                    /* Barre fixe en bas sur mobile */
+                    top: auto !important;
+                    bottom: 80px !important; /* Au-dessus de la barre de saisie */
+                    left: 50% !important;
+                    transform: translateX(-50%) !important;
+                    width: auto;
+                    border-radius: 50px;
+                    padding: 10px 20px;
+                    background: rgba(30, 31, 32, 0.95);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255,255,255,0.2);
+                }
+                .gu-hl-btn {
+                    width: 36px; height: 36px; /* Plus gros pour le doigt */
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
         menu.innerHTML = `
             <div class="gu-hl-btn gu-bg-red" data-color="red" title="Red"></div>
             <div class="gu-hl-btn gu-bg-blue" data-color="blue" title="Blue"></div>
             <div class="gu-hl-btn gu-bg-green" data-color="green" title="Green"></div>
             <div class="gu-hl-btn gu-bg-yellow" data-color="yellow" title="Yellow"></div>
+            <div id="gu-hl-close" style="color:#999; font-size:18px; margin-left:5px; cursor:pointer;">&times;</div>
         `;
         document.body.appendChild(menu);
 
+        // Events des boutons
         menu.querySelectorAll('.gu-hl-btn').forEach(btn => {
-            btn.onmousedown = (e) => {
+            // 'mousedown' pour PC, 'touchstart' pour Mobile (réactivité immédiate)
+            const action = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                const color = btn.getAttribute('data-color');
-                saveSelection(color);
+                saveSelection(btn.getAttribute('data-color'));
                 menu.style.display = 'none';
             };
+            btn.onmousedown = action;
+            btn.ontouchstart = action;
         });
+
+        // Bouton fermer
+        const closeBtn = menu.querySelector('#gu-hl-close');
+        const closeAction = (e) => {
+            e.preventDefault(); e.stopPropagation();
+            menu.style.display = 'none';
+            // Sur mobile, on vide la sélection pour retirer le menu natif aussi
+            if (window.getSelection) window.getSelection().removeAllRanges();
+        };
+        closeBtn.onmousedown = closeAction;
+        closeBtn.ontouchstart = closeAction;
     }
 
-    document.addEventListener('mouseup', (e) => {
-        const menu = document.getElementById('gu-highlight-menu');
-        const selection = window.getSelection();
-        const selectedText = selection.toString().trim();
+    // 2. Écouteur Universel (Desktop & Mobile)
+    document.addEventListener('selectionchange', () => {
+        // On utilise un Timer pour attendre que l'utilisateur finisse sa sélection (Mobile)
+        clearTimeout(selectionTimer);
 
-        if (!selectedText || e.target.closest('#gu-floating-panel') || e.target.closest('#gu-highlight-menu')) {
-            menu.style.display = 'none';
-            return;
-        }
-
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-
-        menu.style.display = 'flex';
-        menu.style.top = `${rect.top + window.scrollY - 40}px`;
-        menu.style.left = `${rect.left + (rect.width / 2) - 60}px`;
+        selectionTimer = setTimeout(() => {
+            handleSelection();
+        }, 800); // 800ms de délai pour laisser le temps d'ajuster les poignées sur Android
     });
+
+    // Optimisation Desktop : Réaction immédiate au relâchement de la souris
+    document.addEventListener('mouseup', () => {
+        clearTimeout(selectionTimer);
+        handleSelection(); // Pas de délai sur souris
+    });
+}
+function handleSelection() {
+    const menu = document.getElementById('gu-highlight-menu');
+    const selection = window.getSelection();
+
+    // Si pas de sélection ou sélection vide
+    if (!selection || selection.rangeCount === 0 || selection.toString().trim().length === 0) {
+        if (menu) menu.style.display = 'none';
+        return;
+    }
+
+    // Ignorer si on sélectionne dans le panneau de l'extension
+    if (selection.anchorNode &&
+        (selection.anchorNode.parentElement.closest('#gu-floating-panel') ||
+         selection.anchorNode.parentElement.closest('#gu-highlight-menu'))) {
+        return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+
+    // Vérification de sécurité (si l'élément est invisible ou hors écran)
+    if (rect.width === 0 || rect.height === 0) return;
+
+    menu.style.display = 'flex';
+
+    // Positionnement PC (Au-dessus du texte)
+    // Sur mobile, le CSS @media forcera la position en bas fixe
+    menu.style.top = `${rect.top + window.scrollY}px`; // Le CSS fait le translate -120%
+    menu.style.left = `${rect.left + (rect.width / 2)}px`; // Centré
 }
 
 function saveSelection(color) {
@@ -2204,14 +2297,21 @@ function saveSelection(color) {
     const text = selection.toString().trim();
     if (!text) return;
 
+    // Tentative de surlignage visuel (Best effort)
     try {
         const range = selection.getRangeAt(0);
+        // On ne surligne que si c'est simple, pour ne pas casser le DOM complexe de Gemini
         const span = document.createElement('span');
         span.className = `gu-bg-${color}`;
         span.style.borderRadius = '4px';
         span.style.padding = '0 2px';
+        span.style.color = '#000'; // Texte noir pour lisibilité sur couleur
+
+        // Cette méthode peut échouer si la sélection traverse plusieurs blocs
         range.surroundContents(span);
-    } catch(e) { console.log("Complex highlight skipped"); }
+    } catch(e) {
+        console.log("Surlignage visuel complexe ignoré (Note sauvegardée quand même)");
+    }
 
     const chatId = window.location.href.split('/app/')[1]?.split('?')[0] || 'unknown_chat';
     const note = {
@@ -2224,10 +2324,13 @@ function saveSelection(color) {
 
     Storage.saveHighlight(chatId, note, () => {
         const panel = document.getElementById('gu-notes-panel');
+        // Si le panneau note est ouvert, on rafraîchit
         if (panel && panel.classList.contains('active')) {
             renderNotesUI();
         }
-        showToast("Saved to Notes", "🖍️");
+        showToast("Note Saved", "💾");
+
+        // Sur mobile, on désélectionne pour fermer le menu natif
         window.getSelection().removeAllRanges();
     });
 }
@@ -2252,12 +2355,11 @@ export function renderNotesUI(filterColor = 'all') {
             return;
         }
 
-        // Tri du plus récent au plus ancien
         filtered.reverse().forEach(note => {
             const card = document.createElement('div');
             card.className = 'gu-note-card';
 
-            // Couleur de bordure
+            // Couleurs de bordure
             let borderColor = '#666';
             if(note.color === 'red') borderColor = '#ffadad';
             if(note.color === 'blue') borderColor = '#a0c4ff';
@@ -2265,12 +2367,11 @@ export function renderNotesUI(filterColor = 'all') {
             if(note.color === 'yellow') borderColor = '#fdffb6';
             card.style.borderLeftColor = borderColor;
 
-            // --- LOGIQUE "AFFICHER PLUS" ---
-            const isLongText = note.text.length > 150; // Seuil de caractères (environ 3 lignes)
+            // Logique "Afficher plus"
+            const isLongText = note.text.length > 150;
             const readMoreBtnHtml = isLongText
                 ? `<button class="gu-read-more-btn">${t('read_more')}</button>`
                 : '';
-            // -------------------------------
 
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
@@ -2278,37 +2379,26 @@ export function renderNotesUI(filterColor = 'all') {
                     <span class="gu-icon-btn del-note" style="width:16px; height:16px; font-size:12px; color:#ff8989;">×</span>
                 </div>
 
-                <div class="gu-note-text" title="Click expand to see full text">"${note.text.replace(/"/g, '&quot;')}"</div>
+                <div class="gu-note-text" title="Click expand">"${note.text.replace(/"/g, '&quot;')}"</div>
                 ${readMoreBtnHtml}
 
                 <textarea class="gu-note-comment" placeholder="${t('note_placeholder')}">${note.comment || ''}</textarea>
             `;
 
-            // --- EVENTS ---
-
-            // 1. Bouton "Afficher plus"
             if (isLongText) {
                 const btn = card.querySelector('.gu-read-more-btn');
                 const txtDiv = card.querySelector('.gu-note-text');
-
                 btn.onclick = () => {
                     txtDiv.classList.toggle('expanded');
-                    // Change le texte du bouton selon l'état
-                    if (txtDiv.classList.contains('expanded')) {
-                        btn.innerText = t('read_less');
-                    } else {
-                        btn.innerText = t('read_more');
-                    }
+                    btn.innerText = txtDiv.classList.contains('expanded') ? t('read_less') : t('read_more');
                 };
             }
 
-            // 2. Auto-save du commentaire
             const area = card.querySelector('textarea');
             area.addEventListener('input', () => {
                 Storage.updateHighlightComment(chatId, note.id, area.value);
             });
 
-            // 3. Suppression
             card.querySelector('.del-note').onclick = () => {
                 if(confirm(t('delete_note_confirm'))) {
                     Storage.deleteHighlight(chatId, note.id, () => renderNotesUI(filterColor));
@@ -2494,24 +2584,20 @@ function exportChatToMarkdown() {
 export function initPanel() {
     if (document.getElementById('gu-floating-panel')) return;
 
+    // Injection des styles si nécessaire
     if (!document.getElementById('gu-global-styles')) {
         const style = document.createElement('style');
         style.id = 'gu-global-styles';
-
-        // --- CSS AVEC DEUX VARIABLES DISTINCTES ---
+        // On définit les variables CSS pour le zoom
         style.textContent = CSS_STYLES + `
             :root {
                 --gu-zoom-text: 1;
                 --gu-zoom-ui: 1;
             }
-
-            /* 1. Variable TEXTE : Pour le chat et les questions */
             message-content .markdown-main-panel,
             user-query {
                 zoom: var(--gu-zoom-text);
             }
-
-            /* 2. Variable UI : Pour l'extension uniquement */
             #gu-floating-panel,
             .gu-modal-overlay,
             .gu-context-menu {
@@ -2521,16 +2607,16 @@ export function initPanel() {
         document.head.appendChild(style);
     }
 
-    // Appel du zoom au démarrage
+    // Appliquer le zoom sauvegardé
     initZoom();
 
+    // Construction du panneau
     chrome.storage.local.get([LANG_STORAGE_KEY], (res) => {
         if(res[LANG_STORAGE_KEY]) currentLanguage = res[LANG_STORAGE_KEY];
 
         const panel = document.createElement('div');
         panel.id = 'gu-floating-panel';
 
-        // Le HTML reste inchangé
         panel.innerHTML = `
             <div class="gu-header" id="gu-header-drag">
                 <div class="gu-header-group">
@@ -2591,10 +2677,11 @@ export function initPanel() {
         `;
         document.body.appendChild(panel);
 
-        // --- EVENTS ---
+        // --- GESTION DES ÉVÉNEMENTS (DRAG & DROP, TOUCH) ---
         const header = panel.querySelector('#gu-header-drag');
         let isDragging = false, startX, startY, initialLeft, initialTop;
 
+        // Souris
         header.onmousedown = (e) => {
             if(e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.tagName === 'INPUT') return;
             isDragging = true; startX = e.clientX; startY = e.clientY;
@@ -2603,6 +2690,7 @@ export function initPanel() {
             header.style.cursor = 'grabbing';
         };
 
+        // Bouton Streamer (Clic court / Long press)
         const btnStreamer = panel.querySelector('#gu-btn-streamer');
         let longPressTimer;
         btnStreamer.onclick = toggleStreamerMode;
@@ -2612,6 +2700,7 @@ export function initPanel() {
         };
         btnStreamer.ontouchend = () => { clearTimeout(longPressTimer); };
 
+        // Mouvement Souris
         document.onmousemove = (e) => {
             if (!isDragging) return;
             panel.style.left = `${initialLeft + e.clientX - startX}px`;
@@ -2620,6 +2709,7 @@ export function initPanel() {
         };
         document.onmouseup = () => { isDragging = false; header.style.cursor = 'move'; };
 
+        // Filtres Notes
         const filterBtns = panel.querySelectorAll('.gu-filter-btn');
         filterBtns.forEach(btn => {
             btn.onclick = () => {
@@ -2629,6 +2719,7 @@ export function initPanel() {
             };
         });
 
+        // Boutons Header & Actions
         panel.querySelector('#gu-btn-min').onclick = () => panel.classList.toggle('minimized');
         panel.querySelector('#gu-add-folder-btn').onclick = () => showCreateFolderModal();
         panel.querySelector('#gu-add-prompt-folder-btn').onclick = () => showCreatePromptFolderModal();
@@ -2652,6 +2743,7 @@ export function initPanel() {
         panel.querySelector('#gu-add-prompt-btn').onclick = () => showCreatePromptModal();
         panel.querySelector('#gu-help-prompt-btn').onclick = showPromptHelpModal;
 
+        // Mobile Touch Events (Drag)
         header.ontouchstart = (e) => {
             if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
             isDragging = true;
@@ -2671,5 +2763,10 @@ export function initPanel() {
         document.ontouchend = () => { isDragging = false; };
 
         refreshMainButtons();
+
+        // --- CORRECTIF MOBILE ---
+        // On force le chargement des données maintenant que le panneau est injecté.
+        // Essentiel pour Firefox Android où le DOM est lent à s'actualiser.
+        refreshUI();
     });
 }
